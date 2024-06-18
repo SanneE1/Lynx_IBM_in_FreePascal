@@ -101,8 +101,10 @@ var               {here you declare global variables}
   to_file_out: TextFile;
   filename:text;
   HabitatMap: array of array of byte;
-  MalesMap: array of array of byte;
-  FemalesMap: array of array of byte;
+  FemalesSettledMap: array of array of byte;     // Fully settled individuals (Status 3)
+  MalesSettledMap: array of array of byte;
+  FemalesEarlyMap: array of array of byte;       // Early settlement - can still be outcompeted (Status 2)
+  MalesEarlyMap: array of array of byte;
   Mapdimx,Mapdimy: integer;
   mapname:string;
   dx:array[0..8] of integer =(0, 0, 1, 1, 1, 0,-1,-1,-1);
@@ -175,8 +177,10 @@ begin
   reset(filename);
   readln(filename, Mapdimx, Mapdimy);
   SetLength(HabitatMap, Mapdimx + 1, Mapdimy + 1);
-  SetLength(MalesMap, Mapdimx + 1, Mapdimy + 1);
-  SetLength(FemalesMap, Mapdimx + 1, Mapdimy + 1);
+  SetLength(MalesSettledMap, Mapdimx + 1, Mapdimy + 1);
+  SetLength(FemalesSettledMap, Mapdimx + 1, Mapdimy + 1);
+  SetLength(MalesEarlyMap, Mapdimx + 1, Mapdimy + 1);
+  SetLength(FemalesEarlyMap, Mapdimx + 1, Mapdimy + 1);
 
   for iy := 1 to Mapdimy do
   begin
@@ -269,18 +273,20 @@ begin
     arr[i] := -1;
 end;
 
-procedure UpdateAbundanceMap;
+procedure UpdateTerritoryMaps;
 // Update the availability of males + local abundances. NOTE: DOESN'T CHECK IF MALE IS OF REPRODUCTIVE AGE
 var
-  a, b, x, y: integer;
+  a, b, x, y, t: integer;
   s : string;
 begin
 
   for a := 0 to MapdimX - 1 do
     for b := 0 to Mapdimy - 1 do
     begin
-      Malesmap[a, b] := 0;      // Empty both maps to fill with current status below
-      Femalesmap[a, b] := 0;
+      MalesSettledMap[a, b] := 0;      // Empty all maps to fill with age below
+      FemalesSettledMap[a, b] := 0;
+      FemalesEarlyMap[a,b] := 0;
+      MalesEarlyMap[a,b] := 0;
     end;
 
 
@@ -295,6 +301,7 @@ begin
           x := Individual^.TerritoryX[b];
           y := Individual^.TerritoryY[b];
           s := Individual^.sex;
+          t := Individual^.Status;
 
           if (x = -1) and (y = -1) then Continue;
 
@@ -302,14 +309,45 @@ begin
           Continue;
 
           if (s = 'f') then
-            Femalesmap[x, y] := Femalesmap[x, y] + 1;
-          if (s = 'm') then
-            Malesmap[x, y] := Malesmap[x, y] + 1;
-        end;
+          begin
+            if t = 3 then
+            begin
+              if FemalesSettledMap[x, y] <> 0 then
+            Exit;
+              FemalesSettledMap[x, y] := Individual^.Age
+            end
+            else if t=2 then
+            begin
+              if FemalesSettledMap[x, y] <> 0 then
+            Exit;
+            FemalesEarlyMap[x, y] := Individual^.Age
+            end
+            else
+              Exit;
+          end;
 
+          if (s = 'm') then
+          begin
+            if t = 3 then
+            begin
+              if MalesSettledMap[x, y] <> 0 then
+            Exit;
+              MalesSettledMap[x, y] := Individual^.Age
+            end
+            else if t=2 then
+            begin
+              if MalesSettledMap[x, y] <> 0 then
+            Exit;
+            MalesEarlyMap[x, y] := Individual^.Age
+            end
+            else
+              Exit;
+          end;
       end;
     end;
   end;
+
+end;
 
 end;
 
@@ -391,7 +429,8 @@ begin
             // Individual is settled
             if Individual^.age >= min_rep_age then
               if Individual^.age <= max_rep_age then
-                if Malesmap[Individual^.Coor_X, Individual^.Coor_Y] = 1 then
+                if (MalesSettledMap[Individual^.Coor_X, Individual^.Coor_Y] <> 0) or
+                (MalesEarlyMap[Individual^.Coor_X, Individual^.Coor_Y] <> 0) then
                   // Check that there is a local male
                   if random < rep_prob then
                   begin
@@ -841,12 +880,12 @@ end;
 
 Procedure Dispersal(day: integer);
 var
-a, b, c, d, e, f, new_dir,  TCount, Bcount, FCount, female_presence: integer;
+a, b, c, d, e, f, new_dir,  TCount, Bcount, FCount, age_competition: integer;
 TestCoordX, TestCoordY, xi, yi, xy, coordX, coordY: integer;
 age_m, P_disp_start : real;
 temp_terrX, temp_terrY, B_cellsX, B_cellsY: array of integer;
 competitor, competitor2, temp_ind: PAgent;
-Iwin: boolean;
+Iwin, test_cell_available, can_settle: boolean;
 
 begin
    with population do
@@ -879,7 +918,7 @@ begin
           if (Individual^.TerritoryX[b] > -1) and (Individual^.TerritoryY[b] > -1) then
           begin
             Inc(TCount);
-            if (Individual^.Sex = 'm') and (FemalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b]] > 0) then
+            if (Individual^.Sex = 'm') and (FemalesSettledMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b]] > 0) then
               Inc(FCount);
           end;
         end;
@@ -944,22 +983,27 @@ begin
           {Is settlement possible}
           if HabitatMap[TestCoordX, TestCoordY] >= 2 then
           begin
-            if ((Individual^.sex = 'f') and (Femalesmap[TestCoordX, TestCoordY] = 0)) or
-            ((Individual^.sex = 'm') and (Malesmap[TestCoordX, TestCoordY] = 0)) then
+            test_cell_available := false;
+
+            if ((Individual^.sex = 'f') and (FemalesSettledMap[TestCoordX, TestCoordY] = 0)) or
+            ((Individual^.sex = 'm') and (MalesSettledMap[TestCoordX, TestCoordY] = 0)) then
+            test_cell_available := true
+            else
+            if ((Individual^.sex = 'f') and (FemalesEarlymap[TestCoordX, TestCoordY] <> 0)) then
             begin
-              Individual^.TerritoryX[1] := TestCoordX;
-              Individual^.TerritoryY[1] := TestCoordY;
-              Individual^.Status := 2;
-              Break;
+            age_competition := FemalesEarlymap[TestCoordX, TestCoordY];
+            Iwin := fight(Individual^.Age, age_competition, 'f');
+            if Iwin then test_cell_available:= true;
+            end
+            else
+            if ((Individual^.sex = 'm') and (MalesEarlymap[TestCoordX, TestCoordY] <> 0)) then
+            begin
+            age_competition := MalesEarlymap[TestCoordX, TestCoordY];
+            Iwin := fight(Individual^.Age, age_competition, 'm');
+            if Iwin then test_cell_available:= true;
             end;
 
-            competitor := FindCompetition(population, Individual^.Sex,
-              TestCoordX, TestCoordY);
-            if (competitor <> nil) and (competitor^.status = 2) and
-              (competitor^.Age <= max_rep_age) then
-              Iwin := fight(Individual^.Age, competitor^.Age, Individual^.Sex);
-
-            if (competitor = nil) or (competitor^.Age > max_rep_age) or (Iwin) then
+            if test_cell_available then
             begin
         {Look for more breeding habitat until teritory is big enough}
 
@@ -980,7 +1024,7 @@ begin
                     //Skip this iteration if it's the central cell
                     if (xi = TestCoordX) and (yi = TestCoordY) then Continue;
 
-                    if HabitatMap[xi, yi] > 0 then
+                    if HabitatMap[xi, yi] > 2 then
                     begin
                       B_cellsX[BCount] := xi;
                       B_cellsY[BCount] := yi;
@@ -998,16 +1042,27 @@ begin
 
                     coordX := B_cellsX[c];
                     coordY := B_cellsY[c];
+                    test_cell_available := false;
 
-                    competitor2 := FindCompetition(population, Individual^.sex, coordX, coordY);
+                    if ((Individual^.sex = 'f') and (FemalesSettledMap[coordX, coordY] = 0)) or
+                    ((Individual^.sex = 'm') and (MalesSettledMap[TestCoordX, TestCoordY] = 0)) then
+                    test_cell_available := true
+                    else
+                    if ((Individual^.sex = 'f') and (FemalesEarlymap[TestCoordX, TestCoordY] <> 0)) then
+                    begin
+                      age_competition := FemalesEarlymap[TestCoordX, TestCoordY];
+                      Iwin := fight(Individual^.Age, age_competition, 'f');
+                      if Iwin then test_cell_available:= true;
+                    end
+                    else
+                    if ((Individual^.sex = 'm') and (MalesEarlymap[TestCoordX, TestCoordY] <> 0)) then
+                    begin
+                      age_competition := MalesEarlymap[TestCoordX, TestCoordY];
+                      Iwin := fight(Individual^.Age, age_competition, 'm');
+                      if Iwin then test_cell_available:= true;
+                    end;
 
-                    if (competitor2 <> nil) then
-                      if (competitor2^.Age <= max_rep_age) then
-                      begin
-                        Iwin := fight(Individual^.Age, competitor2^.Age, Individual^.Sex);
-                      end;
-                    if (competitor2 = nil) or (competitor2^.Age > max_rep_age) or
-                      (Iwin) then
+                    if test_cell_available then
                     begin
                       temp_terrX[TCount] := coordX;
                       temp_terrY[TCount] := coordY;
@@ -1018,21 +1073,30 @@ begin
                   end;
 
 
-                  {Check that there are sufficient breeding cells so territory can be removed and assigned according}
-                  if TCount > 1 then
-                  begin
-                    {use temp_terr to remove those coordinates from existing territories}
-                    if Individual^.Sex = 'f' then
-                    begin
-                      for xy := 0 to TCount - 1 do
-                      begin
+                  {Check if sufficient breeding territory is available, and if there is a settled female available for the males}
+                  can_settle:= false;
 
+                  if (Individual^.sex = 'f') and (TCount > 1) then can_settle := true;
+                  if (Individual^.sex = 'm') and (TCount > 1) then
+                  for b := 0 to Tcount - 1 do
+                  begin
+                    if FemalesSettledMap[temp_terrX[b], temp_terrY[b]] <> 0 then can_settle := true;
+                  end;
+
+                  {If settlement is possible,}
+                  if can_settle then
+                  begin
+                    {First remove the territory from any possible competition}
+                    for xy := 0 to TCount - 1 do
+                      begin
+                        if (Individual^.sex = 'f') and (FemalesEarlyMap[temp_terrX[b], temp_terrY[b]] <> 0) or
+                        (Individual^.sex = 'm') and (MalesEarlyMap[temp_terrX[b], temp_terrY[b]] <> 0) then
                         with population do
                         begin
                           for d := 0 to population.Count - 1 do
                           begin
                             temp_ind := Items[d];
-                            if temp_ind^.Sex = 'f' then
+                            if temp_ind^.Sex = Individual^.sex then
                             begin
                               with temp_ind^ do
                                 for e := Length(TerritoryX) - 1 downto 0 do
@@ -1045,47 +1109,9 @@ begin
                                   end;
                                 end;
                             end;
-                          end;
                         end;
                       end;
                     end;
-
-                    if Individual^.Sex = 'm' then
-                    begin
-                      female_presence := 0;
-                      for xy := 0 to TCount - 1 do
-                        {First check if there are females in any of these coordinates}
-                      begin
-                        if FemalesMap[temp_terrX[xy], temp_terrY[xy]] = 1 then female_presence := 1;
-                      end;
-                      if female_presence = 1 then
-                      begin
-                        for xy := 0 to TCount - 1 do
-                        begin
-                          with population do
-                          begin
-                            for d := 0 to population.Count - 1 do
-                            begin
-                              temp_ind := Items[d];
-                              if temp_ind^.Sex = 'm' then
-                              begin
-                                with temp_ind^ do
-                                  for e := length(TerritoryX) - 1 downto 0 do
-                                  begin
-                                    if (TerritoryX[e] = temp_terrX[xy]) and
-                                      (TerritoryY[e] = temp_terrY[xy]) then
-                                    begin
-                                      TerritoryX[e] := -1;
-                                      TerritoryY[e] := -1;
-                                    end;
-                                  end;
-                              end;
-                            end;
-                          end;
-                        end;
-                      end;
-                    end;
-
 
                     {Assign territory to individual and change status}
                     begin

@@ -6,7 +6,7 @@ object spatial_Form: Tspatial_Form
   Caption = 'spatial model'
   ClientHeight = 787
   ClientWidth = 1134
-  LCLVersion = '3.2.0.0'
+  LCLVersion = '3.4.0.0'
   object Run_Button: TButton
     Left = 976
     Height = 24
