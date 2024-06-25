@@ -46,9 +46,6 @@ type           {here you declare the data structure for you individuals}
     Edit10: TEdit;
     Edit2: TEdit;
     Edit5: TEdit;
-    Edit6: TEdit;
-    Edit7: TEdit;
-    Edit8: TEdit;
     Exit_Button: TButton;
     Abort_Button: TButton;
     Label1: TLabel;
@@ -512,8 +509,9 @@ begin
         else if (Individual^.Status > 1) and (Individual^.Age <= max_rep_age) then
           surv_p := surv_resident_oNP
         else if (Individual^.Age > max_rep_age) then surv_p := surv_old_oNP;
-      end
-      else if (Individual^.Status = 1) and (Individual^.Sex = 'f') then
+      end;
+
+      if (Individual^.Status = 1) and (Individual^.Sex = 'f') then
         surv_p := surv_disperse_f
       else if (Individual^.Status = 1) and (Individual^.Sex = 'm') then
         surv_p := surv_disperse_m;
@@ -1024,7 +1022,7 @@ begin
                     //Skip this iteration if it's the central cell
                     if (xi = TestCoordX) and (yi = TestCoordY) then Continue;
 
-                    if HabitatMap[xi, yi] > 2 then
+                    if HabitatMap[xi, yi] >= 2 then
                     begin
                       B_cellsX[BCount] := xi;
                       B_cellsY[BCount] := yi;
@@ -1081,6 +1079,7 @@ begin
                   for b := 0 to Tcount - 1 do
                   begin
                     if FemalesSettledMap[temp_terrX[b], temp_terrY[b]] <> 0 then can_settle := true;
+                    if can_settle = true then Break;
                   end;
 
                   {If settlement is possible,}
@@ -1089,8 +1088,8 @@ begin
                     {First remove the territory from any possible competition}
                     for xy := 0 to TCount - 1 do
                       begin
-                        if (Individual^.sex = 'f') and (FemalesEarlyMap[temp_terrX[b], temp_terrY[b]] <> 0) or
-                        (Individual^.sex = 'm') and (MalesEarlyMap[temp_terrX[b], temp_terrY[b]] <> 0) then
+                        if (Individual^.sex = 'f') and (FemalesEarlyMap[temp_terrX[xy], temp_terrY[xy]] <> 0) or
+                        (Individual^.sex = 'm') and (MalesEarlyMap[temp_terrX[xy], temp_terrY[xy]] <> 0) then
                         with population do
                         begin
                           for d := 0 to population.Count - 1 do
@@ -1121,6 +1120,17 @@ begin
                       begin
                         Individual^.TerritoryX[f] := temp_terrX[f];
                         Individual^.TerritoryY[f] := temp_terrY[f];
+
+                        {Add territory to the early territory maps}
+                        if Individual^.sex = 'f' then
+                        begin
+                          FemalesEarlyMap[temp_terrX[f], temp_terrY[f]] := Individual^.Age
+                        end
+                        else
+                        begin
+                          MalesEarlyMap[temp_terrX[f], temp_terrY[f]] := Individual^.Age
+                        end;
+
                       end;
 
                       Break;  // No more steps required, as individual is now settled
