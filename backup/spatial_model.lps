@@ -20,10 +20,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="1162"/>
-        <CursorPos Y="1165"/>
-        <FoldState Value=" T3lT0f213 pkBnE0w]9mgoM0T222 PoUsG0 T0+c67J"/>
-        <ComponentState Value="1"/>
+        <TopLine Value="877"/>
+        <CursorPos Y="1170"/>
+        <FoldState Value=" T3lT0f3 pjEkK0A2]9Kjb0w]ImgoM0T222 PoUsG0 T0+c67Q"/>
         <UsageCount Value="256"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -111,123 +110,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1063" TopLine="1048"/>
+        <Caret Line="1171" TopLine="879"/>
       </Position1>
       <Position2>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1065" TopLine="1048"/>
+        <Caret Line="1173" TopLine="879"/>
       </Position2>
       <Position3>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1066" TopLine="1048"/>
+        <Caret Line="1175" TopLine="879"/>
       </Position3>
       <Position4>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1068" TopLine="1048"/>
+        <Caret Line="1170" TopLine="879"/>
       </Position4>
       <Position5>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1069" TopLine="1048"/>
+        <Caret Line="1247" TopLine="1233"/>
       </Position5>
       <Position6>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1038" TopLine="1023"/>
+        <Caret Line="1248" TopLine="1233"/>
       </Position6>
       <Position7>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1075" TopLine="1060"/>
+        <Caret Line="1250" TopLine="1233"/>
       </Position7>
       <Position8>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1077" TopLine="1060"/>
+        <Caret Line="1251" TopLine="1233"/>
       </Position8>
       <Position9>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1078" TopLine="1060"/>
+        <Caret Line="1252" TopLine="1233"/>
       </Position9>
       <Position10>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1079" TopLine="1060"/>
+        <Caret Line="1259" TopLine="1235"/>
       </Position10>
       <Position11>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1081" TopLine="1060"/>
+        <Caret Line="1260" TopLine="1236"/>
       </Position11>
       <Position12>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1079" TopLine="1060"/>
+        <Caret Line="1263" TopLine="1239"/>
       </Position12>
       <Position13>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1081" TopLine="1060"/>
+        <Caret Line="1264" TopLine="1240"/>
       </Position13>
       <Position14>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1079" TopLine="1060"/>
+        <Caret Line="1265" TopLine="1241"/>
       </Position14>
       <Position15>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1085" TopLine="1061"/>
+        <Caret Line="1264" TopLine="1241"/>
       </Position15>
       <Position16>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1141" TopLine="1126"/>
+        <Caret Line="1265" TopLine="1241"/>
       </Position16>
       <Position17>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1082" Column="35" TopLine="1067"/>
+        <Caret Line="1264" TopLine="1241"/>
       </Position17>
       <Position18>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1170" TopLine="1166"/>
+        <Caret Line="1267" TopLine="1243"/>
       </Position18>
       <Position19>
-        <Filename Value="spatial_model.pas"/>
-        <Caret Line="19"/>
+        <Filename Value="spatial_unit.pas"/>
+        <Caret Line="1268" TopLine="1244"/>
       </Position19>
       <Position20>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1170" TopLine="1164"/>
+        <Caret Line="1269" TopLine="1245"/>
       </Position20>
       <Position21>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1171" TopLine="1164"/>
+        <Caret Line="1268" TopLine="1245"/>
       </Position21>
       <Position22>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1173" TopLine="1164"/>
+        <Caret Line="1269" TopLine="1245"/>
       </Position22>
       <Position23>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1175" TopLine="1164"/>
+        <Caret Line="1268" TopLine="1245"/>
       </Position23>
       <Position24>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1179" TopLine="1164"/>
+        <Caret Line="1271" TopLine="1247"/>
       </Position24>
       <Position25>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1181" TopLine="1164"/>
+        <Caret Line="1274" TopLine="1250"/>
       </Position25>
       <Position26>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1168" TopLine="1162"/>
+        <Caret Line="1238" TopLine="1223"/>
       </Position26>
       <Position27>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1170" TopLine="1162"/>
+        <Caret Line="1218" TopLine="1202"/>
       </Position27>
       <Position28>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1171" TopLine="1162"/>
+        <Caret Line="1278" TopLine="1257"/>
       </Position28>
       <Position29>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1173" TopLine="1162"/>
+        <Caret Line="1218" TopLine="1202"/>
       </Position29>
       <Position30>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1175" TopLine="1162"/>
+        <Caret Line="1278" TopLine="1257"/>
       </Position30>
     </JumpHistory>
     <RunParams>
@@ -299,20 +298,6 @@
         <WatchKind Value="wpkWrite"/>
         <Source Value="spatial_unit.pas"/>
         <Line Value="331"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="spatial_unit.pas"/>
-        <Line Value="1184"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="spatial_unit.pas"/>
-        <Line Value="1165"/>
       </Item>
     </BreakPoints>
     <Watches>

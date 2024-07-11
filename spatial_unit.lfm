@@ -4,8 +4,8 @@ object spatial_Form: Tspatial_Form
   Top = 154
   Width = 600
   Caption = 'spatial model'
-  ClientHeight = 0
-  ClientWidth = 0
+  ClientHeight = 432
+  ClientWidth = 600
   LCLVersion = '3.4.0.0'
   object Run_Button: TButton
     Left = 485

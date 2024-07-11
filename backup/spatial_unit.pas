@@ -1079,7 +1079,7 @@ begin
                   for b := 0 to Tcount - 1 do
                   begin
                     if FemalesSettledMap[temp_terrX[b], temp_terrY[b]] <> 0 then can_settle := true;
-                    if can_settle := true then Break;
+                    if can_settle = true then Break;
                   end;
 
                   {If settlement is possible,}
@@ -1165,14 +1165,14 @@ begin
     for a:=1 to max_years do
     begin
       day := 0;  // Start the year
-      while day < 366 do //Let's pretend there's no such thing as leap years
+      while day < 5 do //Let's pretend there's no such thing as leap years
       begin
         day := day + 1;
         populationsize := population.Count;
 
         UpdateTerritoryMaps;
 
-        if day = 90 then
+        if day = 2 then
           if populationsize > 2 then
             reproduction;               // Reproduction happens at the end of March
 

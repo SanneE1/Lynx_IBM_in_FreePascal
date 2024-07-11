@@ -1165,7 +1165,7 @@ begin
     for a:=1 to max_years do
     begin
       day := 0;  // Start the year
-      while day < 366 do //Let's pretend there's no such thing as leap years
+      while day < 365 do //Let's pretend there's no such thing as leap years
       begin
         day := day + 1;
         populationsize := population.Count;
