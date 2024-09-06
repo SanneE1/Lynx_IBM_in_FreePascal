@@ -4,11 +4,11 @@
     <PathDelim Value="\"/>
     <Version Value="12"/>
     <BuildModes Active="Default"/>
-    <Units Count="13">
+    <Units Count="11">
       <Unit0>
         <Filename Value="spatial_model.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="1"/>
         <CursorPos Y="19"/>
         <UsageCount Value="256"/>
         <Loaded Value="True"/>
@@ -20,9 +20,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="797"/>
-        <CursorPos X="20" Y="1175"/>
-        <FoldState Value=" T3lT0f3 pjEkK0A2]9Kjb0w]ImgoM0T222 PoUsG0 T0+c67Q"/>
+        <TopLine Value="394"/>
+        <CursorPos X="47" Y="408"/>
+        <FoldState Value=" T3lT0f12212 pkGoc091 pmAmN0S1 Pi5U0g"/>
         <UsageCount Value="256"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -30,7 +30,7 @@
       <Unit2>
         <Filename Value="..\..\..\..\NaturaConnect\01 Lynx explicit model\CodigoCarlos2_grande\DefUnit.pas"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="3"/>
       </Unit2>
       <Unit3>
         <Filename Value="C:\lazarus\components\tachart\tacustomsource.pas"/>
@@ -38,7 +38,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1844"/>
         <CursorPos Y="1870"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="3"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\..\Tutorials\Ch10_Revilla\spatial model\spatial model\spatial_unit.pas"/>
@@ -46,35 +46,35 @@
         <TopLine Value="287"/>
         <CursorPos X="14" Y="290"/>
         <FoldState Value=" T3ka0I4 PiZiO0$"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="3"/>
       </Unit4>
       <Unit5>
         <Filename Value="C:\lazarus\lcl\include\control.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2958"/>
         <CursorPos Y="2974"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit5>
       <Unit6>
         <Filename Value="C:\lazarus\lcl\include\buttoncontrol.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="39"/>
         <CursorPos Y="56"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit6>
       <Unit7>
         <Filename Value="C:\lazarus\lcl\include\buttons.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="153"/>
         <CursorPos Y="170"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit7>
       <Unit8>
         <Filename Value="C:\lazarus\lcl\include\wincontrol.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="5415"/>
         <CursorPos Y="5431"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit8>
       <Unit9>
         <Filename Value="C:\lazarus\lcl\lclmessageglue.pas"/>
@@ -82,151 +82,136 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="98"/>
         <CursorPos Y="114"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\lazarus\lcl\interfaces\win32\win32callback.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2790"/>
         <CursorPos Y="2807"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit10>
-      <Unit11>
-        <Filename Value="..\Old models\CodigoCarlos2_grande\LinceUnit.pas"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="1033"/>
-        <CursorPos X="37" Y="846"/>
-        <UsageCount Value="13"/>
-        <Loaded Value="True"/>
-      </Unit11>
-      <Unit12>
-        <Filename Value="..\Old models\CodigoCarlos2_grande\InitUnit.pas"/>
-        <EditorIndex Value="2"/>
-        <CursorPos X="30" Y="93"/>
-        <UsageCount Value="13"/>
-        <Loaded Value="True"/>
-      </Unit12>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1171" TopLine="879"/>
+        <Caret Line="434" TopLine="411"/>
       </Position1>
       <Position2>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1173" TopLine="879"/>
+        <Caret Line="435" TopLine="412"/>
       </Position2>
       <Position3>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1175" TopLine="879"/>
+        <Caret Line="437" TopLine="414"/>
       </Position3>
       <Position4>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1170" TopLine="879"/>
+        <Caret Line="438" TopLine="415"/>
       </Position4>
       <Position5>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1247" TopLine="1233"/>
+        <Caret Line="439" TopLine="416"/>
       </Position5>
       <Position6>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1248" TopLine="1233"/>
+        <Caret Line="440" TopLine="417"/>
       </Position6>
       <Position7>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1250" TopLine="1233"/>
+        <Caret Line="442" TopLine="419"/>
       </Position7>
       <Position8>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1251" TopLine="1233"/>
+        <Caret Line="443" TopLine="420"/>
       </Position8>
       <Position9>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1252" TopLine="1233"/>
+        <Caret Line="445" TopLine="422"/>
       </Position9>
       <Position10>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1259" TopLine="1235"/>
+        <Caret Line="422" TopLine="408"/>
       </Position10>
       <Position11>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1260" TopLine="1236"/>
+        <Caret Line="382" TopLine="323"/>
       </Position11>
       <Position12>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1263" TopLine="1239"/>
+        <Caret Line="384" TopLine="323"/>
       </Position12>
       <Position13>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1264" TopLine="1240"/>
+        <Caret Line="385" TopLine="323"/>
       </Position13>
       <Position14>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1265" TopLine="1241"/>
+        <Caret Line="382" TopLine="323"/>
       </Position14>
       <Position15>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1264" TopLine="1241"/>
+        <Caret Line="384" TopLine="323"/>
       </Position15>
       <Position16>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1265" TopLine="1241"/>
+        <Caret Line="385" TopLine="323"/>
       </Position16>
       <Position17>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1264" TopLine="1241"/>
+        <Caret Line="382" TopLine="323"/>
       </Position17>
       <Position18>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1267" TopLine="1243"/>
+        <Caret Line="384" TopLine="323"/>
       </Position18>
       <Position19>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1268" TopLine="1244"/>
+        <Caret Line="385" TopLine="323"/>
       </Position19>
       <Position20>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1269" TopLine="1245"/>
+        <Caret Line="387" TopLine="323"/>
       </Position20>
       <Position21>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1268" TopLine="1245"/>
+        <Caret Line="393" TopLine="334"/>
       </Position21>
       <Position22>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1269" TopLine="1245"/>
+        <Caret Line="1144" TopLine="1131"/>
       </Position22>
       <Position23>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1268" TopLine="1245"/>
+        <Caret Line="1146" TopLine="1131"/>
       </Position23>
       <Position24>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1271" TopLine="1247"/>
+        <Caret Line="1133" TopLine="1128"/>
       </Position24>
       <Position25>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1274" TopLine="1250"/>
+        <Caret Line="1135" TopLine="1128"/>
       </Position25>
       <Position26>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1238" TopLine="1223"/>
+        <Caret Line="1136" TopLine="1128"/>
       </Position26>
       <Position27>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1218" TopLine="1202"/>
+        <Caret Line="1138" TopLine="1128"/>
       </Position27>
       <Position28>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1278" TopLine="1257"/>
+        <Caret Line="380" TopLine="275"/>
       </Position28>
       <Position29>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1218" TopLine="1202"/>
+        <Caret Line="295" Column="37" TopLine="287"/>
       </Position29>
       <Position30>
         <Filename Value="spatial_unit.pas"/>
-        <Caret Line="1278" TopLine="1257"/>
+        <Caret Line="400" Column="36" TopLine="391"/>
       </Position30>
     </JumpHistory>
     <RunParams>
@@ -241,63 +226,21 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="spatial_unit.pas"/>
-        <Line Value="790"/>
+        <Line Value="768"/>
       </Item>
       <Item>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="spatial_unit.pas"/>
-        <Line Value="788"/>
+        <Line Value="766"/>
       </Item>
       <Item>
         <Kind Value="bpkSource"/>
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="spatial_unit.pas"/>
-        <Line Value="792"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="spatial_unit.pas"/>
-        <Line Value="313"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="spatial_unit.pas"/>
-        <Line Value="323"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="spatial_unit.pas"/>
-        <Line Value="319"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="spatial_unit.pas"/>
-        <Line Value="341"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="spatial_unit.pas"/>
-        <Line Value="337"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="spatial_unit.pas"/>
-        <Line Value="331"/>
+        <Line Value="770"/>
       </Item>
     </BreakPoints>
     <Watches>
@@ -308,10 +251,22 @@
         <Expression Value="Individual"/>
       </Item>
       <Item>
+        <Expression Value="Femalesmap"/>
+      </Item>
+      <Item>
+        <Expression Value="Malesmap"/>
+      </Item>
+      <Item>
+        <Expression Value="population"/>
+      </Item>
+      <Item>
         <Expression Value="steps"/>
       </Item>
       <Item>
-        <Expression Value="FemalesEarlyMap"/>
+        <Expression Value="s"/>
+      </Item>
+      <Item>
+        <Expression Value="step_probs"/>
       </Item>
     </Watches>
   </Debugging>

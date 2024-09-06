@@ -11,28 +11,29 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, TAGraph, TASeries, Forms, Controls, Graphics,
-  Dialogs, StdCtrls, ExtCtrls, math, LCLType;
+  Dialogs, StdCtrls, ExtCtrls, Math, LCLType;
 
 type           {here you declare the data structure for you individuals}
-  PAgent=^Agent;
+  PAgent = ^Agent;
+
   Agent = record
-    sex:             string[1];
-    Age:             byte;         // In years
-    Status:          shortint;  // 0=pre-dispersal cubs and subadults, 1=dispersing individuals, 2=early settled adults, 3 = fully settled adults
+    sex: string[1];
+    Age: byte;         // In years
+    Status: shortint;  // 0=pre-dispersal cubs and subadults, 1=dispersing individuals, 2=early settled adults, 3 = fully settled adults
 
-    Coor_X:          byte;
-    Coor_Y:          byte;
+    Coor_X: byte;
+    Coor_Y: byte;
 
-    TerritoryX:      array[0..1] of integer;
-    TerritoryY:      array[0..1] of integer;
+    TerritoryX: array[0..1] of integer;
+    TerritoryY: array[0..1] of integer;
 
-    DailySteps:      byte;
-    DailyStepsOpen:  byte;
-    mov_mem:         byte;
-    return_home:     boolean;  // not to be confused with Territory. This is for when individuals go on an excursion
-                               // into Open habitat, for them to return to the last known Dispersal habitat they've visited
-    homeX:           byte;
-    homeY:           byte;
+    DailySteps: byte;
+    DailyStepsOpen: byte;
+    mov_mem: byte;
+    return_home: boolean;  // not to be confused with Territory. This is for when individuals go on an excursion
+    // into Open habitat, for them to return to the last known Dispersal habitat they've visited
+    homeX: byte;
+    homeY: byte;
 
   end;
 
@@ -46,6 +47,9 @@ type           {here you declare the data structure for you individuals}
     Edit10: TEdit;
     Edit2: TEdit;
     Edit5: TEdit;
+    Edit6: TEdit;
+    Edit7: TEdit;
+    Edit8: TEdit;
     Exit_Button: TButton;
     Abort_Button: TButton;
     Label1: TLabel;
@@ -64,51 +68,49 @@ type           {here you declare the data structure for you individuals}
     { private declarations }
   public
     { public declarations }
-    Procedure Pop_dynamics;
+    procedure Pop_dynamics;
   end;
 
 var               {here you declare global variables}
   spatial_Form: Tspatial_Form;
-  Population : Tlist;
-  Individual : PAgent;
-  n_ini : integer;
+  Population: TList;
+  Individual: PAgent;
+  n_ini: integer;
   max_years: integer;
   rep_prob: real;
-  AlphaR:real;
-  BetaR:real;
+  AlphaR: real;
+  BetaR: real;
   surv_prob: real;
-  AlphaS:real;
-  BetaS:real;
+  AlphaS: real;
+  BetaS: real;
   sett_prob: real;
-  avg_steps:integer;
-  AlphaD:real;
-  BetaD:real;
-  sink:real;
+  avg_steps: integer;
+  AlphaD: real;
+  BetaD: real;
+  sink: real;
   populationsize: longint;
   n_sim: integer;
-  n_extint:integer;
-  sum_distance_X:integer;
-  sum_distance_Y:integer;
-  current_sim:integer;
+  n_extint: integer;
+  sum_distance_X: integer;
+  sum_distance_Y: integer;
+  current_sim: integer;
   max_pop_size: integer;
   step_probs: array of double;
   pop_size: array[1..100] of integer;
   sum_pop_size: array[1..100] of integer;
   n_sim_no_ext: array[1..100] of integer;
   to_file_out: TextFile;
-  filename:text;
+  filename: Text;
   HabitatMap: array of array of byte;
-  FemalesSettledMap: array of array of byte;     // Fully settled individuals (Status 3)
-  MalesSettledMap: array of array of byte;
-  FemalesEarlyMap: array of array of byte;       // Early settlement - can still be outcompeted (Status 2)
-  MalesEarlyMap: array of array of byte;
-  Mapdimx,Mapdimy: integer;
-  mapname:string;
-  dx:array[0..8] of integer =(0, 0, 1, 1, 1, 0,-1,-1,-1);
-  dy:array[0..8] of integer =(0, 1, 1, 0,-1,-1,-1, 0, 1);
+  MalesMap: array of array of byte;
+  FemalesMap: array of array of byte;
+  Mapdimx, Mapdimy: integer;
+  mapname: string;
+  dx: array[0..8] of integer = (0, 0, 1, 1, 1, 0, -1, -1, -1);
+  dy: array[0..8] of integer = (0, 1, 1, 0, -1, -1, -1, 0, 1);
   xp, yp: integer;
-  tempX,tempY: integer;
-  homeX, homeY,steps, s, new_dir, mem: integer;
+  tempX, tempY: integer;
+  homeX, homeY, steps, s, new_dir, mem: integer;
   tohome: boolean;
 
 
@@ -174,10 +176,8 @@ begin
   reset(filename);
   readln(filename, Mapdimx, Mapdimy);
   SetLength(HabitatMap, Mapdimx + 1, Mapdimy + 1);
-  SetLength(MalesSettledMap, Mapdimx + 1, Mapdimy + 1);
-  SetLength(FemalesSettledMap, Mapdimx + 1, Mapdimy + 1);
-  SetLength(MalesEarlyMap, Mapdimx + 1, Mapdimy + 1);
-  SetLength(FemalesEarlyMap, Mapdimx + 1, Mapdimy + 1);
+  SetLength(MalesMap, Mapdimx + 1, Mapdimy + 1);
+  SetLength(FemalesMap, Mapdimx + 1, Mapdimy + 1);
 
   for iy := 1 to Mapdimy do
   begin
@@ -243,7 +243,7 @@ begin
 end;
 
 function randomPoisson(mean: integer): integer;
-{pseudorandom Poisson distributed number genetrator, Donald Knuth's algorithm}
+  {pseudorandom Poisson distributed number genetrator, Donald Knuth's algorithm}
 const
   RESOLUTION = 1000;
 var
@@ -251,15 +251,17 @@ var
   b, l: real;
 begin
   //assert(mean > 0, 'mean < 1');
-  k:= 0;
-  b:= 1;
-  l:= exp(-mean);
+  k := 0;
+  b := 1;
+  l := exp(-mean);
   while b > l do
   begin
-    k:= k + 1;
-    b:= b * random(RESOLUTION)/RESOLUTION;
+    k := k + 1;
+    b := b * random(RESOLUTION) / RESOLUTION;
   end;
-  if mean<= 0 then randomPoisson:=0 else randomPoisson:= k - 1;
+  if mean <= 0 then randomPoisson := 0
+  else
+    randomPoisson := k - 1;
 end;
 
 procedure ArrayToNegOne(var arr: array of integer);
@@ -270,20 +272,18 @@ begin
     arr[i] := -1;
 end;
 
-procedure UpdateTerritoryMaps;
+procedure UpdateAbundanceMap;
 // Update the availability of males + local abundances. NOTE: DOESN'T CHECK IF MALE IS OF REPRODUCTIVE AGE
 var
-  a, b, x, y, t: integer;
-  s : string;
+  a, b, x, y: integer;
+  s: string;
 begin
 
   for a := 0 to MapdimX - 1 do
     for b := 0 to Mapdimy - 1 do
     begin
-      MalesSettledMap[a, b] := 0;      // Empty all maps to fill with age below
-      FemalesSettledMap[a, b] := 0;
-      FemalesEarlyMap[a,b] := 0;
-      MalesEarlyMap[a,b] := 0;
+      Malesmap[a, b] := 0;      // Empty both maps to fill with current status below
+      Femalesmap[a, b] := 0;
     end;
 
 
@@ -292,72 +292,44 @@ begin
     for a := 0 to populationsize - 1 do
     begin
       Individual := Items[a];
+      if Individual^.Status >=2 then
       begin
         for b := 0 to length(Individual^.TerritoryX) - 1 do
         begin
           x := Individual^.TerritoryX[b];
           y := Individual^.TerritoryY[b];
           s := Individual^.sex;
-          t := Individual^.Status;
 
           if (x = -1) and (y = -1) then Continue;
 
-          if (x < 0) or (y < 0) or (x > MapdimX) or (y > MapdimY) then
-          Continue;
+          if (x < 0) and (y < 0) or (x > MapdimX) or (y > MapdimY) then
+            Continue;
 
           if (s = 'f') then
-          begin
-            if t = 3 then
-            begin
-              if FemalesSettledMap[x, y] <> 0 then
-            Exit;
-              FemalesSettledMap[x, y] := Individual^.Age
-            end
-            else if t=2 then
-            begin
-              if FemalesSettledMap[x, y] <> 0 then
-            Exit;
-            FemalesEarlyMap[x, y] := Individual^.Age
-            end
-            else
-              Exit;
-          end;
-
+            {if Femalesmap[x, y] <> 0 then
+            Exit;}
+            Femalesmap[x, y] := Individual^.Status;
           if (s = 'm') then
-          begin
-            if t = 3 then
-            begin
-              if MalesSettledMap[x, y] <> 0 then
-            Exit;
-              MalesSettledMap[x, y] := Individual^.Age
-            end
-            else if t=2 then
-            begin
-              if MalesSettledMap[x, y] <> 0 then
-            Exit;
-            MalesEarlyMap[x, y] := Individual^.Age
-            end
-            else
-              Exit;
-          end;
+            {if Malesmap[x, y] <> 0 then
+            Exit;}
+            Malesmap[x, y] := Individual^.Status;
+        end;
+
       end;
     end;
   end;
 
 end;
 
-end;
-
 function CanMoveHere(mem: integer): boolean;
 begin
   // outside of map dimensions
-  if (xp + dx[mem] < 0) or (xp + dx[mem] > Mapdimx) or (yp + dy[mem] < 0) or
-    (yp + dy[mem] > Mapdimy) then Result := False
+  if (xp + dx[mem] < 0) or (xp + dx[mem] > Mapdimx) or (yp + dy[mem] < 0) or (yp + dy[mem] > Mapdimy) then Result := False
   else
   // barrier cell
-  if (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 0) then Result := False
-  else
-    Result := True;
+    if (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 0) then Result := False
+    else
+      Result := True;
 end;
 
 procedure Startpopulation;
@@ -384,12 +356,12 @@ begin
       ArrayToNegOne(Individual^.TerritoryY);
 
       Individual^.mov_mem := random(8) + 1;
-      Individual^.homeX:= Individual^.Coor_X;
-      Individual^.homeY:= Individual^.Coor_Y;
+      Individual^.homeX := Individual^.Coor_X;
+      Individual^.homeY := Individual^.Coor_Y;
       Individual^.return_home := False;
 
-      Individual^.DailySteps:= 0;
-      Individual^.DailyStepsOpen:= 0;
+      Individual^.DailySteps := 0;
+      Individual^.DailyStepsOpen := 0;
 
       Population.add(Individual);
 
@@ -399,9 +371,10 @@ end;
 
 procedure Reproduction;
 var
-  a, current_litter_size, ls: integer;
+  a, current_litter_size, ls, xy: integer;
   rep_prob: real;
   temp_X, temp_Y, Temp_mem: word;
+  male_present: boolean;
 begin
   with population do
   begin
@@ -410,6 +383,9 @@ begin
       for a := 0 to populationsize - 1 do
       begin
         Individual := Items[a];
+        if Individual^.Sex = 'm' then Continue;
+
+        male_present:= false;
 
         //Might need this later for density dependence
         //Localpop:=Abundancemap[Individual^.Coor_X,Individual^.Coor_Y]; // get local population size
@@ -421,14 +397,20 @@ begin
           rep_prob := rep_prob_oNP;
 
         {Check that the individual is capable of reproduction}
-        if Individual^.sex = 'f' then
-          if Individual^.status <= 2 then
+          if Individual^.status = 3 then
             // Individual is settled
             if Individual^.age >= min_rep_age then
               if Individual^.age <= max_rep_age then
-                if (MalesSettledMap[Individual^.Coor_X, Individual^.Coor_Y] <> 0) or
-                (MalesEarlyMap[Individual^.Coor_X, Individual^.Coor_Y] <> 0) then
-                  // Check that there is a local male
+              // Check that there is a local male
+              begin
+                for xy := 0 to length(Individual^.TerritoryX)-1 do
+                begin
+                  if Individual^.TerritoryX = -1 then Continue;
+                    if Malesmap[Individual^.TerritoryX[xy], Individual^.TerritoryY[xy]] >=2 then
+                    male_present := true;
+                end;
+
+                if male_present then
                   if random < rep_prob then
                   begin
                     current_litter_size := Round(randg(litter_size, litter_size_sd));
@@ -455,19 +437,19 @@ begin
                       ArrayToNegOne(Individual^.TerritoryX);
 
                       Individual^.mov_mem := Temp_mem;
-                      Individual^.homeX:= Individual^.Coor_X;
-                      Individual^.homeY:= Individual^.Coor_Y;
+                      Individual^.homeX := Individual^.Coor_X;
+                      Individual^.homeY := Individual^.Coor_Y;
                       Individual^.return_home := False;
 
-                      Individual^.DailySteps:= 0;
-                      Individual^.DailyStepsOpen:= 0;
+                      Individual^.DailySteps := 0;
+                      Individual^.DailyStepsOpen := 0;
 
                       Population.add(Individual);
                     end;
                   end;
+              end;
       end;
   end;
-
 end;
 
 
@@ -488,33 +470,40 @@ begin
       Individual := items[a];
 
       {Assign yearly survival probabilities}
-      if HabitatMap[Individual^.Coor_X, Individual^.Coor_Y] = 3 then
+      if (Individual^.Status = 1) then
       begin
-        if (Individual^.Status = 0) and (Individual^.Age = 0) then
-          surv_p := surv_cub_iNP;
-        // the status statement shouldn't be necessary (cubs shouldn't be able to have another status but just to make sure)
-        if (Individual^.Status = 0) and (Individual^.Age > 0) then
-          surv_p := surv_sub_iNP;
-        if (Individual^.Status > 1) and (Individual^.Age <= max_rep_age) then
-          surv_p := surv_resident_iNP;
-        if (Individual^.Age > max_rep_age) then surv_p := surv_old_iNP;
+        if (Individual^.Sex = 'f') then surv_p := surv_disperse_f
+        else
+          if (Individual^.Sex = 'm') then  surv_p := surv_disperse_m;
       end
+      else
+        if HabitatMap[Individual^.Coor_X, Individual^.Coor_Y] = 3 then
+        begin
+          if (Individual^.Status = 0) and (Individual^.Age = 0) then
+            surv_p := surv_cub_iNP;
+          // the status statement shouldn't be necessary (cubs shouldn't be able to have another status but just to make sure)
+          if (Individual^.Status = 0) and (Individual^.Age > 0) then
+            surv_p := surv_sub_iNP;
+          if (Individual^.Status > 1) and (Individual^.Age <= max_rep_age) then
+            surv_p := surv_resident_iNP;
+          if (Individual^.Age > max_rep_age) then surv_p := surv_old_iNP;
+        end
 
-      else if HabitatMap[Individual^.Coor_X, Individual^.Coor_Y] < 3 then
-      begin
-        if (Individual^.Age = 0) and (Individual^.Status = 0) then
-          surv_p := surv_cub_oNP
-        else if (Individual^.Age > 0) and (Individual^.Status = 0) then
-          surv_p := surv_sub_oNP
-        else if (Individual^.Status > 1) and (Individual^.Age <= max_rep_age) then
-          surv_p := surv_resident_oNP
-        else if (Individual^.Age > max_rep_age) then surv_p := surv_old_oNP;
-      end;
+        else
+          if HabitatMap[Individual^.Coor_X, Individual^.Coor_Y] < 3 then
+          begin
+            if (Individual^.Age = 0) and (Individual^.Status = 0) then
+              surv_p := surv_cub_oNP
+            else
+              if (Individual^.Age > 0) and (Individual^.Status = 0) then
+                surv_p := surv_sub_oNP
+              else
+                if (Individual^.Status > 1) and (Individual^.Age <= max_rep_age) then
+                  surv_p := surv_resident_oNP
+                else
+                  if (Individual^.Age > max_rep_age) then surv_p := surv_old_oNP;
+          end;
 
-      if (Individual^.Status = 1) and (Individual^.Sex = 'f') then
-        surv_p := surv_disperse_f
-      else if (Individual^.Status = 1) and (Individual^.Sex = 'm') then
-        surv_p := surv_disperse_m;
 
       {Transform annual survival (surv_p) to daily survival (surv_day)}
       surv_day := Power(surv_p, (1 / 365));
@@ -523,7 +512,7 @@ begin
       die := False;
       if Individual^.age > max_age then die := True
       else
-      if random > surv_day then die := True;
+        if random > surv_day then die := True;
       if die then
         Delete(a);
 
@@ -600,8 +589,9 @@ begin
     begin
       if (HabitatMap[(xp + dx[i]), (yp + dy[i])] = 1) then
         nOpen := nOpen + 1
-      else if (HabitatMap[(xp + dx[i]), (yp + dy[i])] <= 2) then
-        nDisp := nDisp + 1;
+      else
+        if (HabitatMap[(xp + dx[i]), (yp + dy[i])] <= 2) then
+          nDisp := nDisp + 1;
     end
     else
       NBarr := NBarr + 1;
@@ -639,8 +629,7 @@ begin
   Consider autocorrelatin in movement - add to autocorrelation in fragmented area}
     begin
       if fragmented = True then theta := theta + delta_theta_f;
-      if CanMoveHere(mem) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] >= 2) and
-        (p < (theta)) then
+      if CanMoveHere(mem) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] >= 2) and (p < (theta)) then
         new_dir := mem
       else
       begin
@@ -668,12 +657,12 @@ begin
       {movement in non-fragmented area}
       if (p < theta) and CanMoveHere(mem) then new_dir := mem
       else
-      if f < (theta + theta * theta_delta) then
-      begin
-        if (mem > 4) and CanMoveHere(mem - 4) then new_dir := mem - 4
-        else
-        if (mem > 0) and (mem <= 4) and CanMoveHere(mem + 4) then new_dir := mem + 4;
-      end;
+        if f < (theta + theta * theta_delta) then
+        begin
+          if (mem > 4) and CanMoveHere(mem - 4) then new_dir := mem - 4
+          else
+            if (mem > 0) and (mem <= 4) and CanMoveHere(mem + 4) then new_dir := mem + 4;
+        end;
       if new_dir > 10 then  // If new direction has not yet been assigned through autocorrelation, random movement
       begin
         h := random(nDisp + nOpen) + 1;
@@ -703,65 +692,58 @@ begin
     {If memory movement is same type as chosen habitat type (here Open) then use
     autocorrelation to see if ind. moves in memory direction.}
         if CanMoveHere(mem) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 1) and (p < theta) then
-           new_dir := mem
-        else
-          {probability of moving backwards to autocorrelation}
-        if (p < (theta + theta * theta_delta)) then
-          begin
-            if (mem = 0) and CanMoveHere(mem) and
-              (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 1) then
-            new_dir := mem
-              else
-            if (mem > 4) and CanMoveHere(mem - 4) and
-              (HabitatMap[(xp + dx[mem - 4]), (yp + dy[mem - 4])] = 1) then
-            new_dir := mem - 4
-              else
-            if (mem > 0) and (mem <= 4) and CanMoveHere(mem + 4) and
-              (HabitatMap[(xp + dx[mem + 4]), (yp + dy[mem + 4])] = 1) then
-            new_dir := mem + 4
-          end;
-        if (new_dir > 10) and (nOpen > 0) then
-          begin
-            h := random(nOpen) + 1;
-            f := 0;
-            for i := 1 to 8 do
-            begin
-              if CanMoveHere(i) and (HabitatMap[(xp + dx[i]), (yp + dy[i])] = 1) then
-              begin
-                f := f + 1;
-                if f = h then
-                begin
-                  new_dir := i;
-                  Break;
-                end;
-              end;
-            end;
-          end;
-        end
-        else
-        begin
-        {Move to dispersal habitat}
-   {If memory movement is same type as chosen habitat type (here Dispersal) then
-   use autocorrelation to see if ind. moves in memory direction.}
-        if CanMoveHere(mem) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] <= 2) and
-          (p < theta) then
           new_dir := mem
         else
         {probability of moving backwards to autocorrelation}
-        if (p < (theta + theta * theta_delta)) then
+          if (p < (theta + theta * theta_delta)) then
+          begin
+            if (mem = 0) and CanMoveHere(mem) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 1) then
+              new_dir := mem
+            else
+              if (mem > 4) and CanMoveHere(mem - 4) and (HabitatMap[(xp + dx[mem - 4]), (yp + dy[mem - 4])] = 1) then
+                new_dir := mem - 4
+              else
+                if (mem > 0) and (mem <= 4) and CanMoveHere(mem + 4) and (HabitatMap[(xp + dx[mem + 4]), (yp + dy[mem + 4])] = 1) then
+                  new_dir := mem + 4;
+          end;
+        if (new_dir > 10) and (nOpen > 0) then
         begin
-          if (mem = 0) and CanMoveHere(mem) and
-            (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] <= 2) then
-            new_dir := mem
-          else
-          if (mem > 4) and CanMoveHere(mem - 4) and
-            (HabitatMap[(xp + dx[mem - 4]), (yp + dy[mem - 4])] <= 2) then
-            new_dir := mem - 4
-          else
-          if (mem > 0) and (mem <= 4) and CanMoveHere(mem + 4) and
-            (HabitatMap[(xp + dx[mem + 4]), (yp + dy[mem + 4])] <= 2) then
-            new_dir := mem + 4;
+          h := random(nOpen) + 1;
+          f := 0;
+          for i := 1 to 8 do
+          begin
+            if CanMoveHere(i) and (HabitatMap[(xp + dx[i]), (yp + dy[i])] = 1) then
+            begin
+              f := f + 1;
+              if f = h then
+              begin
+                new_dir := i;
+                Break;
+              end;
+            end;
+          end;
         end;
+      end
+      else
+      begin
+        {Move to dispersal habitat}
+   {If memory movement is same type as chosen habitat type (here Dispersal) then
+   use autocorrelation to see if ind. moves in memory direction.}
+        if CanMoveHere(mem) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] <= 2) and (p < theta) then
+          new_dir := mem
+        else
+        {probability of moving backwards to autocorrelation}
+          if (p < (theta + theta * theta_delta)) then
+          begin
+            if (mem = 0) and CanMoveHere(mem) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] <= 2) then
+              new_dir := mem
+            else
+              if (mem > 4) and CanMoveHere(mem - 4) and (HabitatMap[(xp + dx[mem - 4]), (yp + dy[mem - 4])] <= 2) then
+                new_dir := mem - 4
+              else
+                if (mem > 0) and (mem <= 4) and CanMoveHere(mem + 4) and (HabitatMap[(xp + dx[mem + 4]), (yp + dy[mem + 4])] <= 2) then
+                  new_dir := mem + 4;
+          end;
         {Otherwise a random choise of Dispersal habitat cells}
         if (new_dir > 10) and (nDisp > 0) then
         begin
@@ -788,14 +770,13 @@ begin
     Exit;
   if HabitatMap[(xp + dx[new_dir]), (yp + dy[new_dir])] < 1 then
     Exit;
-  if CanMoveHere(new_dir) = false then
+  if CanMoveHere(new_dir) = False then
     Exit;
 
   Result := new_dir;
 end;
 
-function FindCompetition(population: TList; targetSex: string;
-  targetX, targetY: word): PAgent;
+function FindCompetition(population: TList; targetSex: string; targetX, targetY: word): PAgent;
 var
   i, j, x, y: integer;
   temp: PAgent;
@@ -876,17 +857,15 @@ begin
 end;
 
 
-Procedure Dispersal(day: integer);
+procedure Dispersal(day: integer);
 var
-a, b, c, d, e, f, new_dir,  TCount, Bcount, FCount, age_competition: integer;
-TestCoordX, TestCoordY, xi, yi, xy, coordX, coordY: integer;
-age_m, P_disp_start : real;
-temp_terrX, temp_terrY, B_cellsX, B_cellsY: array of integer;
-competitor, competitor2, temp_ind: PAgent;
-Iwin, test_cell_available, can_settle: boolean;
-
+  a, b, c, d, e, f, new_dir, TestCoordX, TestCoordY, TCount, FCount, Bcount, xi, yi, xy, coordX, coordY : integer;
+  age_m, P_disp_start: real;
+  temp_terrX, temp_terrY, B_cellsX, B_cellsY: array of integer;
+  competitor, competitor2, temp_ind: PAgent;
+  Iwin, test_cell_free, test_cell_available, female_presence: boolean;
 begin
-   with population do
+  with population do
   begin
     populationsize := population.Count;
     for a := 0 to populationsize - 1 do
@@ -905,7 +884,7 @@ begin
         // Change status to dispersing if random <= to p_disp_start
       end;
 
-      {restart dispersal in case newly settled female individuals do not have enough territory}
+      {restart dispersal in case newly settled individuals do not have enough territory}
       if (Individual^.Status = 2) then
       begin
         TCount := 0;
@@ -916,21 +895,26 @@ begin
           if (Individual^.TerritoryX[b] > -1) and (Individual^.TerritoryY[b] > -1) then
           begin
             Inc(TCount);
-            if (Individual^.Sex = 'm') and (FemalesSettledMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b]] > 0) then
+            if (Individual^.Sex = 'm') and (FemalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b]] > 0) then
               Inc(FCount);
           end;
         end;
-        if (TCount < 2) or ((Individual^.Sex = 'm') and (FCount < 1)) then
+        {Reset territory information to empty if there's not enough territory}
+        if (TCount < 2) and ((Individual^.Sex = 'f') or ((Individual^.Sex = 'm') and (FCount < 1))) then
         begin
-          Individual^.Status := 1;
-          /// Reset Territory to -1 / NA values
           for b := 0 to length(Individual^.TerritoryX) - 1 do
           begin
+            if (Individual^.TerritoryX[b] = -1) then Continue;   // If the territory is already set to -1 then it's been 'taken away' already, and we don't need to update the info below
+            if Individual^.Sex = 'f' then FemalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b]]:= 0 else
+            MalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b]]:= 0;
+
             Individual^.TerritoryX[b] := -1;
             Individual^.TerritoryY[b] := -1;
           end;
+          Individual^.Status := 1;
         end;
       end;
+
 
       {Now start dispersal IF individual has dispersal status}
 
@@ -943,8 +927,15 @@ begin
         SetLength(temp_terrX, 2);
         SetLength(temp_terrY, 2);
 
-        steps := NSteps(step_probs);
+        {This next section is weird, I know... However, for some reason the NSteps function would sometimes randomly produce
+        a number of steps around the 66 milion.... This fixes it so *shrug*}
+        steps := 200;
+        while steps > 100 do steps := NSteps(step_probs);
+
         s := 1;
+
+        if steps > 100 then
+        Exit;
 
         while s <= steps do
         begin
@@ -981,29 +972,25 @@ begin
           {Is settlement possible}
           if HabitatMap[TestCoordX, TestCoordY] >= 2 then
           begin
-            test_cell_available := false;
 
-            if ((Individual^.sex = 'f') and (FemalesSettledMap[TestCoordX, TestCoordY] = 0)) or
-            ((Individual^.sex = 'm') and (MalesSettledMap[TestCoordX, TestCoordY] = 0)) then
-            test_cell_available := true
+            test_cell_available := False;
+
+            if ((Individual^.sex = 'f') and (Femalesmap[TestCoordX, TestCoordY] = 0)) or
+            ((Individual^.sex = 'm') and (Malesmap[TestCoordX, TestCoordY] = 0)) then
+              test_cell_available := True
             else
-            if ((Individual^.sex = 'f') and (FemalesEarlymap[TestCoordX, TestCoordY] <> 0)) then
-            begin
-            age_competition := FemalesEarlymap[TestCoordX, TestCoordY];
-            Iwin := fight(Individual^.Age, age_competition, 'f');
-            if Iwin then test_cell_available:= true;
-            end
-            else
-            if ((Individual^.sex = 'm') and (MalesEarlymap[TestCoordX, TestCoordY] <> 0)) then
-            begin
-            age_competition := MalesEarlymap[TestCoordX, TestCoordY];
-            Iwin := fight(Individual^.Age, age_competition, 'm');
-            if Iwin then test_cell_available:= true;
-            end;
+              if ((Individual^.sex = 'f') and (Femalesmap[TestCoordX, TestCoordY] = 2)) or
+              ((Individual^.sex = 'm') and (Malesmap[TestCoordX, TestCoordY] = 2)) then
+              begin
+                competitor := nil;
+                competitor := FindCompetition(population, Individual^.Sex, TestCoordX, TestCoordY);
+                Iwin := fight(Individual^.Age, competitor^.Age, Individual^.Sex);
+                if Iwin then test_cell_available := True;
+              end;
 
             if test_cell_available then
             begin
-        {Look for more breeding habitat until teritory is big enough}
+              {Look for more breeding habitat until teritory is big enough}
 
               temp_terrX[0] := TestCoordX;
               temp_terrY[0] := TestCoordY;
@@ -1015,6 +1002,7 @@ begin
                 SetLength(B_cellsY, 9);
                 Bcount := 0;
 
+                {to-do: update this to use dx/dy instead of the two for loops}
                 // Walk through all 9 cells and sort cell in right category
                 for xi := (TestCoordX - 1) to (TestCoordX + 1) do
                   for yi := (TestCoordY - 1) to (TestCoordY + 1) do
@@ -1022,7 +1010,7 @@ begin
                     //Skip this iteration if it's the central cell
                     if (xi = TestCoordX) and (yi = TestCoordY) then Continue;
 
-                    if HabitatMap[xi, yi] >= 2 then
+                    if HabitatMap[xi, yi] > 0 then
                     begin
                       B_cellsX[BCount] := xi;
                       B_cellsY[BCount] := yi;
@@ -1040,27 +1028,15 @@ begin
 
                     coordX := B_cellsX[c];
                     coordY := B_cellsY[c];
-                    test_cell_available := false;
 
-                    if ((Individual^.sex = 'f') and (FemalesSettledMap[coordX, coordY] = 0)) or
-                    ((Individual^.sex = 'm') and (MalesSettledMap[TestCoordX, TestCoordY] = 0)) then
-                    test_cell_available := true
-                    else
-                    if ((Individual^.sex = 'f') and (FemalesEarlymap[TestCoordX, TestCoordY] <> 0)) then
-                    begin
-                      age_competition := FemalesEarlymap[TestCoordX, TestCoordY];
-                      Iwin := fight(Individual^.Age, age_competition, 'f');
-                      if Iwin then test_cell_available:= true;
-                    end
-                    else
-                    if ((Individual^.sex = 'm') and (MalesEarlymap[TestCoordX, TestCoordY] <> 0)) then
-                    begin
-                      age_competition := MalesEarlymap[TestCoordX, TestCoordY];
-                      Iwin := fight(Individual^.Age, age_competition, 'm');
-                      if Iwin then test_cell_available:= true;
-                    end;
+                    competitor2 := FindCompetition(population, Individual^.sex, coordX, coordY);
 
-                    if test_cell_available then
+                    if (competitor2 <> nil) then
+                      if (competitor2^.Age <= max_rep_age) then
+                      begin
+                        Iwin := fight(Individual^.Age, competitor2^.Age, Individual^.Sex);
+                      end;
+                    if (competitor2 = nil) or (competitor2^.Age > max_rep_age) or (Iwin) then
                     begin
                       temp_terrX[TCount] := coordX;
                       temp_terrY[TCount] := coordY;
@@ -1070,47 +1046,46 @@ begin
                     end;
                   end;
 
+                  {additional criteria for males that there needs to be overlap with a female's territory}
+                  if (TCount > 1) and (Individual^.Sex = 'm') then
+                    begin
+                      female_presence := false;
+                      for xy := 0 to TCount - 1 do
+                        {First check if there are females in any of these coordinates}
+                      begin
+                        if FemalesMap[temp_terrX[xy], temp_terrY[xy]] > 0 then female_presence := true;
+                      end;
+                    end;
 
-                  {Check if sufficient breeding territory is available, and if there is a settled female available for the males}
-                  can_settle:= false;
 
-                  if (Individual^.sex = 'f') and (TCount > 1) then can_settle := true;
-                  if (Individual^.sex = 'm') and (TCount > 1) then
-                  for b := 0 to Tcount - 1 do
+                  {Check that there are sufficient breeding cells so territory can be removed and assigned according}
+                  if ((Individual^.Sex = 'f') and (TCount > 1)) or
+                     ((Individual^.Sex = 'm') and (TCount > 1) and (female_presence)) then
                   begin
-                    if FemalesSettledMap[temp_terrX[b], temp_terrY[b]] <> 0 then can_settle := true;
-                    if can_settle = true then Break;
-                  end;
-
-                  {If settlement is possible,}
-                  if can_settle then
-                  begin
-                    {First remove the territory from any possible competition}
+                    {use temp_terr to remove those coordinates from existing territories}
                     for xy := 0 to TCount - 1 do
                       begin
-                        if (Individual^.sex = 'f') and (FemalesEarlyMap[temp_terrX[xy], temp_terrY[xy]] <> 0) or
-                        (Individual^.sex = 'm') and (MalesEarlyMap[temp_terrX[xy], temp_terrY[xy]] <> 0) then
+
                         with population do
                         begin
                           for d := 0 to population.Count - 1 do
                           begin
                             temp_ind := Items[d];
-                            if temp_ind^.Sex = Individual^.sex then
+                            if temp_ind^.Sex = Individual^.Sex then
                             begin
                               with temp_ind^ do
                                 for e := Length(TerritoryX) - 1 downto 0 do
                                 begin
-                                  if (TerritoryX[e] = temp_terrX[xy]) and
-                                    (TerritoryY[e] = temp_terrY[xy]) then
+                                  if (TerritoryX[e] = temp_terrX[xy]) and (TerritoryY[e] = temp_terrY[xy]) then
                                   begin
                                     TerritoryX[e] := -1;
                                     TerritoryY[e] := -1;
                                   end;
                                 end;
                             end;
+                          end;
                         end;
                       end;
-                    end;
 
                     {Assign territory to individual and change status}
                     begin
@@ -1121,16 +1096,9 @@ begin
                         Individual^.TerritoryX[f] := temp_terrX[f];
                         Individual^.TerritoryY[f] := temp_terrY[f];
 
-                        {Add territory to the early territory maps}
-                        if Individual^.sex = 'f' then
-                        begin
-                          FemalesEarlyMap[temp_terrX[f], temp_terrY[f]] := Individual^.Age
-                        end
+                        if Individual^.Sex = 'f' then FemalesMap[temp_terrX[xy], temp_terrY[xy]] := Individual^.Status
                         else
-                        begin
-                          MalesEarlyMap[temp_terrX[f], temp_terrY[f]] := Individual^.Age
-                        end;
-
+                          MalesMap[temp_terrX[xy], temp_terrY[xy]] := Individual^.Status;
                       end;
 
                       Break;  // No more steps required, as individual is now settled
@@ -1151,28 +1119,27 @@ begin
       end;
 
     end;
-end;
+  end;
 
 end;
 
-Procedure Tspatial_Form.Pop_dynamics;
+procedure Tspatial_Form.Pop_dynamics;
 var
-a, b, day:integer;
-
+  a, b, day: integer;
 begin
   with population do
   begin
-    for a:=1 to max_years do
+    for a := 1 to max_years do
     begin
       day := 0;  // Start the year
-      while day < 5 do //Let's pretend there's no such thing as leap years
+      while day < 366 do //Let's pretend there's no such thing as leap years
       begin
         day := day + 1;
         populationsize := population.Count;
 
-        UpdateTerritoryMaps;
+        UpdateAbundanceMap;
 
-        if day = 2 then
+        if day = 90 then
           if populationsize > 2 then
             reproduction;               // Reproduction happens at the end of March
 
@@ -1187,26 +1154,26 @@ begin
         for b := 0 to populationsize - 1 do
         begin
           Individual := Items[b];
-          Individual^.Age:= Individual^.Age + 1;
+          Individual^.Age := Individual^.Age + 1;
           if Individual^.Status = 2 then Individual^.Status := 3;
         end;
       end;
 
       {ploting pop size}
-      if max_pop_size<populationsize then max_pop_size:=populationsize;
-      if max_pop_size>Chart1.extent.YMax then
+      if max_pop_size < populationsize then max_pop_size := populationsize;
+      if max_pop_size > Chart1.extent.YMax then
       begin
-        Chart1.extent.YMax:=max_pop_size;
-        application.processmessages;
+        Chart1.extent.YMax := max_pop_size;
+        application.ProcessMessages;
       end;
-      pop_size[a]:=populationsize;
-      sum_pop_size[a]:=sum_pop_size[a]+ populationsize;
-      if populationsize>0 then n_sim_no_ext[a]:=n_sim_no_ext[a]+1;
+      pop_size[a] := populationsize;
+      sum_pop_size[a] := sum_pop_size[a] + populationsize;
+      if populationsize > 0 then n_sim_no_ext[a] := n_sim_no_ext[a] + 1;
       {plot trajectory}
-      Chart1LineSeries1.addxy(a,populationsize);
+      Chart1LineSeries1.addxy(a, populationsize);
 
     end;
-    if  populationsize=0 then N_extint:=N_extint+1;
+    if populationsize = 0 then N_extint := N_extint + 1;
   end;
 end;
 
@@ -1280,7 +1247,7 @@ end;
 
 procedure Tspatial_Form.Exit_ButtonClick(Sender: TObject);
 begin
-  close;
+  Close;
 end;
 
 procedure Tspatial_Form.Abort_ButtonClick(Sender: TObject);
