@@ -7,7 +7,6 @@ object spatial_Form: Tspatial_Form
   ClientHeight = 726
   ClientWidth = 1551
   DesignTimePPI = 144
-  LCLVersion = '3.4.0.0'
   object Run_Button: TButton
     Left = 756
     Height = 36
@@ -90,18 +89,18 @@ object spatial_Form: Tspatial_Form
     end
   end
   object Label7: TLabel
-    Left = 385
-    Height = 15
-    Top = 341
-    Width = 122
+    Left = 355
+    Height = 25
+    Top = 336
+    Width = 182
     Anchors = []
     Caption = 'Number of simulations'
     ParentColor = False
   end
   object Edit5: TEdit
     Left = 524
-    Height = 23
-    Top = 335
+    Height = 33
+    Top = 330
     Width = 112
     Anchors = []
     TabOrder = 4
@@ -109,7 +108,7 @@ object spatial_Form: Tspatial_Form
   end
   object Edit6: TEdit
     Left = 372
-    Height = 23
+    Height = 33
     Top = 228
     Width = 112
     TabOrder = 5
@@ -117,7 +116,7 @@ object spatial_Form: Tspatial_Form
   end
   object Edit7: TEdit
     Left = 372
-    Height = 23
+    Height = 33
     Top = 264
     Width = 112
     TabOrder = 6
@@ -125,17 +124,17 @@ object spatial_Form: Tspatial_Form
   end
   object Edit8: TEdit
     Left = 372
-    Height = 23
+    Height = 33
     Top = 360
     Width = 112
     TabOrder = 7
     Text = '0.0001'
   end
   object Label12: TLabel
-    Left = 367
-    Height = 15
-    Top = 280
-    Width = 113
+    Left = 340
+    Height = 25
+    Top = 275
+    Width = 167
     Anchors = []
     Caption = 'extinction probability'
     ParentColor = False
@@ -153,18 +152,18 @@ object spatial_Form: Tspatial_Form
     TabOrder = 8
   end
   object Label13: TLabel
-    Left = 427
-    Height = 15
-    Top = 363
-    Width = 76
+    Left = 409
+    Height = 25
+    Top = 358
+    Width = 113
     Anchors = []
     Caption = 'Map file name'
     ParentColor = False
   end
   object Edit10: TEdit
     Left = 523
-    Height = 23
-    Top = 362
+    Height = 33
+    Top = 357
     Width = 112
     Anchors = []
     TabOrder = 9
@@ -180,7 +179,7 @@ object spatial_Form: Tspatial_Form
     TabOrder = 10
     object Edit1: TEdit
       Left = 360
-      Height = 23
+      Height = 33
       Top = 42
       Width = 112
       TabOrder = 0
@@ -188,23 +187,23 @@ object spatial_Form: Tspatial_Form
     end
     object Label1: TLabel
       Left = 170
-      Height = 15
+      Height = 25
       Top = 48
-      Width = 112
+      Width = 168
       Caption = 'Initial population size'
       ParentColor = False
     end
     object Label2: TLabel
       Left = 204
-      Height = 15
+      Height = 25
       Top = 12
-      Width = 71
+      Width = 108
       Caption = 'PARAMETERS'
       ParentColor = False
     end
     object Edit2: TEdit
       Left = 358
-      Height = 23
+      Height = 33
       Top = 98
       Width = 114
       TabOrder = 1
@@ -212,9 +211,9 @@ object spatial_Form: Tspatial_Form
     end
     object Label3: TLabel
       Left = 192
-      Height = 15
+      Height = 25
       Top = 98
-      Width = 88
+      Width = 133
       Caption = 'Number of years'
     end
   end

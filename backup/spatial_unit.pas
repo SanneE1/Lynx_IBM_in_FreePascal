@@ -161,7 +161,6 @@ const             {here you declare constants}
   gamma = 0.09;                // Probability to return to dispersal habitat
 
   file_name = 'output.txt';
-  file_name_ab_map = 'abundance_map_average.txt';
 
 implementation
 
@@ -1164,8 +1163,8 @@ begin
                     ((Individual^.Sex = 'm') and (MalesMap[xi, yi] < 3) and (FemalesMap[xi, yi] > 1 )) then
                     begin
                     competitor2 := FindCompetition(population, Individual^.sex, xi, yi);
-                    if competitor2^.Status = 3 then
-                    Exit;
+                    {if competitor2^.Status = 3 then
+                    Exit;}
 
                     if (competitor2 <> nil) then
                       if (competitor2^.Age <= max_rep_age) then

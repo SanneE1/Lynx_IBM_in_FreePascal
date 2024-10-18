@@ -161,7 +161,6 @@ const             {here you declare constants}
   gamma = 0.09;                // Probability to return to dispersal habitat
 
   file_name = 'output.txt';
-  file_name_ab_map = 'abundance_map_average.txt';
 
 implementation
 
