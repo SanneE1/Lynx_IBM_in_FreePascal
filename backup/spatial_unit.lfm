@@ -8,9 +8,9 @@ object spatial_Form: Tspatial_Form
   ClientWidth = 1551
   DesignTimePPI = 144
   object Run_Button: TButton
-    Left = 756
+    Left = 1219
     Height = 36
-    Top = 323
+    Top = 329
     Width = 110
     Anchors = []
     Caption = 'Run'
@@ -18,9 +18,9 @@ object spatial_Form: Tspatial_Form
     OnClick = Run_ButtonClick
   end
   object Exit_Button: TButton
-    Left = 758
+    Left = 1220
     Height = 39
-    Top = 358
+    Top = 371
     Width = 108
     Anchors = []
     Caption = 'Exit'
@@ -28,9 +28,9 @@ object spatial_Form: Tspatial_Form
     OnClick = Exit_ButtonClick
   end
   object Abort_Button: TButton
-    Left = 759
+    Left = 1220
     Height = 39
-    Top = 395
+    Top = 417
     Width = 108
     Anchors = []
     Caption = 'Abort'
@@ -98,9 +98,9 @@ object spatial_Form: Tspatial_Form
     ParentColor = False
   end
   object Edit5: TEdit
-    Left = 524
+    Left = 974
     Height = 33
-    Top = 330
+    Top = 381
     Width = 112
     Anchors = []
     TabOrder = 4
@@ -140,9 +140,9 @@ object spatial_Form: Tspatial_Form
     ParentColor = False
   end
   object Memo1: TMemo
-    Left = 489
+    Left = 601
     Height = 38
-    Top = 276
+    Top = 301
     Width = 84
     Anchors = []
     Lines.Strings = (
@@ -161,9 +161,9 @@ object spatial_Form: Tspatial_Form
     ParentColor = False
   end
   object Edit10: TEdit
-    Left = 523
+    Left = 976
     Height = 33
-    Top = 357
+    Top = 426
     Width = 112
     Anchors = []
     TabOrder = 9

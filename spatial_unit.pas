@@ -554,18 +554,6 @@ begin
         if CanMoveHere(mem) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 1) and (p < theta) then
           new_dir := mem
         else
-        {probability of moving backwards to autocorrelation}
-          if (p < (theta + theta * theta_delta)) then
-          begin
-            if (mem = 0) and CanMoveHere(mem) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 1) then
-              new_dir := mem
-            else
-              if (mem > 4) and CanMoveHere(mem - 4) and (HabitatMap[(xp + dx[mem - 4]), (yp + dy[mem - 4])] = 1) then
-                new_dir := mem - 4
-              else
-                if (mem > 0) and (mem <= 4) and CanMoveHere(mem + 4) and (HabitatMap[(xp + dx[mem + 4]), (yp + dy[mem + 4])] = 1) then
-                  new_dir := mem + 4;
-          end;
         if (new_dir > 10) and (nOpen > 0) then
         begin
           h := random(nOpen) + 1;

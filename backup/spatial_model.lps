@@ -9,6 +9,7 @@
         <Filename Value="spatial_model.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
+        <TopLine Value="4"/>
         <CursorPos X="41" Y="15"/>
         <UsageCount Value="256"/>
         <Loaded Value="True"/>
@@ -20,9 +21,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="193"/>
-        <CursorPos X="8" Y="207"/>
-        <FoldState Value=" T3kf0K113 pjTl70G4 pn4nW0S2]IWkP0{111]Cl6u70;1 T1%C02F"/>
+        <TopLine Value="16"/>
+        <CursorPos Y="956"/>
+        <FoldState Value=" T3kf0K3 pibjO0N5 pj8k20}w2]JXo80*1]9dkS0%]9nYpV0c2]bgl103 T1%C02T"/>
         <UsageCount Value="256"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -30,7 +31,7 @@
       <Unit2>
         <Filename Value="..\..\02_Rabbit_model\donana_rabbit\spatial_model.pas"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="5"/>
       </Unit2>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
@@ -166,6 +167,15 @@
     </HistoryLists>
   </ProjectSession>
   <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="spatial_unit.pas"/>
+        <Line Value="972"/>
+      </Item>
+    </BreakPoints>
     <Watches>
       <Item>
         <Expression Value="populationsize"/>

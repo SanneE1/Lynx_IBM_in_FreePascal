@@ -7,6 +7,7 @@ object spatial_Form: Tspatial_Form
   ClientHeight = 726
   ClientWidth = 1551
   DesignTimePPI = 144
+  LCLVersion = '3.4.0.0'
   object Run_Button: TButton
     Left = 1219
     Height = 36
