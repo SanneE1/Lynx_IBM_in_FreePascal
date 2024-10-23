@@ -100,8 +100,8 @@ var               {here you declare global variables}
   to_file_out: TextFile;
   filename: Text;
   HabitatMap: array of array of byte;
-  MalesMap: array of array of byte;
-  FemalesMap: array of array of byte;
+  MalesMap: array of array of array of byte;
+  FemalesMap: array of array of array of byte;
   Mapdimx, Mapdimy: integer;
   mapname: string;
   dx: array[0..8] of integer = (0, 0, 1, 1, 1, 0, -1, -1, -1);
@@ -207,8 +207,8 @@ begin
   reset(filename);
   readln(filename, Mapdimx, Mapdimy);
   SetLength(HabitatMap, Mapdimx + 1, Mapdimy + 1);
-  SetLength(MalesMap, Mapdimx + 1, Mapdimy + 1);
-  SetLength(FemalesMap, Mapdimx + 1, Mapdimy + 1);
+  SetLength(MalesMap, Mapdimx + 1, Mapdimy + 1, 2);
+  SetLength(FemalesMap, Mapdimx + 1, Mapdimy + 1, 2);
 
   for iy := 1 to Mapdimy do
   begin
@@ -234,15 +234,16 @@ end;
 procedure UpdateAbundanceMap;
 // Update the availability of males + local abundances. NOTE: DOESN'T CHECK IF MALE IS OF REPRODUCTIVE AGE
 var
-  a, b, x, y: integer;
+  a, b, c, x, y: integer;
   s: string;
 begin
 
   for a := 0 to MapdimX - 1 do
     for b := 0 to Mapdimy - 1 do
+      for c := 0 to 1 do           // where 0 is status, 1 is age
     begin
-      Malesmap[a, b] := 0;      // Empty both maps to fill with current status below
-      Femalesmap[a, b] := 0;
+      Malesmap[a, b, c] := 0;      // Empty maps to fill with status and age below
+      Femalesmap[a, b, c] := 0;
     end;
 
 
@@ -263,15 +264,16 @@ begin
             Continue;
 
           if (s = 'f') then
-            {if Femalesmap[x, y] <> 0 then
-            Exit;}
-            Femalesmap[x, y] := Individual^.Status;
+            begin
+            Femalesmap[x, y, 0] := Individual^.Status;
+            Femalesmap[x, y, 1] := Individual^.Age;
+            end;
           if (s = 'm') then
-            {if Malesmap[x, y] <> 0 then
-            Exit;}
-            Malesmap[x, y] := Individual^.Status;
+            begin
+            Malesmap[x, y, 0] := Individual^.Status;
+            Malesmap[x, y, 1] := Individual^.Age;
+            end;
         end;
-
       end;
     end;
   end;
@@ -554,18 +556,6 @@ begin
         if CanMoveHere(mem) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 1) and (p < theta) then
           new_dir := mem
         else
-        {probability of moving backwards to autocorrelation}
-          if (p < (theta + theta * theta_delta)) then
-          begin
-            if (mem = 0) and CanMoveHere(mem) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 1) then
-              new_dir := mem
-            else
-              if (mem > 4) and CanMoveHere(mem - 4) and (HabitatMap[(xp + dx[mem - 4]), (yp + dy[mem - 4])] = 1) then
-                new_dir := mem - 4
-              else
-                if (mem > 0) and (mem <= 4) and CanMoveHere(mem + 4) and (HabitatMap[(xp + dx[mem + 4]), (yp + dy[mem + 4])] = 1) then
-                  new_dir := mem + 4;
-          end;
         if (new_dir > 10) and (nOpen > 0) then
         begin
           h := random(nOpen) + 1;
@@ -827,7 +817,7 @@ begin
                 for xy := 0 to length(Individual^.TerritoryX)-1 do
                 begin
                   if Individual^.TerritoryX[xy] = -1 then Continue;
-                    if Malesmap[Individual^.TerritoryX[xy], Individual^.TerritoryY[xy]] >=2 then
+                    if Malesmap[Individual^.TerritoryX[xy], Individual^.TerritoryY[xy], 0] >=2 then
                     male_present := true;
                 end;
 
@@ -877,7 +867,7 @@ end;
 
 procedure Survival;
 var
-  a: integer;
+  a, b: integer;
   surv_p, surv_day, daily_mortality_p: real;
   die: boolean;
 
@@ -947,19 +937,37 @@ begin
       else
         if random > surv_day then die := True;
       if die then
+      begin
+       if Individual^.Status >= 2 then
+       for b := 0 to length(Individual^.TerritoryX) - 1 do
+          begin
+            if (Individual^.TerritoryX[b] = -1) then Continue;
+            if Individual^.Sex = 'f' then
+            begin
+            FemalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 0]:= 0;
+            FemalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 1]:= 0;
+            end
+            else
+            begin
+            MalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 0]:= 0;
+            MalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 1]:= 0;
+            end;
+            Individual^.TerritoryX[b] := -1;
+            Individual^.TerritoryY[b] := -1;
+          end;
         Delete(a);
-
+      end;
     end;
   end;
 end;
 
 procedure Dispersal(day: integer);
 var
-  a, b, c, d, e, f, g, i, j, new_dir, TestCoordX, TestCoordY, TCount, first_Tcount, FCount, Bcount, xi, yi, xy, coordX, coordY : integer;
+  a, b, c, d, e, f, g, i, j, new_dir, TestCoordX, TestCoordY, TCount, first_Tcount, FCount, Bcount, xi, yi, xy, coordX, coordY, competitor_age : integer;
   age_m, P_disp_start: real;
   temp_terrX, temp_terrY: array of integer;
-  competitor, competitor2, temp_ind: PAgent;
-  Iwin, test_cell_available, already_terr: boolean;
+  temp_ind, check_status: PAgent;
+  Iwin, test_cell_available, c_available, already_terr: boolean;
 
 begin
 
@@ -993,7 +1001,7 @@ begin
           if (Individual^.TerritoryX[b] > -1) and (Individual^.TerritoryY[b] > -1) then
           begin
             Inc(TCount);
-            if (Individual^.Sex = 'm') and (FemalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b]] > 0) then
+            if (Individual^.Sex = 'm') and (FemalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 0] > 0) then
               Inc(FCount);
           end;
         end;
@@ -1003,9 +1011,16 @@ begin
           for b := 0 to length(Individual^.TerritoryX) - 1 do
           begin
             if (Individual^.TerritoryX[b] = -1) then Continue;   // If the territory is already set to -1 then it's been 'taken away' already, and we don't need to update the info below
-            if Individual^.Sex = 'f' then FemalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b]]:= 0 else
-            MalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b]]:= 0;
-
+            if Individual^.Sex = 'f' then
+            begin
+            FemalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 0]:= 0;
+            FemalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 1]:= 0;
+            end
+            else
+            begin
+            MalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 0]:= 0;
+            MalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 1]:= 0;
+            end;
             Individual^.TerritoryX[b] := -1;
             Individual^.TerritoryY[b] := -1;
           end;
@@ -1032,9 +1047,6 @@ begin
         steps := 200;
         while steps > 100 do steps := NSteps(step_probs);
 
-        if steps > 100 then
-        Exit;
-
         Individual^.DailySteps:= steps;
         Individual^.DailyStepsOpen := 0;
         s := 1;
@@ -1045,10 +1057,11 @@ begin
           {Reset variables}
           xp := Individual^.Coor_X;
           yp := Individual^.Coor_Y;
-
+          new_dir := -1;
           TestCoordX := -1;
           TestCoordY := -1;
 
+          {Calculate new movement direction}
           new_dir := MoveDir;
 
           {Calculate coordinates to move to}
@@ -1081,16 +1094,21 @@ begin
 
             test_cell_available := False;
 
-            if ((Individual^.sex = 'f') and (Femalesmap[TestCoordX, TestCoordY] = 0)) or
-            ((Individual^.sex = 'm') and (Malesmap[TestCoordX, TestCoordY] = 0) and (Femalesmap[TestCoordX, TestCoordY] > 0)) then
+            if ((Individual^.sex = 'f') and (Femalesmap[TestCoordX, TestCoordY, 0] = 3)) or
+            ((Individual^.sex = 'm') and (Malesmap[TestCoordX, TestCoordY, 0] = 3)) then
+              Break
+            else
+            if ((Individual^.sex = 'f') and (Femalesmap[TestCoordX, TestCoordY, 0] = 0)) or
+            ((Individual^.sex = 'm') and (Malesmap[TestCoordX, TestCoordY, 0] = 0) and (Femalesmap[TestCoordX, TestCoordY, 0] = 3)) then
               test_cell_available := True
             else
-              if ((Individual^.sex = 'f') and (Femalesmap[TestCoordX, TestCoordY] = 2)) or
-              ((Individual^.sex = 'm') and (Malesmap[TestCoordX, TestCoordY] = 2)) then
+              if ((Individual^.sex = 'f') and (Femalesmap[TestCoordX, TestCoordY, 0] = 2)) or
+              ((Individual^.sex = 'm') and (Malesmap[TestCoordX, TestCoordY, 0] = 2)) then
               begin
-                competitor := nil;
-                competitor := FindCompetition(population, Individual^.Sex, TestCoordX, TestCoordY);
-                Iwin := fight(Individual^.Age, competitor^.Age, Individual^.Sex);
+                competitor_age := -1;
+                if (Individual^.sex = 'f') then competitor_age := Femalesmap[TestCoordX, TestCoordY, 1]
+                    else competitor_age := Malesmap[TestCoordX, TestCoordY, 1];
+                Iwin := fight(Individual^.Age, competitor_age, Individual^.Sex);
                 if Iwin then test_cell_available := True;
               end;
 
@@ -1102,33 +1120,50 @@ begin
               temp_terrY[0] := TestCoordY;
               TCount := 1;
 
+              check_status:=nil;
+              check_status:=FindCompetition(Population, Individual^.Sex, TestCoordX, TestCoordY);
+              if check_status<>nil then
+              if check_status^.Status=3 then
+              Exit;
+
                 // Walk through all 9 cells and find any available territory
                 for i := 1 to 8 do
                   begin
+                    c_available := False;
+                    competitor_age := -1;
                     xi := TestCoordX + dx[i];
                     yi := TestCoordY + dy[i];
                     if ((HabitatMap[xi, yi] = 2) and (ReproductionQuality(xi, yi))) then
                     begin
-                      if ((Individual^.Sex = 'f') and (FemalesMap[xi, yi] < 3)) or
-                    ((Individual^.Sex = 'm') and (MalesMap[xi, yi] < 3) and (FemalesMap[xi, yi] > 0 )) then
-                    begin
-                      competitor2 := nil;
-                    competitor2 := FindCompetition(population, Individual^.sex, xi, yi);
-
-                    if (competitor2 <> nil) then
-                      if (competitor2^.Age <= max_rep_age) then
+                      if ((Individual^.sex = 'f') and (Femalesmap[TestCoordX, TestCoordY, 0] = 3)) or
+                      ((Individual^.sex = 'm') and (Malesmap[TestCoordX, TestCoordY, 0] = 3)) then
+                      Continue
+                      else
+                      if ((Individual^.Sex = 'f') and (FemalesMap[xi, yi, 0] = 0)) or
+                      ((Individual^.Sex = 'm') and (MalesMap[xi, yi, 0] = 0) and (FemalesMap[xi, yi, 0] = 3 )) then
+                         c_available := True
+                    else
+                    if ((Individual^.Sex = 'f') and (FemalesMap[xi, yi, 0] = 2)) or
+                       ((Individual^.Sex = 'm') and (MalesMap[xi, yi, 0] = 2) and (FemalesMap[xi, yi, 0] = 3 )) then
                       begin
-                        Iwin := fight(Individual^.Age, competitor2^.Age, Individual^.Sex);
+                       if Individual^.Sex = 'f' then competitor_age := FemalesMap[xi,yi,1] else competitor_age := MalesMap[xi,yi,1];
+                        Iwin := fight(Individual^.Age, competitor_age, Individual^.Sex);
                       end;
-                    if (competitor2 = nil) or (competitor2^.Age > max_rep_age) or (Iwin) then
+                    if (c_available) or (Iwin) then
                     begin
                       temp_terrX[TCount] := xi;
                       temp_terrY[TCount] := yi;
 
                       Inc(TCount);
+
+                      check_status:=nil;
+              check_status:=FindCompetition(Population, Individual^.Sex, TestCoordX, TestCoordY);
+              if check_status<>nil then
+              if check_status^.Status=3 then
+              Exit;
+
                       if TCount = Tsize then Break;
                       end;
-                    end;;
                     end;
 
                   end;
@@ -1158,28 +1193,36 @@ begin
                    if not already_terr then
                     if ReproductionQuality(xi, yi) then
                     begin
-                    competitor2 := nil;
-                      if ((Individual^.Sex = 'f') and (FemalesMap[xi, yi] < 3)) or
-                    ((Individual^.Sex = 'm') and (MalesMap[xi, yi] < 3) and (FemalesMap[xi, yi] > 1 )) then
-                    begin
-                    competitor2 := FindCompetition(population, Individual^.sex, xi, yi);
-                    {if competitor2^.Status = 3 then
-                    Exit;}
-
-                    if (competitor2 <> nil) then
-                      if (competitor2^.Age <= max_rep_age) then
+                    c_available := False;
+                    competitor_age := -1;
+                      if ((Individual^.sex = 'f') and (Femalesmap[TestCoordX, TestCoordY, 0] = 3)) or
+                      ((Individual^.sex = 'm') and (Malesmap[TestCoordX, TestCoordY, 0] = 3)) then
+                      Continue
+                      else
+                      if ((Individual^.Sex = 'f') and (FemalesMap[xi, yi, 0] = 0)) or
+                      ((Individual^.Sex = 'm') and (MalesMap[xi, yi, 0] = 0) and (FemalesMap[xi, yi, 0] = 3 )) then
+                         c_available := True
+                      else
+                       if ((Individual^.Sex = 'f') and (FemalesMap[xi, yi, 0] = 2)) or
+                       ((Individual^.Sex = 'm') and (MalesMap[xi, yi, 0] = 2) and (FemalesMap[xi, yi, 0] = 3 )) then
                       begin
-                        Iwin := fight(Individual^.Age, competitor2^.Age, Individual^.Sex);
+                       if Individual^.Sex = 'f' then competitor_age := FemalesMap[xi,yi,1] else competitor_age := MalesMap[xi,yi,1];
+                        Iwin := fight(Individual^.Age, competitor_age, Individual^.Sex);
                       end;
-                    if (competitor2 = nil) or (competitor2^.Age > max_rep_age) or (Iwin) then
+                    if (c_available) or (Iwin) then
                     begin
                       temp_terrX[TCount] := xi;
                       temp_terrY[TCount] := yi;
 
                       Inc(TCount);
+                      check_status:=nil;
+              check_status:=FindCompetition(Population, Individual^.Sex, TestCoordX, TestCoordY);
+              if check_status<>nil then
+              if check_status^.Status=3 then
+              Exit;
+
                       if TCount = Tsize then Break;
                       end;
-                    end;
                     end;
                   end;
                    j := j + 1;
@@ -1223,29 +1266,37 @@ begin
                         Individual^.TerritoryX[f] := temp_terrX[f];
                         Individual^.TerritoryY[f] := temp_terrY[f];
 
-                        if Individual^.Sex = 'f' then FemalesMap[temp_terrX[f], temp_terrY[f]] := Individual^.Status
+                        if Individual^.Sex = 'f' then
+                        begin
+                        FemalesMap[temp_terrX[f], temp_terrY[f], 0] := Individual^.Status;
+                        FemalesMap[temp_terrX[f], temp_terrY[f], 1] := Individual^.Age;
+                        end
                         else
-                          MalesMap[temp_terrX[f], temp_terrY[f]] := Individual^.Status;
+                        begin
+                          MalesMap[temp_terrX[f], temp_terrY[f], 0] := Individual^.Status;
+                          MalesMap[temp_terrX[f], temp_terrY[f], 1] := Individual^.Age;
+                        end;
                       end;
 
                       Break;  // No more steps required, as individual is now settled
 
                     end;
-                  end;
 
               ArrayToNegOne(temp_terrX);
               ArrayToNegOne(temp_terrY);
               TCount := 0;
-            end;
-        Inc(s);
-        end;
+              end;
 
+              end;
+              Inc(s);
+          end;
+
+        end;
 
         end;
       end;
 
     end;
-  end;
 
 
 
@@ -1350,8 +1401,8 @@ begin
     end;
     if populationsize = 0 then N_extint := N_extint + 1;
 
-    WriteMapCSV('FemalesMap.csv', Femalesmap, MapdimX, MapdimY);
-    WriteMapCSV('MalesMap.csv', Malesmap, MapdimX, MapdimY);
+    //WriteMapCSV('FemalesMap.csv', Femalesmap, MapdimX, MapdimY);
+    //WriteMapCSV('MalesMap.csv', Malesmap, MapdimX, MapdimY);
 
   end;
 end;

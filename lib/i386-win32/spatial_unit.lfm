@@ -1,47 +1,47 @@
 object spatial_Form: Tspatial_Form
-  Left = 170
-  Height = 726
-  Top = 163
-  Width = 1551
+  Left = 113
+  Height = 484
+  Top = 109
+  Width = 1034
   Caption = 'spatial model'
-  ClientHeight = 726
-  ClientWidth = 1551
-  DesignTimePPI = 144
+  ClientHeight = 484
+  ClientWidth = 1034
+  LCLVersion = '3.4.0.0'
   object Run_Button: TButton
-    Left = 1219
-    Height = 36
-    Top = 329
-    Width = 110
+    Left = 801
+    Height = 24
+    Top = 215
+    Width = 73
     Anchors = []
     Caption = 'Run'
     TabOrder = 0
     OnClick = Run_ButtonClick
   end
   object Exit_Button: TButton
-    Left = 1220
-    Height = 39
-    Top = 371
-    Width = 108
+    Left = 801
+    Height = 26
+    Top = 243
+    Width = 72
     Anchors = []
     Caption = 'Exit'
     TabOrder = 1
     OnClick = Exit_ButtonClick
   end
   object Abort_Button: TButton
-    Left = 1220
-    Height = 39
-    Top = 417
-    Width = 108
+    Left = 801
+    Height = 26
+    Top = 274
+    Width = 72
     Anchors = []
     Caption = 'Abort'
     TabOrder = 2
     OnClick = Abort_ButtonClick
   end
   object Chart1: TChart
-    Left = 588
-    Height = 267
-    Top = 24
-    Width = 756
+    Left = 392
+    Height = 178
+    Top = 16
+    Width = 504
     AxisList = <    
       item
         Grid.Color = clSilver
@@ -89,61 +89,61 @@ object spatial_Form: Tspatial_Form
     end
   end
   object Label7: TLabel
-    Left = 355
-    Height = 25
-    Top = 336
-    Width = 182
+    Left = 236
+    Height = 15
+    Top = 225
+    Width = 122
     Anchors = []
     Caption = 'Number of simulations'
     ParentColor = False
   end
   object Edit5: TEdit
-    Left = 974
-    Height = 33
-    Top = 381
-    Width = 112
+    Left = 637
+    Height = 23
+    Top = 254
+    Width = 75
     Anchors = []
     TabOrder = 4
     Text = '1'
   end
   object Edit6: TEdit
-    Left = 372
-    Height = 33
-    Top = 228
-    Width = 112
+    Left = 248
+    Height = 23
+    Top = 152
+    Width = 75
     TabOrder = 5
     Text = '0.001'
   end
   object Edit7: TEdit
-    Left = 372
-    Height = 33
-    Top = 264
-    Width = 112
+    Left = 248
+    Height = 23
+    Top = 176
+    Width = 75
     TabOrder = 6
     Text = '1.5'
   end
   object Edit8: TEdit
-    Left = 372
-    Height = 33
-    Top = 360
-    Width = 112
+    Left = 248
+    Height = 23
+    Top = 240
+    Width = 75
     TabOrder = 7
     Text = '0.0001'
   end
   object Label12: TLabel
-    Left = 340
-    Height = 25
-    Top = 275
-    Width = 167
+    Left = 226
+    Height = 15
+    Top = 184
+    Width = 113
     Anchors = []
     Caption = 'extinction probability'
     ParentColor = False
   end
   object Memo1: TMemo
-    Left = 601
-    Height = 38
-    Top = 301
-    Width = 84
+    Left = 391
+    Height = 25
+    Top = 197
+    Width = 56
     Anchors = []
     Lines.Strings = (
       'Memo1'
@@ -152,68 +152,68 @@ object spatial_Form: Tspatial_Form
     TabOrder = 8
   end
   object Label13: TLabel
-    Left = 409
-    Height = 25
-    Top = 358
-    Width = 113
+    Left = 272
+    Height = 15
+    Top = 240
+    Width = 76
     Anchors = []
     Caption = 'Map file name'
     ParentColor = False
   end
   object Edit10: TEdit
-    Left = 976
-    Height = 33
-    Top = 426
-    Width = 112
+    Left = 638
+    Height = 23
+    Top = 284
+    Width = 75
     Anchors = []
     TabOrder = 9
     Text = 'map3.txt'
   end
   object Panel1: TPanel
-    Left = 12
-    Height = 1116
-    Top = 24
-    Width = 528
-    ClientHeight = 1116
-    ClientWidth = 528
+    Left = 8
+    Height = 744
+    Top = 16
+    Width = 352
+    ClientHeight = 744
+    ClientWidth = 352
     TabOrder = 10
     object Edit1: TEdit
-      Left = 360
-      Height = 33
-      Top = 42
-      Width = 112
+      Left = 240
+      Height = 23
+      Top = 28
+      Width = 75
       TabOrder = 0
       Text = '100'
     end
     object Label1: TLabel
-      Left = 170
-      Height = 25
-      Top = 48
-      Width = 168
+      Left = 113
+      Height = 15
+      Top = 32
+      Width = 112
       Caption = 'Initial population size'
       ParentColor = False
     end
     object Label2: TLabel
-      Left = 204
-      Height = 25
-      Top = 12
-      Width = 108
+      Left = 136
+      Height = 15
+      Top = 8
+      Width = 71
       Caption = 'PARAMETERS'
       ParentColor = False
     end
     object Edit2: TEdit
-      Left = 358
-      Height = 33
-      Top = 98
-      Width = 114
+      Left = 239
+      Height = 23
+      Top = 65
+      Width = 76
       TabOrder = 1
       Text = '100'
     end
     object Label3: TLabel
-      Left = 192
-      Height = 25
-      Top = 98
-      Width = 133
+      Left = 128
+      Height = 15
+      Top = 65
+      Width = 88
       Caption = 'Number of years'
     end
   end
