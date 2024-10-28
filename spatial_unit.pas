@@ -331,11 +331,9 @@ begin
     // Write territory coordinates
     for j := 0 to length(individual^.TerritoryX) - 1 do
     begin
-      x := individual^.TerritoryX[j];
-      y := individual^.TerritoryY[j];
 
-      Write(csvFile, x, ',');
-      Write(csvFile, y);
+      Write(csvFile, Individual^.TerritoryX[j], ',');
+      Write(csvFile, individual^.TerritoryY[j]);
 
       // Add comma if not last coordinate
       if j < length(individual^.TerritoryX) - 1 then
@@ -1129,8 +1127,8 @@ begin
                     yi := TestCoordY + dy[i];
                     if ((HabitatMap[xi, yi] = 2) and (ReproductionQuality(xi, yi))) then
                     begin
-                      if ((Individual^.sex = 'f') and (Femalesmap[TestCoordX, TestCoordY, 0] = 3)) or
-                      ((Individual^.sex = 'm') and (Malesmap[TestCoordX, TestCoordY, 0] = 3)) then
+                      if ((Individual^.sex = 'f') and (Femalesmap[xi, yi, 0] = 3)) or
+                      ((Individual^.sex = 'm') and (Malesmap[xi, yi, 0] = 3)) then
                       Continue
                       else
                       if ((Individual^.Sex = 'f') and (FemalesMap[xi, yi, 0] = 0)) or
@@ -1184,8 +1182,8 @@ begin
                     begin
                     c_available := False;
                     competitor_age := -1;
-                      if ((Individual^.sex = 'f') and (Femalesmap[TestCoordX, TestCoordY, 0] = 3)) or
-                      ((Individual^.sex = 'm') and (Malesmap[TestCoordX, TestCoordY, 0] = 3)) then
+                      if ((Individual^.sex = 'f') and (Femalesmap[xi, yi, 0] = 3)) or
+                      ((Individual^.sex = 'm') and (Malesmap[xi, yi, 0] = 3)) then
                       Continue
                       else
                       if ((Individual^.Sex = 'f') and (FemalesMap[xi, yi, 0] = 0)) or
