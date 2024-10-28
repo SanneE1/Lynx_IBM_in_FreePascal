@@ -10,7 +10,8 @@ uses
   Dialogs, StdCtrls, ExtCtrls, Math, LCLType;
 
 type           {here you declare the data structure for you individuals}
-  Array2DInt = array of array of byte;
+  Array2Dbyte = array of array of byte;
+  Array3Dbyte = array of array of array of byte;
 
   PAgent = ^Agent;
 
@@ -99,9 +100,9 @@ var               {here you declare global variables}
   n_sim_no_ext: array[1..100] of integer;
   to_file_out: TextFile;
   filename: Text;
-  HabitatMap: array of array of byte;
-  MalesMap: array of array of array of byte;
-  FemalesMap: array of array of array of byte;
+  HabitatMap: Array2Dbyte;
+  MalesMap: Array3Dbyte;
+  FemalesMap: Array3Dbyte;
   Mapdimx, Mapdimy: integer;
   mapname: string;
   dx: array[0..8] of integer = (0, 0, 1, 1, 1, 0, -1, -1, -1);
@@ -280,7 +281,7 @@ begin
 
 end;
 
-procedure WriteMapCSV(filename: string; var arrayData: Array2DInt; dimx, dimy: integer);
+procedure WriteMapCSV(filename: string; var arrayData: Array3Dbyte; dimx, dimy, dimz: integer);
 var
   ix, iy: integer;
   outfile: Text;
@@ -295,9 +296,9 @@ begin
     begin
       // Write each value, followed by a comma, except for the last value in the row
       if ix < dimx then
-        Write(outfile, arrayData[ix, iy], ',')
+        Write(outfile, arrayData[ix, iy, dimz], ',')
       else
-        Write(outfile, arrayData[ix, iy]);  // No comma at the end of the row
+        Write(outfile, arrayData[ix, iy, dimz]);  // No comma at the end of the row
     end;
     writeln(outfile);  // Move to the next line in the CSV file
   end;
@@ -1384,8 +1385,10 @@ begin
     end;
     if populationsize = 0 then N_extint := N_extint + 1;
 
-    //WriteMapCSV('FemalesMap.csv', Femalesmap, MapdimX, MapdimY);
-    //WriteMapCSV('MalesMap.csv', Malesmap, MapdimX, MapdimY);
+    WriteMapCSV('FemalesMap_status.csv', Femalesmap, MapdimX, MapdimY, 0);
+    WriteMapCSV('FemalesMap_age.csv', Femalesmap, MapdimX, MapdimY, 1);
+    WriteMapCSV('MalesMap_status.csv', Malesmap, MapdimX, MapdimY, 0);
+    WriteMapCSV('MalesMap_age.csv', Malesmap, MapdimX, MapdimY, 1);
 
   end;
 end;
