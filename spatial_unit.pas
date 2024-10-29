@@ -471,13 +471,13 @@ begin
 end;
 
 
-function CanMoveHere(mem: integer): boolean;
+function CanMoveHere(x,y: integer): boolean;
 begin
   // outside of map dimensions
-  if (xp + dx[mem] < 0) or (xp + dx[mem] > Mapdimx) or (yp + dy[mem] < 0) or (yp + dy[mem] > Mapdimy) then Result := False
+  if (x < 0) or (x > Mapdimx) or (y < 0) or (y > Mapdimy) then Result := False
   else
   // barrier cell
-    if (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 0) then Result := False
+    if (HabitatMap[x, y] = 0) then Result := False
     else
       Result := True;
 end;
@@ -539,7 +539,7 @@ begin
 
   for i := 1 to 8 do
   begin
-    if CanMoveHere(i) then
+    if CanMoveHere((xp + dx[i]), (yp + dy[i])) then
     begin
       if (HabitatMap[(xp + dx[i]), (yp + dy[i])] = 1) then
         nOpen := nOpen + 1
@@ -567,7 +567,7 @@ begin
       dist_min := 1000;
       for i := 1 to 8 do
       begin
-        if CanMoveHere(i) then
+        if CanMoveHere((xp + dx[i]), (yp + dy[i])) then
           dist_act := sqrt(sqr((xp + dx[i]) - homeX) + sqr((yp + dy[i]) - homeY))
         else
           dist_act := 1001;
@@ -583,7 +583,7 @@ begin
   Consider autocorrelatin in movement - add to autocorrelation in fragmented area}
     begin
       if fragmented = True then theta := theta + delta_theta_f;
-      if CanMoveHere(mem) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 2) and (p < (theta)) then
+      if CanMoveHere((xp + dx[mem]), (yp + dy[mem])) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 2) and (p < (theta)) then
         new_dir := mem
       else
       begin
@@ -591,7 +591,7 @@ begin
         f := 0;
         for i := 1 to 8 do
         begin
-          if CanMoveHere(i) and (HabitatMap[(xp + dx[i]), (yp + dy[i])] = 2) then
+          if CanMoveHere((xp + dx[i]), (yp + dy[i])) and (HabitatMap[(xp + dx[i]), (yp + dy[i])] = 2) then
           begin
             f := f + 1;
             if f = h then
@@ -609,13 +609,13 @@ begin
     if fragmented = False then
     begin
       {movement in non-fragmented area}
-      if (p < theta) and CanMoveHere(mem) then new_dir := mem
+      if (p < theta) and CanMoveHere((xp + dx[mem]), (yp + dy[mem])) then new_dir := mem
       else
         if f < (theta + theta * theta_delta) then
         begin
-          if (mem > 4) and CanMoveHere(mem - 4) then new_dir := mem - 4
+          if (mem > 4) and CanMoveHere((xp + dx[mem-4]), (yp + dy[mem-4])) then new_dir := mem - 4
           else
-            if (mem > 0) and (mem <= 4) and CanMoveHere(mem + 4) then new_dir := mem + 4;
+            if (mem > 0) and (mem <= 4) and CanMoveHere((xp + dx[mem+4]), (yp + dy[mem+4])) then new_dir := mem + 4;
         end;
       if new_dir > 10 then  // If new direction has not yet been assigned through autocorrelation, random movement
       begin
@@ -623,7 +623,7 @@ begin
         f := 0;
         for i := 1 to 8 do
         begin
-          if CanMoveHere(i) then
+          if CanMoveHere((xp + dx[i]), (yp + dy[i])) then
           begin
             f := f + 1;
             if f = h then
@@ -645,7 +645,7 @@ begin
       begin
     {If memory movement is same type as chosen habitat type (here Open) then use
     autocorrelation to see if ind. moves in memory direction.}
-        if CanMoveHere(mem) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 1) and (p < theta) then
+        if CanMoveHere((xp + dx[mem]), (yp + dy[mem])) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 1) and (p < theta) then
           new_dir := mem
         else
         if (new_dir > 10) and (nOpen > 0) then
@@ -654,7 +654,7 @@ begin
           f := 0;
           for i := 1 to 8 do
           begin
-            if CanMoveHere(i) and (HabitatMap[(xp + dx[i]), (yp + dy[i])] = 1) then
+            if CanMoveHere((xp + dx[i]), (yp + dy[i])) and (HabitatMap[(xp + dx[i]), (yp + dy[i])] = 1) then
             begin
               f := f + 1;
               if f = h then
@@ -671,19 +671,19 @@ begin
         {Move to dispersal habitat}
    {If memory movement is same type as chosen habitat type (here Dispersal) then
    use autocorrelation to see if ind. moves in memory direction.}
-        if CanMoveHere(mem) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 2) and (p < theta) then
+        if CanMoveHere((xp + dx[mem]), (yp + dy[mem])) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 2) and (p < theta) then
           new_dir := mem
         else
         {probability of moving backwards to autocorrelation}
           if (p < (theta + theta * theta_delta)) then
           begin
-            if (mem = 0) and CanMoveHere(mem) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 2) then
+            if (mem = 0) and CanMoveHere((xp + dx[mem]), (yp + dy[mem])) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 2) then
               new_dir := mem
             else
-              if (mem > 4) and CanMoveHere(mem - 4) and (HabitatMap[(xp + dx[mem - 4]), (yp + dy[mem - 4])] = 2) then
+              if (mem > 4) and CanMoveHere((xp + dx[mem-4]), (yp + dy[mem-4])) and (HabitatMap[(xp + dx[mem - 4]), (yp + dy[mem - 4])] = 2) then
                 new_dir := mem - 4
               else
-                if (mem > 0) and (mem <= 4) and CanMoveHere(mem + 4) and (HabitatMap[(xp + dx[mem + 4]), (yp + dy[mem + 4])] = 2) then
+                if (mem > 0) and (mem <= 4) and CanMoveHere((xp + dx[mem+4]), (yp + dy[mem+4])) and (HabitatMap[(xp + dx[mem + 4]), (yp + dy[mem + 4])] = 2) then
                   new_dir := mem + 4;
           end;
         {Otherwise a random choise of Dispersal habitat cells}
@@ -694,7 +694,7 @@ begin
 
           for i := 1 to 8 do
           begin
-            if CanMoveHere(i) and (HabitatMap[(xp + dx[i]), (yp + dy[i])] = 2) then
+            if CanMoveHere((xp + dx[i]), (yp + dy[i])) and (HabitatMap[(xp + dx[i]), (yp + dy[i])] = 2) then
             begin
               f := f + 1;
               if f = h then
@@ -712,7 +712,7 @@ begin
     Exit;
   if HabitatMap[(xp + dx[new_dir]), (yp + dy[new_dir])] < 1 then
     Exit;
-  if CanMoveHere(new_dir) = False then
+  if CanMoveHere((xp + dx[new_dir]), (yp + dy[new_dir])) = False then
     Exit;
 
   Result := new_dir;
@@ -1055,10 +1055,10 @@ end;
 
 procedure Dispersal(day: integer);
 var
-  a, b, c, d, e, f, g, i, j, new_dir, TestCoordX, TestCoordY, TCount, first_Tcount, FCount, Bcount, xi, yi, xy, coordX, coordY, competitor_age : integer;
+  a, b, d, e, f, g, i, j, new_dir, TestCoordX, TestCoordY, TCount, first_Tcount, FCount, xi, yi, xy, competitor_age : integer;
   age_m, P_disp_start: real;
   temp_terrX, temp_terrY: array of integer;
-  temp_ind, check_status: PAgent;
+  temp_ind: PAgent;
   Iwin, test_cell_available, c_available, already_terr: boolean;
 
 begin
@@ -1374,8 +1374,6 @@ begin
       end;
 
     end;
-
-
 
 
 procedure Startpopulation;
