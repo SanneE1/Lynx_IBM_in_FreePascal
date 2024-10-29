@@ -45,6 +45,7 @@ type           {here you declare the data structure for you individuals}
     Edit1: TEdit;
     Edit10: TEdit;
     Edit2: TEdit;
+    Edit3: TEdit;
     Edit5: TEdit;
     Edit6: TEdit;
     Edit7: TEdit;
@@ -56,6 +57,9 @@ type           {here you declare the data structure for you individuals}
     Label13: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
     Label7: TLabel;
     Memo1: TMemo;
     Panel1: TPanel;
@@ -104,7 +108,7 @@ var               {here you declare global variables}
   MalesMap: Array3Dbyte;
   FemalesMap: Array3Dbyte;
   Mapdimx, Mapdimy: integer;
-  mapname: string;
+  mapname, paramname: string;
   dx: array[0..8] of integer = (0, 0, 1, 1, 1, 0, -1, -1, -1);
   dy: array[0..8] of integer = (0, 1, 1, 0, -1, -1, -1, 0, 1);
   xp, yp: integer;
@@ -112,56 +116,19 @@ var               {here you declare global variables}
   homeX, homeY, steps, s, new_dir, mem: integer;
   tohome: boolean;
 
+  {Vital rate variables}
+  min_rep_age, min_rep_age_m, max_rep_age, max_age: integer;
+  Tsize: integer;
+  litter_size, litter_size_sd, rep_prob_oNP, rep_prob_iNP: real;
+  surv_cub_iNP, surv_cub_oNP, surv_sub_iNP, surv_sub_oNP, surv_resident_iNP, surv_resident_oNP, surv_disperse_iNP, surv_disperse_oNP, surv_disp_rho, surv_old_iNP, surv_old_oNP: real;
+  alpha_steps: real;
+  theta_d, theta_delta, delta_theta_long, delta_theta_f, L, N_d, beta, gamma: real;
 
 const             {here you declare constants}
-  //max_years = 10;
-  min_rep_age = 2;
-  min_rep_age_m = 3;
-  max_rep_age = 9;
-  max_age = 13;
-
-  Tsize = 8;       //Number of cells for territory
-
-  litter_size = 2.9;    // 0.2, 0.7 and 0.1 for 2,3 and 4 offspring resp.
-  litter_size_sd = 2.61;
-  rep_prob_oNP = 0.6;
-  rep_prob_iNP = 0.8;
-
-  surv_cub_iNP = 0.5;
-  //surv_cub_iNP_sd = 0.516;
-  surv_cub_oNP = 0.45;
-  surv_sub_iNP = 0.77;
-  //surv_sub_iNP_sd = 0.204;
-  surv_sub_oNP = 0.6;
-  surv_resident_iNP = 0.9;
-  //surv_resident_iNP_sd = 0.312;
-  surv_resident_oNP = 0.7;
-  surv_disperse_iNP = 0.7;
-  //surv_disperse_f_sd = 0.490;
-  surv_disperse_oNP = 0.25;
-  //surv_disperse_m_sd = 0.505;
-  surv_disp_rho = 5.8;
-  surv_old_iNP = 0.6;
-  surv_old_oNP = 0.5;
-
-
-  alpha_steps = 0.00027;
-  max_steps = 100;
-
-  theta_d = 0.4;
-  // probability to move in the same direction as the previous movement step
-  theta_delta = 0.65;
-  // probability to move "backwards", with 0 = no backwards movement and 1=equally probable as moving forward
-  delta_theta_long = 0.27;
-  // Increase in movement autocorrelation in long-distance movements
-  delta_theta_f = 0.1;
-  // Increase in movement autocorrelation in fragmented habitat
-  L = 6;                       // Long-distance threshold
-  N_d = 5;                     // Fragmentation threshold
-  beta = 0.8;                  // Avoidance of open habitat
-  gamma = 0.09;                // Probability to return to dispersal habitat
 
   file_name = 'output.txt';
+
+  max_steps = 100;
 
 implementation
 
@@ -199,6 +166,19 @@ begin
     arr[i] := -1;
 end;
 
+procedure ShowErrorAndExit(const errMsg: string);
+begin
+  {$IFDEF WINDOWS}
+  if IsConsole then
+    Writeln('Error: ', errMsg)  // Console error output
+  else
+    MessageDlg('Error: ' + errMsg, mtError, [mbOK], 0); // GUI error dialog
+  {$ELSE}
+  Writeln('Error: ', errMsg);  // For non-Windows systems or always CLI
+  {$ENDIF}
+
+  Halt(1);  // Exit the program with a non-zero code to indicate error
+end;
 
 procedure ReadMap(mapname: string);
 var
@@ -217,7 +197,7 @@ begin
       for ix := 1 to Mapdimx do
       begin
         Read(filename, Value);
-        //HabitatMap (and the others) are 'byte' types which is less memory
+        // HabitatMap (and the others) are 'byte' types which is less memory
         // intensive than an integer, but that does mean it can only deal with 0:255
         // There are values in the map of -9999 that represent the sea. As its the same as a barrier, here set to 0!
         if Value < 0 then HabitatMap[ix, iy] := 0
@@ -231,6 +211,119 @@ begin
   Close(filename);
 end;
 
+procedure ReadParameters(paramname: string);
+var
+  par_seq: array[1..28] of string;
+  val_seq: array of real;
+  r, spacePos: integer;
+  a, param: string;
+  value: real;
+begin
+  {This function is probably much longer than it needs to be. I just need to make absolutely sure
+  that if I at some point change or mess with the param file, I get a warning here, so
+  I don't accedentily work with parameter values in the wrong variable!}
+
+   par_seq[1]:= 'min_rep_age';
+   par_seq[2]:= 'max_rep_age';
+   par_seq[3]:= 'max_age';
+   par_seq[4]:= 'Tsize';
+   par_seq[5]:= 'litter_size';
+   par_seq[6]:= 'litter_size_sd';
+   par_seq[7]:= 'rep_prob_iNP';
+   par_seq[8]:= 'rep_prob_oNP';
+   par_seq[9]:= 'surv_cub_iNP';
+   par_seq[10]:= 'surv_cub_oNP';
+   par_seq[11]:= 'surv_sub_iNP';
+   par_seq[12]:= 'surv_sub_oNP';
+   par_seq[13]:= 'surv_resident_iNP';
+   par_seq[14]:= 'surv_resident_oNP';
+   par_seq[15]:= 'surv_disperse_iNP';
+   par_seq[16]:= 'surv_resident_oNP';
+   par_seq[17]:= 'surv_disp_rho';
+   par_seq[18]:= 'surv_old_iNP';
+   par_seq[19]:= 'surv_old_oNP';
+   par_seq[20]:= 'alpha_steps';
+   par_seq[21]:= 'theta_d';
+   par_seq[22]:= 'theta_delta';
+   par_seq[23]:= 'delta_theta_long';
+   par_seq[24]:= 'delta_theta_f';
+   par_seq[25]:= 'L';
+   par_seq[26]:= 'N_d';
+   par_seq[27]:= 'beta';
+   par_seq[28]:= 'gamma';
+
+   SetLength(val_seq, High(par_seq)+1);
+
+   Assign(filename, paramname);
+   reset(filename);
+
+   for r:=1 to High(par_seq) do
+   begin
+     readln(filename, a);
+     // Find the first space to split the string
+    spacePos := Pos(' ', a);
+
+    if spacePos > 0 then
+    begin
+      // Extract parameter name and convert the rest to a real
+      param := Copy(a, 1, spacePos - 1);                      // Get parameter name
+      Val(Trim(Copy(a, spacePos + 1, Length(a))), value);     // Convert value part to real - any integers are converted below to correct type
+
+    if (param = par_seq[r]) then
+     val_seq[r] := value
+   else
+   // stop program and get error message that parameter name not expected
+   ShowErrorAndExit('One of the parameter names is not as expected. Check parameter file');
+   end
+    else ShowErrorAndExit('No space found. Check parameter file');
+   end;
+
+   min_rep_age        := Round(val_seq[1]);
+   max_rep_age        := Round(val_seq[2]);
+   max_age            := Round(val_seq[3]);
+   Tsize              := Round(val_seq[4]);
+   litter_size        := val_seq[5];
+   litter_size_sd     := val_seq[6];
+   rep_prob_iNP       := val_seq[7];
+   rep_prob_oNP       := val_seq[8];
+   surv_cub_iNP       := val_seq[9];
+   surv_cub_oNP       := val_seq[10];
+   surv_sub_iNP       := val_seq[11];
+   surv_sub_oNP       := val_seq[12];
+   surv_resident_iNP  := val_seq[13];
+   surv_resident_oNP  := val_seq[14];
+   surv_disperse_iNP  := val_seq[15];
+   surv_disperse_oNP  := val_seq[16];
+   surv_disp_rho      := val_seq[17];
+   surv_old_iNP       := val_seq[18];
+   surv_old_oNP       := val_seq[19];
+   alpha_steps        := val_seq[20];
+   theta_d            := val_seq[21];
+   theta_delta        := val_seq[22];
+   delta_theta_long   := val_seq[23];
+   delta_theta_f      := val_seq[24];
+   L                  := val_seq[25];
+   N_d                := val_seq[26];
+   beta               := val_seq[27];
+   gamma              := val_seq[28];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+end;
 
 procedure UpdateAbundanceMap;
 // Update the availability of males + local abundances. NOTE: DOESN'T CHECK IF MALE IS OF REPRODUCTIVE AGE
@@ -309,7 +402,7 @@ end;
 procedure WritePopulationToCSV(const population: TList; const filename: string);
 var
   csvFile: TextFile;
-  i, j, x, y: integer;
+  i, j: integer;
 begin
   AssignFile(csvFile, filename);
   Rewrite(csvFile);
@@ -1406,6 +1499,9 @@ begin
 
   mapname := Edit10.Text;
   readmap(mapname);
+
+  paramname := Edit3.Text;
+  ReadParameters(paramname);
 
   N_extint := 0;
 
