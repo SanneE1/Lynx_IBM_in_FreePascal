@@ -213,7 +213,7 @@ end;
 
 procedure ReadParameters(paramname: string);
 var
-  par_seq: array[1..28] of string;
+  par_seq: array[1..32] of string;
   val_seq: array of real;
   r, spacePos: integer;
   a, param: string;
@@ -251,6 +251,11 @@ begin
    par_seq[26]:= 'N_d';
    par_seq[27]:= 'beta';
    par_seq[28]:= 'gamma';
+   par_seq[29]:= 'n_ini';
+   par_seq[30]:= 'max_years';
+   par_seq[31]:= 'n_sim';
+   par_seq[32]:= 'mapname';
+
 
    SetLength(val_seq, High(par_seq)+1);
 
@@ -306,7 +311,10 @@ begin
    N_d                := val_seq[26];
    beta               := val_seq[27];
    gamma              := val_seq[28];
-
+   n_ini              := val_seq[29];
+   max_years          := val_seq[30];
+   n_sim              := val_seq[31];
+   mapname            := val_seq[32];
 
 
 
@@ -486,11 +494,8 @@ Function inPark(x,y:integer):boolean;
 
 begin
   Result:=False;   // false = not in park, true = in NP
-  {if ((x>=89) and (x<=97)) then
-    if ((y>=71) and (y<=77)) then Result:=True;
-  if ((x>=71) and (x<=113)) then
-    if ((y>=3) and (y<=71)) then Result:=True;}
 
+  if
   if ((x >= 122) and (x <= 135)) then
   if((y >= 85) and (y <= 115)) then Result:=True;
 
@@ -805,55 +810,8 @@ Function ReproductionQuality(x,y:integer):boolean;
 begin
   Result:=False;
 
-  {if ((x>=70) and (x<=95)) then
-  if ((y>=35) and (y<=74)) then Result:= True;{reserva - 1}
-
-  {if ((x>=71) and (x<=94)) then
-  if ((y>=35) and (y<=62)) then Result:= True;{reserva - 1}}
-
-  if ((x>=89) and (x<=97)) then
-  if ((y>=71) and (y<=77)) then Result:= True;{cotorey - 2}
-
-  if ((x>=100)and (x<=106))then
-  if ((y>=11) and (y<=20)) then Result:= True;{marismillas - 3}
-
-  if ((x>=60) and (x<=71)) then
-  if ((y>=53) and (y<=71)) then Result:= True;{acebuche - 4}
-
-  if ((x>=8)  and (x<=14)) then
-  if ((y>=87) and (y<=93)) then Result:= True;{moguer - 5}
-
-  if ((x>=109)and (x<=113))then
-  if ((y>=82) and (y<=86)) then Result:= True;{hatoraton - 6}
-
-  if ((x>=100)and (x<=104))then
-  if ((y>=114)and (y<=119))then Result:= True;{torrecuadros - 7}
-
-  if ((x>=132)and (x<=137))then
-  if ((y>=95) and (y<=99)) then Result:= True;{puebla - 8}
-
-
-
-  if ((x>=14)and (x<=20))then
-  if ((y>=74) and (y<=80)) then Result:= True;{mazagon - 9}
-
-  if ((x>=35)and (x<=50))then
-  if ((y>=88) and (y<=105)) then Result:= True;{bonares - 10}
-
-  if ((x>=75)and (x<=82))then
-  if ((y>=70) and (y<=77)) then  Result:= True;{rocina - 11}
-
-
-
-  if ((x>=0)and (x<=0))then
-  if ((y>=0) and (y<=0)) then  Result:= True;{arrayangato - 12}
-
-  if ((x>=0)and (x<=0))then
-  if ((y>=0) and (y<=0)) then  Result:= True;{tojal del aguila - 13}
-
-  if ((x>=0)and (x<=0))then
-  if ((y>=0) and (y<=0)) then  Result:= True;{sotos - 14} }
-
+  if (mapname = input_data/old_donana.txt) do
+  begin
   if ((x >= 122) and (x <= 135)) then
   if((y >= 85) and (y <= 115)) then Result:=True;
 
@@ -868,6 +826,8 @@ begin
 
   if ((x >= 68) and (x <= 72)) then
   if ((y >= 53) and (y <= 62)) then Result:= True;
+  end else
+  ShowErrorAndExit('No reproduction quality areas defined for this map file');
 
 
 end;
@@ -1491,15 +1451,17 @@ var
   t: string;
 begin
   randomize; {initialize the pseudorandom number generator}
+
+  paramname := Edit3.Text;
+  ReadParameters(paramname);
+
+  {These values should overwrite the values in the file with the input from the GUI}
   val(Edit1.Text, n_ini);  {read parameter values from the form}
   val(Edit2.Text, max_years);
   val(Edit5.Text, n_sim);
 
   mapname := Edit10.Text;
   readmap(mapname);
-
-  paramname := Edit3.Text;
-  ReadParameters(paramname);
 
   N_extint := 0;
 
