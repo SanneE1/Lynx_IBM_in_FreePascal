@@ -4,14 +4,12 @@
     <PathDelim Value="\"/>
     <Version Value="12"/>
     <BuildModes Active="Default"/>
-    <Units Count="9">
+    <Units Count="10">
       <Unit0>
-        <Filename Value="spatial_model.pas"/>
+        <Filename Value="Model_lynx_GUI.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="lynx_model"/>
-        <CursorPos X="53" Y="15"/>
-        <UsageCount Value="256"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="20"/>
       </Unit0>
       <Unit1>
         <Filename Value="spatial_unit.pas"/>
@@ -29,7 +27,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="25" Y="9"/>
-        <UsageCount Value="38"/>
+        <UsageCount Value="39"/>
       </Unit2>
       <Unit3>
         <Filename Value="general_functions_unit.pas"/>
@@ -38,52 +36,56 @@
         <TopLine Value="8"/>
         <CursorPos X="14" Y="9"/>
         <FoldState Value=" T3I0K3 Pi2iG02"/>
-        <UsageCount Value="29"/>
+        <UsageCount Value="30"/>
       </Unit3>
       <Unit4>
         <Filename Value="lynx_input_output_functions.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="78"/>
         <CursorPos Y="93"/>
-        <UsageCount Value="27"/>
+        <UsageCount Value="28"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="lynx_vital_rates.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="21"/>
+        <EditorIndex Value="1"/>
         <CursorPos Y="490"/>
-        <FoldState Value=" T3W0{11 pj8l80~M5 piYpO0}k2]AXnc0SU"/>
-        <UsageCount Value="26"/>
+        <UsageCount Value="27"/>
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
-        <Filename Value="lynx_define_units.pas"/>
-        <EditorIndex Value="4"/>
-        <UsageCount Value="12"/>
-        <Loaded Value="True"/>
+        <Filename Value="spatial_model.pas"/>
+        <UnitName Value="lynx_model"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="53" Y="15"/>
+        <UsageCount Value="256"/>
       </Unit6>
       <Unit7>
-        <Filename Value="general_functions.pas"/>
-        <EditorIndex Value="5"/>
-        <CursorPos X="14" Y="10"/>
+        <Filename Value="lynx_define_units.pas"/>
+        <EditorIndex Value="3"/>
         <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit7>
       <Unit8>
+        <Filename Value="general_functions.pas"/>
+        <EditorIndex Value="4"/>
+        <CursorPos Y="10"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit8>
+      <Unit9>
         <Filename Value="lynx_population_dynamics.pas"/>
         <ComponentName Value="spatial_Form"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="1"/>
-        <CursorPos X="47" Y="13"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos Y="13"/>
         <UsageCount Value="12"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
-      </Unit8>
+      </Unit9>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>

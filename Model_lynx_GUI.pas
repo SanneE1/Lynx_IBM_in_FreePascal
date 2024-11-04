@@ -3,7 +3,7 @@ Revilla, E. (in press). Individual and agent based models in population ecology 
 In: Population Ecology in Practice: Underused, Misused, and Abused Methods.
 Eds Murray DL, Sandercock B. John Wiley & Sons Ltd. ISBN/ISSN: 9780470674130}
 
-program lynx_model;
+program lynx_GUI;
 
 {$mode objfpc}{$H+}
 

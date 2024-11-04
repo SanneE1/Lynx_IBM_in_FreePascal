@@ -8,7 +8,7 @@
         <CompatibilityMode Value="True"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
-      <Title Value="spatial_model"/>
+      <Title Value="Model_lynx_GUI"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
       <Icon Value="0"/>
@@ -38,7 +38,7 @@
     </RequiredPackages>
     <Units Count="6">
       <Unit0>
-        <Filename Value="spatial_model.pas"/>
+        <Filename Value="Model_lynx_GUI.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="lynx_model"/>
       </Unit0>
@@ -71,7 +71,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="spatial_model"/>
+      <Filename Value="Model_lynx_GUI"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
