@@ -8,6 +8,7 @@ uses
   Classes, SysUtils, Math,
   lynx_define_units, general_functions;
 
+
 procedure Reproduction;
 procedure Survival;
 procedure Dispersal(day: integer);
@@ -23,7 +24,7 @@ function MoveDir: integer;
 
 function FindTerrOwner(population: TList; targetSex: string; targetX, targetY: word): PAgent;
 function Fight(AgeDisperser, AgeEarlySettler: integer; Sex: string): boolean;
-
+function TerritoryCellAvailable(x,y: integer; Sex:string; disperser_age: integer): boolean;
 
 
 implementation
@@ -341,24 +342,7 @@ begin
           begin
 
             test_cell_available := False;
-
-            if ((Individual^.sex = 'f') and (Femalesmap[TestCoordX, TestCoordY, 0] = 3)) or
-            ((Individual^.sex = 'm') and (Malesmap[TestCoordX, TestCoordY, 0] = 3)) then
-              Break
-            else
-            if ((Individual^.sex = 'f') and (Femalesmap[TestCoordX, TestCoordY, 0] = 0)) or
-            ((Individual^.sex = 'm') and (Malesmap[TestCoordX, TestCoordY, 0] = 0) and (Femalesmap[TestCoordX, TestCoordY, 0] = 3)) then
-              test_cell_available := True
-            else
-              if ((Individual^.sex = 'f') and (Femalesmap[TestCoordX, TestCoordY, 0] = 2)) or
-              ((Individual^.sex = 'm') and (Malesmap[TestCoordX, TestCoordY, 0] = 2)) then
-              begin
-                competitor_age := -1;
-                if (Individual^.sex = 'f') then competitor_age := Femalesmap[TestCoordX, TestCoordY, 1]
-                    else competitor_age := Malesmap[TestCoordX, TestCoordY, 1];
-                Iwin := fight(Individual^.Age, competitor_age, Individual^.Sex);
-                if Iwin then test_cell_available := True;
-              end;
+            test_cell_available := TerritoryCellAvailable(TestCoordX, TestCoordY, Individual^.Sex, Individual^.Age);
 
             if test_cell_available then
             begin
@@ -371,27 +355,14 @@ begin
                 // Walk through all 9 cells and find any available territory
                 for i := 1 to 8 do
                   begin
-                    c_available := False;
-                    competitor_age := -1;
                     xi := TestCoordX + dx[i];
                     yi := TestCoordY + dy[i];
                     if ((HabitatMap[xi, yi] = 2) and (ReproductionQuality(xi, yi))) then
                     begin
-                      if ((Individual^.sex = 'f') and (Femalesmap[xi, yi, 0] = 3)) or
-                      ((Individual^.sex = 'm') and (Malesmap[xi, yi, 0] = 3)) then
-                      Continue
-                      else
-                      if ((Individual^.Sex = 'f') and (FemalesMap[xi, yi, 0] = 0)) or
-                      ((Individual^.Sex = 'm') and (MalesMap[xi, yi, 0] = 0) and (FemalesMap[xi, yi, 0] = 3 )) then
-                         c_available := True
-                    else
-                    if ((Individual^.Sex = 'f') and (FemalesMap[xi, yi, 0] = 2)) or
-                       ((Individual^.Sex = 'm') and (MalesMap[xi, yi, 0] = 2) and (FemalesMap[xi, yi, 0] = 3 )) then
-                      begin
-                       if Individual^.Sex = 'f' then competitor_age := FemalesMap[xi,yi,1] else competitor_age := MalesMap[xi,yi,1];
-                        Iwin := fight(Individual^.Age, competitor_age, Individual^.Sex);
-                      end;
-                    if (c_available) or (Iwin) then
+                      c_available:= False;
+                      c_available:= TerritoryCellAvailable(xi, yi, Individual^.Sex, Individual^.Age);
+
+                      if c_available then
                     begin
                       temp_terrX[TCount] := xi;
                       temp_terrY[TCount] := yi;
@@ -428,31 +399,16 @@ begin
                      end;
 
                    if not already_terr then
-                    if ReproductionQuality(xi, yi) then
+                    if ((HabitatMap[xi, yi] = 2) and (ReproductionQuality(xi, yi))) then
                     begin
                     c_available := False;
-                    competitor_age := -1;
-                      if ((Individual^.sex = 'f') and (Femalesmap[xi, yi, 0] = 3)) or
-                      ((Individual^.sex = 'm') and (Malesmap[xi, yi, 0] = 3)) then
-                      Continue
-                      else
-                      if ((Individual^.Sex = 'f') and (FemalesMap[xi, yi, 0] = 0)) or
-                      ((Individual^.Sex = 'm') and (MalesMap[xi, yi, 0] = 0) and (FemalesMap[xi, yi, 0] = 3 )) then
-                         c_available := True
-                      else
-                       if ((Individual^.Sex = 'f') and (FemalesMap[xi, yi, 0] = 2)) or
-                       ((Individual^.Sex = 'm') and (MalesMap[xi, yi, 0] = 2) and (FemalesMap[xi, yi, 0] = 3 )) then
-                      begin
-                       if Individual^.Sex = 'f' then competitor_age := FemalesMap[xi,yi,1] else competitor_age := MalesMap[xi,yi,1];
-                        Iwin := fight(Individual^.Age, competitor_age, Individual^.Sex);
-                      end;
-                    if (c_available) or (Iwin) then
+                    c_available:= TerritoryCellAvailable(xi, yi, Individual^.Sex, Individual^.Age);
+
+                      if c_available then
                     begin
                       temp_terrX[TCount] := xi;
                       temp_terrY[TCount] := yi;
-
                       Inc(TCount);
-
 
                       if TCount = Tsize then Break;
                       end;
@@ -530,6 +486,7 @@ begin
       end;
 
     end;
+
 
 
 function NSteps(step_probs: array of double): integer;
@@ -917,6 +874,35 @@ begin
 
 end;
 
+function TerritoryCellAvailable(x,y: integer; Sex:string; disperser_age: integer): boolean;
+var
+  resident_age: integer;
+  Iwin: boolean;
+begin
+
+  Result := False;
+
+  if ((Sex = 'f') and (Femalesmap[x, y, 0] = 3)) or
+  ((Sex = 'm') and (Malesmap[x, y, 0] = 3)) then
+  Result := False
+  else
+    if ((Sex = 'f') and (Femalesmap[x, y, 0] = 0)) or
+    ((Sex = 'm') and (Malesmap[x, y, 0] = 0) and (Femalesmap[x, y, 0] = 3)) then
+    Result := True
+    else
+      if ((Sex = 'f') and (Femalesmap[x, y, 0] = 2)) or
+      ((Sex = 'm') and (Malesmap[x, y, 0] = 2) and (FemalesMap[x,y,0] = 3)) then
+      begin
+      resident_age := -1;
+        if (Sex = 'f') then
+        resident_age := Femalesmap[x, y, 1]
+        else
+          resident_age := Malesmap[x, y, 1];
+        Iwin := fight(disperser_age, resident_age, Sex);
+        if Iwin then Result := True;
+      end;
+
+end;
 
 
 
