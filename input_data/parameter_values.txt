@@ -26,3 +26,8 @@ L 6
 N_d 5
 beta 0.8
 gamma 0.09
+n_ini 100
+max_years 100
+n_sim 1
+mapname input_data/old_donana.txt
+

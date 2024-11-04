@@ -1,5 +1,5 @@
 {}
-unit spatial_unit;
+unit lynx_population_dynamics;
 
 {$mode objfpc}{$H+}
 
@@ -8,7 +8,8 @@ interface
 uses
   Classes, SysUtils, FileUtil, TAGraph, TASeries, Forms, Controls, Graphics,
   Dialogs, StdCtrls, ExtCtrls, Math, LCLType,
-  lynx_define_unit, general_functions_unit, lynx_input_output_functions;
+  lynx_define_units, general_functions, lynx_input_output_functions,
+  lynx_vital_rates;
 
 type
 Tspatial_Form = class(TForm)
