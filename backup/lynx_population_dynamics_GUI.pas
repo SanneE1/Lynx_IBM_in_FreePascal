@@ -53,7 +53,8 @@ implementation
 
 procedure Startpopulation;
 var
-  a: integer;
+  a, i, k: integer;
+  tmic: real;
 begin
   Population := TList.Create;
   with population do
@@ -84,6 +85,23 @@ begin
 
       Individual^.DailySteps := 0;
       Individual^.DailyStepsOpen := 0;
+
+      //add the genes here based on file lungo 742
+      for i := 1 to 24 do
+      begin                                    //magari qui la cambi  e inverti: per ogni genome guarda i due alleli
+        for k := 0 to 1 do
+        begin
+          tmic := random;
+          if tmic < 0.25 then
+            Individual^.Genome[i, k] := 1
+          else if tmic < 0.5 then
+            Individual^.Genome[i, k] := 2
+          else if tmic < 0.75 then
+            Individual^.Genome[i, k] := 3
+          else
+            Individual^.Genome[i, k] := 4;
+          end;
+        end;
 
       Population.add(Individual);
 
@@ -223,8 +241,6 @@ begin
     {and the average of all simulations}
     CloseFile(to_file_out);
 
-
-    if current_sim = n_sim then WritePopulationToCSV(population, 'population_data.csv');
 
   end;
 

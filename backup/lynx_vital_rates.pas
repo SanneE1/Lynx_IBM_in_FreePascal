@@ -32,10 +32,12 @@ implementation
 
 procedure Reproduction;
 var
-  a, current_litter_size, ls, xy: integer;
-  rep_prob: real;
+  a, g, i, k, current_litter_size, ls, xy, male_x, male_y, homogeneity_count: integer;
+  rep_prob, tmic: real;
   temp_X, temp_Y, Temp_mem: word;
   male_present: boolean;
+  PotentialFather: PAgent;
+  father, mother: array of array of integer;
 begin
   with population do
   begin
@@ -68,7 +70,31 @@ begin
                   if Individual^.TerritoryX[xy] = -1 then Continue;
                     if Malesmap[Individual^.TerritoryX[xy], Individual^.TerritoryY[xy], 0] >=2 then
                     male_present := true;
+                    male_x := Individual^.TerritoryX[xy];
+                    male_y := Individual^.TerritoryY[xy];
                 end;
+
+                if male_present then
+                begin
+                  setLength(mother, 25, 2);
+                  setLength(father, 25, 2);
+
+                  PotentialFather := nil;
+                PotentialFather := FindTerrOwner(population, 'm', male_x, male_y);
+                if (PotentialFather <> nil) then
+                for xy := 0 to Length(PotentialFather^.TerritoryX) - 1 do
+                begin
+                for i:= 1 to 24 do
+                begin
+                    for k:= 0 to 1 do
+                    begin
+                      mother[i,k]:= Individual^.Genome[i,k];
+                      father[i,k]:= PotentialFather^.Genome[i,k];
+                    end;
+               end;
+                end;
+                end;
+
 
                 if male_present then
                   if random < rep_prob then
@@ -105,6 +131,36 @@ begin
 
                       Individual^.DailySteps := 0;
                       Individual^.DailyStepsOpen := 0;
+
+                      //create the genome 0.5--> per ogni locus della mamma ed ogni coppia di allele, il kitten può ereditare ognuno dei due possibiliy alleli che sono 0 o 1.
+                      //prima: quando l'ind ha il gene calcoliamo la percentuale di homogeneity e la diamo ad ogni individuo
+                      //add the 0.5
+                      //madre-----
+                      setLength(Individual^.Genome, 25, 2);
+
+                      for i := 1 to 24 do
+                      begin
+                        tmic:=random;   //sceglie nbumero tra 0 e 1
+                        if tmic < 0.5 then
+                           Individual^.Genome[i, 0] := mother[i, 0]     //magari non c'è bisogno di specificare che si tratta di micropadre o madre
+                        else
+                           Individual^.Genome[i, 0] := mother[i, 1];     //non importa quale prendi sarà sempre nella stessa posizione. ma proviene dall allele della mamma 1
+
+                       //padre                                      //gli fa dire se tmic minore di 0.5 Fai che l'individual prenda da genome l'allele 0.
+
+                        tmic := random;
+                        if tmic < 0.5 then
+                           Individual^.Genome[i, 1] := father[i, 0]
+                        else
+                           Individual^.Genome[i, 1] := father[i, 1];
+
+                      //check for homogeneity                 //se il primo individuo^genome è diver
+                      if Individual^.Genome[i, 0] = Individual^.Genome[i, 1] then   //ma allora non c'è bisogno //appunto dentro Individual^Genome [i,k]= è 1,2,3 o 4.
+                      homogeneity_count := homogeneity_count + 1;
+                      end;
+
+                      //ratio of homogeneity
+                       Individual^.P_homogeneity := homogeneity_count / 24.0;
 
                       Population.add(Individual);
                     end;
@@ -383,6 +439,7 @@ begin
                      end;
 
                    if not already_terr then
+                    if CanMoveHere(xi, yi) then
                     if ((HabitatMap[xi, yi] = 2) and (ReproductionQuality(xi, yi))) then
                     begin
                     c_available := False;

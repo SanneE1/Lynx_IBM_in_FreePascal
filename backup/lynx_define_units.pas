@@ -11,7 +11,7 @@ uses
 type           {here you declare the data structure for you individuals}
   Array2Dbyte = array of array of byte;
   Array3Dbyte = array of array of array of byte;
-
+  GenomeArray
   PAgent = ^Agent;
 
   Agent = record
@@ -32,6 +32,9 @@ type           {here you declare the data structure for you individuals}
     // into Open habitat, for them to return to the last known Dispersal habitat they've visited
     homeX: byte;
     homeY: byte;
+
+    Genome: array of array of integer;
+    P_homogeneity: real;
 
   end;
 
@@ -89,7 +92,7 @@ var               {here you declare global variables}
 
 const             {here you declare constants}
 
-  file_name = 'output.txt';
+  file_name = 'output_data/PopulationSizes.txt';
 
   max_steps = 100;
 
