@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Dialogs,
-  lynx_define;
+  lynx_define_units;
 
 function randomPoisson(mean: integer): integer;
 procedure ArrayToNegOne(var arr: array of integer);
@@ -77,13 +77,12 @@ end;
 
 procedure ShowErrorAndExit(const errMsg: string);
 begin
-  {$IFDEF WINDOWS}
-  if IsConsole then
-    Writeln('Error: ', errMsg)  // Console error output
-  else
-    MessageDlg('Error: ' + errMsg, mtError, [mbOK], 0); // GUI error dialog
+  {$IFDEF GUI}
+  // If in GUI mode, use MessageDlg for graphical error display
+  MessageDlg('Error: ' + errMsg, mtError, [mbOK], 0);
   {$ELSE}
-  Writeln('Error: ', errMsg);  // For non-Windows systems or always CLI
+  // In non-GUI mode, use console output
+  Writeln('Error: ', errMsg);
   {$ENDIF}
 
   Halt(1);  // Exit the program with a non-zero code to indicate error

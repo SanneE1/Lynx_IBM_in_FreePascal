@@ -36,11 +36,10 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="6">
+    <Units Count="7">
       <Unit0>
         <Filename Value="Model_lynx_GUI.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="lynx_model"/>
       </Unit0>
       <Unit1>
         <Filename Value="spatial_unit.pas"/>
@@ -65,6 +64,10 @@
         <Filename Value="lynx_vital_rates.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit5>
+      <Unit6>
+        <Filename Value="lynx_population_dynamics.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit6>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

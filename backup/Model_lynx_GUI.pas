@@ -12,7 +12,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, tachartlazaruspkg, lynx_population_dynamics_GUI;
+  Forms, tachartlazaruspkg, lynx_population_dynamics_GUI, lynx_population_dynamics;
 
 {$R *.res}
 

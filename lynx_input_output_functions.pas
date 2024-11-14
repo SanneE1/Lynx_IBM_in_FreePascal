@@ -8,12 +8,43 @@ uses
   Classes, SysUtils,
   lynx_define_units, general_functions;
 
+procedure ReadMap(mapname: string);
 procedure ReadParameters(paramname: string);
 procedure UpdateAbundanceMap;
 procedure WriteMapCSV(filename: string; var arrayData: Array3Dbyte; dimx, dimy, dimz: integer);
-procedure WritePopulationToCSV(const population: TList; const filename: string);
+procedure WritePopulationToCSV(population: TList; filename: string; current_sim, year: integer);
 
 implementation
+
+procedure ReadMap(mapname: string);
+var
+  ix, iy, Value: integer;
+begin
+  Assign(filename, mapName);
+  reset(filename);
+  readln(filename, Mapdimx, Mapdimy);
+  SetLength(HabitatMap, Mapdimx + 1, Mapdimy + 1);
+
+  for iy := 1 to Mapdimy do
+  begin
+    begin
+      for ix := 1 to Mapdimx do
+      begin
+        Read(filename, Value);
+        // HabitatMap (and the others) are 'byte' types which is less memory
+        // intensive than an integer, but that does mean it can only deal with 0:255
+        // There are values in the map of -9999 that represent the sea. As its the same as a barrier, here set to 0!
+        if Value < 0 then HabitatMap[ix, iy] := 0
+        else
+          HabitatMap[ix, iy] := Value;
+      end;
+    end;
+    readln(filename);
+  end;
+
+  Close(filename);
+end;
+
 
 procedure ReadParameters(paramname: string);
 var
@@ -200,20 +231,26 @@ begin
   Close(outfile);
 end;
 
-procedure WritePopulationToCSV(const population: TList; const filename: string);
+procedure WritePopulationToCSV(population: TList; filename: string; current_sim, year: integer);
 var
   csvFile: TextFile;
   i, j: integer;
 begin
-  AssignFile(csvFile, filename);
-  Rewrite(csvFile);
 
-  // Write header
-  WriteLn(csvFile, 'Sex,Age,Status,Coor_X,Coor_Y,Territory_X,Territory_Y');
+  AssignFile(csvFile, filename);
+
+  if (current_sim = 1) and (year = 1) then
+    begin
+    Rewrite(csvFile);
+    // Write header
+    WriteLn(csvFile, 'Simulation,Year,Sex,Age,Status,Coor_X,Coor_Y,Territory_XY');
+    end
+  else append(csvFile);
 
   // Write data for each individual
   for i := 0 to population.Count - 1 do
   begin
+    Write(csvFile, current_sim, ',', year, ',');
     individual := PAgent(population[i]);
 
     // Write individual information
@@ -227,12 +264,12 @@ begin
     for j := 0 to length(individual^.TerritoryX) - 1 do
     begin
 
-      Write(csvFile, Individual^.TerritoryX[j], ',');
+      Write(csvFile, Individual^.TerritoryX[j], '/');
       Write(csvFile, individual^.TerritoryY[j]);
 
       // Add comma if not last coordinate
       if j < length(individual^.TerritoryX) - 1 then
-        Write(csvFile, ',');
+        Write(csvFile, ';');
     end;
 
     WriteLn(csvFile); // End of current individual's data

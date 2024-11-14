@@ -25,7 +25,7 @@ function MoveDir: integer;
 function FindTerrOwner(population: TList; targetSex: string; targetX, targetY: word): PAgent;
 function Fight(AgeDisperser, AgeEarlySettler: integer; Sex: string): boolean;
 function TerritoryCellAvailable(x,y: integer; Sex:string; disperser_age: integer): boolean;
-
+procedure ClaimNewTerrOrStartDispersal;
 
 implementation
 
@@ -239,44 +239,27 @@ begin
         // Change status to dispersing if random <= to p_disp_start
       end;
 
-      {restart dispersal in case newly settled individuals do not have enough territory}
+      {Check size of territory for newly established individuals.
+      If they do not have enough, see if there is enough unclaimed territory around to add to their territory.
+      If not, restart dispersal}
       if (Individual^.Status = 2) then
       begin
         TCount := 0;
-        FCount := 0;
 
         for b := 0 to length(Individual^.TerritoryX) - 1 do
         begin
           if (Individual^.TerritoryX[b] > -1) and (Individual^.TerritoryY[b] > -1) then
           begin
+            if (Individual^.Sex = 'f') or
+            ((Individual^.Sex = 'm') and (FemalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 0] = 3)) then
             Inc(TCount);
-            if (Individual^.Sex = 'm') and (FemalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 0] > 0) then
-              Inc(FCount);
           end;
         end;
-        {Reset territory information to empty if there's not enough territory}
-        if (TCount < Tsize) and ((Individual^.Sex = 'f') or ((Individual^.Sex = 'm') and (FCount < 1))) then
-        begin
-          for b := 0 to length(Individual^.TerritoryX) - 1 do
-          begin
-            if (Individual^.TerritoryX[b] = -1) then Continue;   // If the territory is already set to -1 then it's been 'taken away' already, and we don't need to update the info below
-            if Individual^.Sex = 'f' then
-            begin
-            FemalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 0]:= 0;
-            FemalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 1]:= 0;
-            end
-            else
-            begin
-            MalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 0]:= 0;
-            MalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 1]:= 0;
-            end;
-            Individual^.TerritoryX[b] := -1;
-            Individual^.TerritoryY[b] := -1;
-          end;
-          Individual^.Status := 1;
-        end;
-      end;
 
+        {If there's not enough territory, see if there's any unclaimed available}
+        if (TCount < Tsize) and (TCount > 0) then //If TCount is 0 that means that the individual will have to move for sure to find new territory
+        ClaimNewTerrOrStartDispersal;
+      end;
 
       {Now start dispersal IF individual has dispersal status}
 
@@ -357,6 +340,7 @@ begin
                   begin
                     xi := TestCoordX + dx[i];
                     yi := TestCoordY + dy[i];
+                    if CanMoveHere(xi, yi) then
                     if ((HabitatMap[xi, yi] = 2) and (ReproductionQuality(xi, yi))) then
                     begin
                       c_available:= False;
@@ -399,6 +383,7 @@ begin
                      end;
 
                    if not already_terr then
+                    if CanMoveHere(xi, yi) then
                     if ((HabitatMap[xi, yi] = 2) and (ReproductionQuality(xi, yi))) then
                     begin
                     c_available := False;
@@ -571,6 +556,13 @@ begin
 
   if ((x >= 68) and (x <= 72)) then
   if ((y >= 53) and (y <= 62)) then Result:= True;
+
+  if ((x >= 151) and (x <= 156)) then
+  if ((y >= 67) and (y <= 74)) then Result:=True;
+
+  if ((x >= 138) and (x <= 142)) then
+  if ((y >= 37) and (y <= 41)) then Result:=True;
+
   end else
   ShowErrorAndExit('No reproduction quality areas defined for this map file');
 
@@ -657,11 +649,6 @@ begin
   {Move to the nearby dispersal cell if there's any in sight.
   Consider autocorrelatin in movement - add to autocorrelation in fragmented area}
     begin
-      if fragmented = True then theta := theta + delta_theta_f;
-      if CanMoveHere((xp + dx[mem]), (yp + dy[mem])) and (HabitatMap[(xp + dx[mem]), (yp + dy[mem])] = 2) and (p < (theta)) then
-        new_dir := mem
-      else
-      begin
         h := random(nDisp) + 1;
         f := 0;
         for i := 1 to 8 do
@@ -677,7 +664,6 @@ begin
           end;
         end;
       end;
-    end;
   end
   else
   begin
@@ -904,7 +890,140 @@ begin
 
 end;
 
+procedure ClaimNewTerrOrStartDispersal;
+var
+  temp_terrX, temp_terrY: array of integer;
+  temp_ind: PAgent;
+  b,first_Tcount, TCount,d, e, f, j, i, g, xi, yi, xy: integer;
+  already_terr, c_available: boolean;
+ begin
+        SetLength(temp_terrX, Tsize);
+        SetLength(temp_terrY, Tsize);
+        ArrayToNegOne(temp_terrX);
+        ArrayToNegOne(temp_terrY);
 
+        {Get all current claimed territory} //not already done above, as TCount < TSize for status = 2 should be less common throughout the year once individuals are more settled}
+        for b := 0 to length(Individual^.TerritoryX) - 1 do
+        begin
+          if (Individual^.TerritoryX[b] > -1) and (Individual^.TerritoryY[b] > -1) then
+          begin
+          if (Individual^.Sex = 'f') or
+            ((Individual^.Sex = 'm') and (FemalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 0] = 3)) then
+          temp_terrX[b] := Individual^.TerritoryX[b];
+          temp_terrY[b] := Individual^.TerritoryY[b];
+          end;
+        end;
+
+        {See if there's other available territory nearby}
+        begin
+                  first_Tcount := TCount;
+                  j := 0;
+                while (TCount < Tsize) and (j < first_Tcount) do
+                begin
+                   for i := 1 to 8 do
+                  begin
+                   xi := temp_terrX[j] + dx[i];
+                   yi := temp_terrY[j] + dy[i];
+
+                   already_terr := false;
+                   for g := 0 to TCount - 1 do
+                     begin
+                      if (xi = temp_terrX[g]) and (yi = temp_terrY[g]) then
+                      begin
+                      already_terr := true;
+                      Break;
+                      end;
+                     end;
+
+                   if not already_terr then
+                    if ((HabitatMap[xi, yi] = 2) and (ReproductionQuality(xi, yi))) then
+                    begin
+                    c_available := False;
+                    c_available:= TerritoryCellAvailable(xi, yi, Individual^.Sex, Individual^.Age);
+
+                      if c_available then
+                    begin
+                      temp_terrX[TCount] := xi;
+                      temp_terrY[TCount] := yi;
+                      Inc(TCount);
+
+                      if TCount = Tsize then Break;
+                      end;
+                    end;
+                  end;
+                   j := j + 1;
+                 end;
+                  end;
+
+        {If there's enough territory available, assign to individual, and make sure individual is located within territory}
+        if (TCount = Tsize) then
+        begin
+          {use temp_terr to remove those coordinates from existing territories}
+                    for xy := 0 to TCount - 1 do
+                      begin
+
+                        with population do
+                        begin
+                          for d := 0 to population.Count - 1 do
+                          begin
+                            temp_ind := Items[d];
+                            if temp_ind^.Sex = Individual^.Sex then
+                            begin
+                              with temp_ind^ do
+                                for e := Length(TerritoryX) - 1 downto 0 do
+                                begin
+                                  if (TerritoryX[e] = temp_terrX[xy]) and (TerritoryY[e] = temp_terrY[xy]) then
+                                  begin
+                                    TerritoryX[e] := -1;
+                                    TerritoryY[e] := -1;
+                                  end;
+                                end;
+                            end;
+                          end;
+                        end;
+                      end;
+
+                    {Assign territory to individual and change status}
+                    Individual^.status := 2;
+                      for f := 0 to TCount - 1 do
+                      begin
+                        Individual^.TerritoryX[f] := temp_terrX[f];
+                        Individual^.TerritoryY[f] := temp_terrY[f];
+
+                        if Individual^.Sex = 'f' then
+                        begin
+                        FemalesMap[temp_terrX[f], temp_terrY[f], 0] := Individual^.Status;
+                        FemalesMap[temp_terrX[f], temp_terrY[f], 1] := Individual^.Age;
+                        end
+                        else
+                        begin
+                          MalesMap[temp_terrX[f], temp_terrY[f], 0] := Individual^.Status;
+                          MalesMap[temp_terrX[f], temp_terrY[f], 1] := Individual^.Age;
+                        end;
+                      end;
+        end
+        else
+        {Reset territory information to empty and restart dispersal if there's not enough territory}
+        begin
+          for b := 0 to length(Individual^.TerritoryX) - 1 do
+          begin
+            if (Individual^.TerritoryX[b] = -1) then Continue;   // If the territory is already set to -1 then it's been 'taken away' already, and we don't need to update the info below
+            if Individual^.Sex = 'f' then
+            begin
+            FemalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 0]:= 0;
+            FemalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 1]:= 0;
+            end
+            else
+            begin
+            MalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 0]:= 0;
+            MalesMap[Individual^.TerritoryX[b], Individual^.TerritoryY[b], 1]:= 0;
+            end;
+            Individual^.TerritoryX[b] := -1;
+            Individual^.TerritoryY[b] := -1;
+          end;
+          Individual^.Status := 1;
+        end;
+      end;
 
 end.
 

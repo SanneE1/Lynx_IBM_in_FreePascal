@@ -11,7 +11,7 @@ uses
 procedure ReadParameters(paramname: string);
 procedure UpdateAbundanceMap;
 procedure WriteMapCSV(filename: string; var arrayData: Array3Dbyte; dimx, dimy, dimz: integer);
-procedure WritePopulationToCSV(const population: TList; const filename: string);
+procedure WritePopulationToCSV(population: TList; filename: string; current_sim, year: integer);
 
 implementation
 
@@ -91,7 +91,6 @@ begin
       else ShowErrorAndExit('No space found. Check parameter file');
      end;
 
-     min_rep_age        := -1;
      min_rep_age        := Round(val_seq[1]);
      max_rep_age        := Round(val_seq[2]);
      max_age            := Round(val_seq[3]);
@@ -201,20 +200,26 @@ begin
   Close(outfile);
 end;
 
-procedure WritePopulationToCSV(const population: TList; const filename: string);
+procedure WritePopulationToCSV(population: TList; filename: string; current_sim, year: integer);
 var
   csvFile: TextFile;
   i, j: integer;
 begin
-  AssignFile(csvFile, filename);
-  Rewrite(csvFile);
 
-  // Write header
-  WriteLn(csvFile, 'Sex,Age,Status,Coor_X,Coor_Y,Territory_X,Territory_Y');
+  AssignFile(csvFile, filename);
+
+  if (current_sim = 1) and (year = 1) then
+    begin
+    Rewrite(csvFile);
+    // Write header
+    WriteLn(csvFile, 'Simulation,Year,Sex,Age,Status,Coor_X,Coor_Y,Territory_X,Territory_Y');
+    end
+  else append(csvFile);
 
   // Write data for each individual
   for i := 0 to population.Count - 1 do
   begin
+    Write(csvFile, current_sim, ',', year, ',');
     individual := PAgent(population[i]);
 
     // Write individual information
@@ -228,12 +233,12 @@ begin
     for j := 0 to length(individual^.TerritoryX) - 1 do
     begin
 
-      Write(csvFile, Individual^.TerritoryX[j], ',');
+      Write(csvFile, Individual^.TerritoryX[j], '/');
       Write(csvFile, individual^.TerritoryY[j]);
 
       // Add comma if not last coordinate
       if j < length(individual^.TerritoryX) - 1 then
-        Write(csvFile, ',');
+        Write(csvFile, ';');
     end;
 
     WriteLn(csvFile); // End of current individual's data

@@ -89,7 +89,7 @@ var               {here you declare global variables}
 
 const             {here you declare constants}
 
-  file_name = 'output_data/PopulationSizes.txt';
+  file_name = 'output.txt';
 
   max_steps = 100;
 
