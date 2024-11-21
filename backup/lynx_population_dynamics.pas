@@ -16,7 +16,8 @@ implementation
 
 procedure Startpopulation;
 var
-  a: integer;
+  a, i, k, homogeneity_count: integer;
+  tmic: real;
 begin
   Population := TList.Create;
   with population do
@@ -47,6 +48,30 @@ begin
 
       Individual^.DailySteps := 0;
       Individual^.DailyStepsOpen := 0;
+
+      //add the genes here based on file lungo 742
+      setLength(Individual^.Genome, 25, 2);
+      homogeneity_count := 0;
+
+      for i := 1 to 24 do
+      begin                                    //magari qui la cambi  e inverti: per ogni genome guarda i due alleli
+        for k := 0 to 1 do
+        begin
+          tmic := random;
+          if tmic < 0.25 then
+            Individual^.Genome[i, k] := 1
+          else if tmic < 0.5 then
+            Individual^.Genome[i, k] := 2
+          else if tmic < 0.75 then
+            Individual^.Genome[i, k] := 3
+          else
+            Individual^.Genome[i, k] := 4;
+          end;
+        //check for homogeneity                 //se il primo individuo^genome è diver
+        if Individual^.Genome[i, 0] = Individual^.Genome[i, 1] then   //ma allora non c'è bisogno //appunto dentro Individual^Genome [i,k]= è 1,2,3 o 4.
+        homogeneity_count := homogeneity_count + 1;
+
+        end;
 
       Population.add(Individual);
 
@@ -85,10 +110,10 @@ begin
 
       if (a mod 5 = 0) then
         begin
-        WriteMapCSV('output_data/FemalesMap_status_' + IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Femalesmap, MapdimX, MapdimY, 0);
-        WriteMapCSV('output_data/FemalesMap_age_' + IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Femalesmap, MapdimX, MapdimY, 1);
-        WriteMapCSV('output_data/MalesMap_status_' + IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Malesmap, MapdimX, MapdimY, 0);
-        WriteMapCSV('output_data/MalesMap_age_' +  IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Malesmap, MapdimX, MapdimY, 1);
+        WriteMapCSV('output_data/FemalesMap_status_' + IntToStr(current_sim) + '_' + IntToStr(a) + '.csv', Femalesmap, MapdimX, MapdimY, 0);
+        WriteMapCSV('output_data/FemalesMap_age_' + IntToStr(current_sim) + '_' + IntToStr(a) + '.csv', Femalesmap, MapdimX, MapdimY, 1);
+        WriteMapCSV('output_data/MalesMap_status_' + IntToStr(current_sim) + '_' + IntToStr(a) + '.csv', Malesmap, MapdimX, MapdimY, 0);
+        WriteMapCSV('output_data/MalesMap_age_' +  IntToStr(current_sim) + '_' + IntToStr(a) + '.csv', Malesmap, MapdimX, MapdimY, 1);
         end;
 
 

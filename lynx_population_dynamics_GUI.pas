@@ -53,7 +53,7 @@ implementation
 
 procedure Startpopulation;
 var
-  a, i, k: integer;
+  a, i, k, homogeneity_count: integer;
   tmic: real;
 begin
   Population := TList.Create;
@@ -88,7 +88,7 @@ begin
 
       //add the genes here based on file lungo 742
       setLength(Individual^.Genome, 25, 2);
-
+      homogeneity_count := 0;
 
       for i := 1 to 24 do
       begin                                    //magari qui la cambi  e inverti: per ogni genome guarda i due alleli
@@ -104,6 +104,10 @@ begin
           else
             Individual^.Genome[i, k] := 4;
           end;
+        //check for homogeneity                 //se il primo individuo^genome è diver
+        if Individual^.Genome[i, 0] = Individual^.Genome[i, 1] then   //ma allora non c'è bisogno //appunto dentro Individual^Genome [i,k]= è 1,2,3 o 4.
+        homogeneity_count := homogeneity_count + 1;
+
         end;
 
       Population.add(Individual);

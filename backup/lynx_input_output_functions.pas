@@ -234,8 +234,11 @@ end;
 procedure WritePopulationToCSV(population: TList; filename: string; current_sim, year: integer);
 var
   csvFile: TextFile;
-  i, j: integer;
+  i, j, l: integer;
 begin
+
+  with population do
+  begin
 
   AssignFile(csvFile, filename);
 
@@ -248,7 +251,7 @@ begin
   else append(csvFile);
 
   // Write data for each individual
-  for i := 0 to population.Count - 1 do
+  for l := 0 to population.Count - 1 do
   begin
     Write(csvFile, current_sim, ',', year, ',');
     individual := PAgent(population[i]);
@@ -273,7 +276,7 @@ begin
     end;
 
     // Write genetics
-    for i = 1 to 24 do
+    for i := 1 to 24 do
       begin
         Write(csvFile, Individual^.Genome[i,0], ':', Individual^.Genome[i,1], ',');
       end;
@@ -282,6 +285,7 @@ begin
   end;
 
   CloseFile(csvFile);
+end;
 end;
 
 end.

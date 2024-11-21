@@ -237,6 +237,9 @@ var
   i, j, l: integer;
 begin
 
+  with population do
+  begin
+
   AssignFile(csvFile, filename);
 
   if (current_sim = 1) and (year = 1) then
@@ -251,7 +254,7 @@ begin
   for l := 0 to population.Count - 1 do
   begin
     Write(csvFile, current_sim, ',', year, ',');
-    individual := PAgent(population[i]);
+    individual := PAgent(population[l]);
 
     // Write individual information
     Write(csvFile, individual^.sex, ',');
@@ -282,6 +285,7 @@ begin
   end;
 
   CloseFile(csvFile);
+end;
 end;
 
 end.
