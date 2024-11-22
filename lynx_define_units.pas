@@ -33,6 +33,9 @@ type           {here you declare the data structure for you individuals}
     homeX: byte;
     homeY: byte;
 
+    Genome: array of array of integer;
+    P_homogeneity: real;
+
   end;
 
 
