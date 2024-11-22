@@ -383,6 +383,7 @@ begin
                      end;
 
                    if not already_terr then
+                    if CanMoveHere(xi, yi) then
                     if ((HabitatMap[xi, yi] = 2) and (ReproductionQuality(xi, yi))) then
                     begin
                     c_available := False;

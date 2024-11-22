@@ -51,10 +51,11 @@
       <Unit5>
         <Filename Value="lynx_vital_rates.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="108"/>
-        <CursorPos Y="92"/>
-        <FoldState Value=" T3jU0{D1 pn2pG0G5 PnHjA0~"/>
+        <TopLine Value="928"/>
+        <CursorPos X="41" Y="939"/>
+        <FoldState Value=" T3jU0{D1 pn2pG0G521 Po2pg0s"/>
         <UsageCount Value="28"/>
         <Loaded Value="True"/>
       </Unit5>
@@ -91,7 +92,6 @@
         <ComponentName Value="spatial_Form"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <TopLine Value="216"/>
         <CursorPos Y="225"/>
@@ -216,8 +216,8 @@
         <Caret Line="15" Column="57"/>
       </Position29>
       <Position30>
-        <Filename Value="lynx_vital_rates.pas"/>
-        <Caret Line="92" TopLine="108"/>
+        <Filename Value="lynx_population_dynamics_GUI.pas"/>
+        <Caret Line="225" TopLine="216"/>
       </Position30>
     </JumpHistory>
     <RunParams>
