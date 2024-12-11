@@ -12,6 +12,9 @@ uses
   lynx_vital_rates;
 
 type
+
+{ Tspatial_Form }
+
 Tspatial_Form = class(TForm)
     Chart1: TChart;
     Chart1LineSeries1: TLineSeries;
@@ -20,6 +23,7 @@ Tspatial_Form = class(TForm)
     Edit10: TEdit;
     Edit2: TEdit;
     Edit3: TEdit;
+    Edit4: TEdit;
     Edit5: TEdit;
     Exit_Button: TButton;
     Abort_Button: TButton;
@@ -29,6 +33,7 @@ Tspatial_Form = class(TForm)
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    Label7: TLabel;
     Panel1: TPanel;
     Run_Button: TButton;
     procedure Abort_ButtonClick(Sender: TObject);
@@ -69,8 +74,13 @@ begin
         Individual^.sex := 'm';
       Individual^.status := 1;
 
-      Individual^.Coor_X := 130;
-      Individual^.Coor_Y := 100;
+      Individual^.Coor_X := 550;   // For old_donana 130;  // For Peninsula = 550
+      Individual^.Coor_Y := 1550;  // For old_donana 100;  // For Peninsula = 1550
+
+      Individual^.Natal_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
+      Individual^.Current_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
+      Individual^.Previous_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
+
 
       setLength(Individual^.TerritoryX, Tsize);
       setLength(Individual^.TerritoryY, Tsize);
@@ -94,19 +104,19 @@ end;
 
 procedure Tspatial_Form.Pop_dynamics_GUI;
 var
-  a, b, xy, day, Tcheck: integer;
+  b, xy, day, Tcheck: integer;
 begin
   with population do
   begin
-    for a := 1 to max_years do
+    for current_year := 1 to max_years do
     begin
       day := 0;  // Start the year
-      while day < 366 do //Let's pretend there's no such thing as leap years
+      while (day < 366) and (populationsize > 0) do //Let's pretend there's no such thing as leap years
       begin
         day := day + 1;
         populationsize := population.Count;
 
-        UpdateAbundanceMap;
+        //UpdateAbundanceMap;
 
         if day = 90 then
           if populationsize > 2 then
@@ -120,7 +130,7 @@ begin
       populationsize := population.Count;
       if populationsize > 0 then
       begin
-        for b := 0 to populationsize - 1 do
+      for b := 0 to populationsize - 1 do
         begin
           Individual := Items[b];
           Individual^.Age := Individual^.Age + 1;
@@ -128,13 +138,17 @@ begin
           begin
           Tcheck := 0;
           for xy := 0 to Tsize - 1 do
-          begin
-            if ((Individual^.TerritoryX[xy] > 0) and (Individual^.TerritoryY[xy] > 0)) then Tcheck := Tcheck + 1;
-          end;
+          if ((Individual^.TerritoryX[xy] > 0) and (Individual^.TerritoryY[xy] > 0)) then Tcheck := Tcheck + 1;
+
           if Tcheck = Tsize then Individual^.Status := 3;
           end;
+
+          each_pop_sizes[Individual^.current_pop, current_year] := each_pop_sizes[Individual^.current_pop, current_year] + 1;
+
         end;
       end;
+
+      UpdateAbundanceMap;
 
       {ploting pop size}
       if max_pop_size < populationsize then max_pop_size := populationsize;
@@ -143,26 +157,30 @@ begin
         Chart1.extent.YMax := max_pop_size;
         application.ProcessMessages;
       end;
-      pop_size[a] := populationsize;
-      sum_pop_size[a] := sum_pop_size[a] + populationsize;
-      if populationsize > 0 then n_sim_no_ext[a] := n_sim_no_ext[a] + 1;
+      pop_size[current_year] := populationsize;
+      sum_pop_size[current_year] := sum_pop_size[current_year] + populationsize;
+      if populationsize > 0 then n_sim_no_ext[current_year] := n_sim_no_ext[current_year] + 1;
       {plot trajectory}
-      Chart1LineSeries1.addxy(a, populationsize);
+      Chart1LineSeries1.addxy(current_year, populationsize);
 
+    {if (current_year mod 5 = 0) then
+    begin
+    WriteMapCSV('output_data/FemalesMap_status_yr_' + IntToStr(current_year) + '.csv', Femalesmap, MapdimX, MapdimY, 0);
+    WriteMapCSV('output_data/FemalesMap_age_yr_' + IntToStr(current_year) + '.csv', Femalesmap, MapdimX, MapdimY, 1);
+    WriteMapCSV('output_data/MalesMap_status_yr_' + IntToStr(current_year) + '.csv', Malesmap, MapdimX, MapdimY, 0);
+    WriteMapCSV('output_data/MalesMap_age_yr_' + IntToStr(current_year) + '.csv', Malesmap, MapdimX, MapdimY, 1);
     end;
+    }
+    end;
+
     if populationsize = 0 then N_extint := N_extint + 1;
 
-    WriteMapCSV('FemalesMap_status.csv', Femalesmap, MapdimX, MapdimY, 0);
-    WriteMapCSV('FemalesMap_age.csv', Femalesmap, MapdimX, MapdimY, 1);
-    WriteMapCSV('MalesMap_status.csv', Malesmap, MapdimX, MapdimY, 0);
-    WriteMapCSV('MalesMap_age.csv', Malesmap, MapdimX, MapdimY, 1);
-
-  end;
+   end;
 end;
 
 procedure Tspatial_Form.Run_ButtonClick(Sender: TObject);
 var
-  a, b: integer;
+  a, b, i: integer;
   t: string;
 begin
   randomize; {initialize the pseudorandom number generator}
@@ -173,10 +191,11 @@ begin
   {These values should overwrite the values in the file with the input from the GUI}
   val(Edit1.Text, n_ini);  {read parameter values from the form}
   val(Edit2.Text, max_years);
-  val(Edit5.Text, n_sim);
 
   mapname := Edit10.Text;
-  readmap(mapname);
+  mapBHname := Edit4.Text;
+
+  readmap(mapname, mapBHname, mapiPname, mapPops);
 
   SetLength(MalesMap, Mapdimx + 1, Mapdimy + 1, 2);
   SetLength(FemalesMap, Mapdimx + 1, Mapdimy + 1, 2);
@@ -185,12 +204,24 @@ begin
 
   AssignFile(to_file_out, file_name);
   rewrite(to_file_out); {create txt file}
+  writeln(to_file_out, 'current_sim,year,pop1, pop2, pop3, pop4, pop5');
+
+  AssignFile(mig_file_out, 'output_data/migration.csv');
+  rewrite(mig_file_out); {create txt file}
+  writeln(mig_file_out, 'EventID,Simulation,Year,Sex,Age,Natal_pop,Old_pop,New_pop');
+
 
   for a := 1 to max_years do sum_pop_size[a] := 0;
   for a := 1 to max_years do n_sim_no_ext[a] := 0;
 
+  SetLength(each_pop_sizes, 6);
+  for i := 0 to High(each_pop_sizes) do
+    SetLength(each_pop_sizes[i], max_years+1);
+
   // Calculate array of step probabilities (here once) to be used in dispersal procedure later
   Step_probabilities;
+
+  MigrationList := TList.Create;
 
   for current_sim := 1 to n_sim do
   begin
@@ -214,17 +245,33 @@ begin
 
     {save the results to a text file}
     append(to_file_out);
-    for b := 1 to max_years do
-      writeln(to_file_out, current_sim, ' ', b, ' ', pop_size[b]);
-    {we save all simulations}
-    if current_sim = n_sim then
-      for b := 1 to max_years do
-        writeln(to_file_out, 'avg', ' ', b, ' ', sum_pop_size[b] / current_sim);
-    {and the average of all simulations}
+    for b :=  to max_years do
+      writeln(to_file_out, current_sim, ',', b, ',',
+      each_pop_sizes[0,b], ',',
+      each_pop_sizes[1,b], ',',
+      each_pop_sizes[2,b], ',',
+      each_pop_sizes[3,b], ',',
+      each_pop_sizes[4,b], ',',
+      each_pop_sizes[5,b], ',');
+
     CloseFile(to_file_out);
 
+    {Write Migration list to file}
+    append(mig_file_out);
+    with MigrationList do
+    for b := 0 to MigrationList.Count - 1 do
+    begin
+      MigrationEvent := items[b];
 
-    if current_sim = n_sim then WritePopulationToCSV(population, 'population_data.csv');
+      writeln(mig_file_out, b , ',', MigrationEvent^.simulation, ',',
+      MigrationEvent^.year, ',',
+      MigrationEvent^.sex, ',',
+      MigrationEvent^.age, ',',
+      MigrationEvent^.natal_pop, ',',
+      MigrationEvent^.old_pop, ',',
+      MigrationEvent^.new_pop);
+    end;
+    CloseFile(mig_file_out);
 
   end;
 

@@ -9,8 +9,8 @@ uses
   Classes, SysUtils;
 
 type           {here you declare the data structure for you individuals}
-  Array2Dbyte = array of array of byte;
-  Array3Dbyte = array of array of array of byte;
+  Array2Dinteger = array of array of integer;
+  Array3Dinteger = array of array of array of integer;
 
   PAgent = ^Agent;
 
@@ -19,8 +19,12 @@ type           {here you declare the data structure for you individuals}
     Age: byte;         // In years
     Status: shortint;  // 0=pre-dispersal cubs and subadults, 1=dispersing individuals, 2=early settled adults, 3 = fully settled adults
 
-    Coor_X: byte;
-    Coor_Y: byte;
+    Coor_X: integer;
+    Coor_Y: integer;
+
+    Natal_pop: byte;
+    Current_pop: byte;
+    Previous_pop: byte;
 
     TerritoryX: array of integer;
     TerritoryY: array of integer;
@@ -30,17 +34,37 @@ type           {here you declare the data structure for you individuals}
     mov_mem: byte;
     return_home: boolean;  // not to be confused with Territory. This is for when individuals go on an excursion
     // into Open habitat, for them to return to the last known Dispersal habitat they've visited
-    homeX: byte;
-    homeY: byte;
+    homeX: integer;
+    homeY: integer;
 
   end;
 
+
+
+  PMigration = ^Migration;
+  Migration = record
+
+    simulation: integer;
+    year: integer;
+    // Add ID here (like Chiara will be using) to track if single individuals move through multiple populations
+    // and/or to keep track to see if they're actually going to breed in population
+    sex: string[1];
+    age: byte;
+    natal_pop: integer;
+    old_pop: integer;
+    new_pop: integer;
+
+  end;
 
 
 var               {here you declare global variables}
 
   Population: TList;
   Individual: PAgent;
+
+  MigrationList: TList;
+  MigrationEvent: PMigration;
+
   n_ini: integer;
   max_years: integer;
   rep_prob: real;
@@ -64,20 +88,25 @@ var               {here you declare global variables}
   step_probs: array of double;
   pop_size: array[1..100] of integer;
   sum_pop_size: array[1..100] of integer;
+  each_pop_sizes: array[0..5] of array of integer;
   n_sim_no_ext: array[1..100] of integer;
-  to_file_out: TextFile;
+  to_file_out, mig_file_out: TextFile;
   filename: Text;
-  HabitatMap: Array2Dbyte;
-  MalesMap: Array3Dbyte;
-  FemalesMap: Array3Dbyte;
+  HabitatMap: Array2Dinteger;
+  BreedingHabitatMap: Array2Dinteger;
+  ParkMap: Array2Dinteger;
+  PopsMap: Array2Dinteger;
+  MalesMap: Array3Dinteger;
+  FemalesMap: Array3Dinteger;
   Mapdimx, Mapdimy: integer;
-  mapname, paramname: string;
+  mapname, mapBHname, mapiPname, mapPops, paramname: string;
   dx: array[0..8] of integer = (0, 0, 1, 1, 1, 0, -1, -1, -1);
   dy: array[0..8] of integer = (0, 1, 1, 0, -1, -1, -1, 0, 1);
   xp, yp: integer;
   tempX, tempY: integer;
-  homeX, homeY, steps, s, new_dir, mem: integer;
+  homeX, homeY, startpoint_X, startpoint_Y, steps, s, new_dir, mem: integer;
   tohome: boolean;
+  current_year: integer;
 
   {Vital rate variables}
   min_rep_age, min_rep_age_m, max_rep_age, max_age: integer;
@@ -89,7 +118,7 @@ var               {here you declare global variables}
 
 const             {here you declare constants}
 
-  file_name = 'output.txt';
+  file_name = 'output_data/PopulationSizes.txt';
 
   max_steps = 100;
 

@@ -60,18 +60,14 @@
         <Filename Value="lynx_vital_rates.pas"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="325"/>
-        <CursorPos X="26" Y="344"/>
-        <FoldState Value=" T3W0{1115 pl6tN0}e2 piXnW0Sr"/>
+        <TopLine Value="367"/>
+        <CursorPos X="24" Y="387"/>
+        <FoldState Value=" T3W0{1115 pl6tO0}e2 piXnW0S="/>
         <UsageCount Value="33"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <Caret Line="97" TopLine="77"/>
-      </Position>
       <Position>
         <Filename Value="lynx_input_output_functions.pas"/>
         <Caret Line="98" TopLine="77"/>
@@ -187,6 +183,10 @@
       <Position>
         <Filename Value="lynx_vital_rates.pas"/>
         <Caret Line="343" Column="37" TopLine="324"/>
+      </Position>
+      <Position>
+        <Filename Value="lynx_vital_rates.pas"/>
+        <Caret Line="344" Column="26" TopLine="325"/>
       </Position>
     </JumpHistory>
     <RunParams>

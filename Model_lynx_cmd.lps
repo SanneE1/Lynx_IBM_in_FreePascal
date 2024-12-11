@@ -17,15 +17,15 @@
         <Filename Value="lynx_population_dynamics.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
+        <TopLine Value="18"/>
         <CursorPos X="6" Y="100"/>
-        <FoldState Value=" T3G0c0"/>
         <UsageCount Value="91"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="general_functions.pas"/>
         <EditorIndex Value="5"/>
-        <CursorPos Y="78"/>
+        <CursorPos Y="66"/>
         <UsageCount Value="46"/>
         <Loaded Value="True"/>
       </Unit>
@@ -49,20 +49,17 @@
       </Unit>
       <Unit>
         <Filename Value="lynx_input_output_functions.pas"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="178"/>
         <CursorPos X="80" Y="215"/>
-        <FoldState Value=" T3H0{S2 PiRkV0?"/>
         <UsageCount Value="44"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="lynx_vital_rates.pas"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="367"/>
         <CursorPos X="24" Y="387"/>
-        <FoldState Value=" T3W0{1115 pl6tO0}e2 piXnW0S="/>
+        <FoldState Value=" T3W0{1115 PlAsW0g"/>
         <UsageCount Value="33"/>
         <Loaded Value="True"/>
       </Unit>

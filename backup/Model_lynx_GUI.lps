@@ -9,7 +9,7 @@
         <Filename Value="Model_lynx_GUI.pas"/>
         <IsPartOfProject Value="True"/>
         <CursorPos X="57" Y="15"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="51"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -28,7 +28,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="25" Y="9"/>
-        <UsageCount Value="40"/>
+        <UsageCount Value="70"/>
       </Unit2>
       <Unit3>
         <Filename Value="general_functions_unit.pas"/>
@@ -37,26 +37,26 @@
         <TopLine Value="8"/>
         <CursorPos X="14" Y="9"/>
         <FoldState Value=" T3I0K3 Pi2iG02"/>
-        <UsageCount Value="31"/>
+        <UsageCount Value="61"/>
       </Unit3>
       <Unit4>
         <Filename Value="lynx_input_output_functions.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="78"/>
-        <CursorPos Y="93"/>
-        <UsageCount Value="29"/>
+        <TopLine Value="194"/>
+        <CursorPos X="18" Y="203"/>
+        <FoldState Value=" T3I0{Q031 Pi2o60g"/>
+        <UsageCount Value="59"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="lynx_vital_rates.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="108"/>
-        <CursorPos Y="92"/>
-        <FoldState Value=" T3jU0{D1 pn2pG0G5 PnHjA0~"/>
-        <UsageCount Value="28"/>
+        <TopLine Value="30"/>
+        <CursorPos Y="218"/>
+        <FoldState Value=" T3X0{51 pj8lC0~R7 pn4u40S2 piXjO0{qH"/>
+        <UsageCount Value="58"/>
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
@@ -65,26 +65,28 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="2"/>
         <CursorPos Y="12"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="51"/>
       </Unit6>
       <Unit7>
         <Filename Value="spatial_model.pas"/>
         <UnitName Value="lynx_model"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="53" Y="15"/>
-        <UsageCount Value="256"/>
+        <UsageCount Value="254"/>
       </Unit7>
       <Unit8>
         <Filename Value="lynx_define_units.pas"/>
         <EditorIndex Value="4"/>
-        <UsageCount Value="13"/>
+        <TopLine Value="72"/>
+        <CursorPos X="24" Y="91"/>
+        <UsageCount Value="27"/>
         <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="general_functions.pas"/>
         <EditorIndex Value="5"/>
-        <CursorPos Y="10"/>
-        <UsageCount Value="13"/>
+        <CursorPos X="27" Y="50"/>
+        <UsageCount Value="27"/>
         <Loaded Value="True"/>
       </Unit9>
       <Unit10>
@@ -92,132 +94,135 @@
         <ComponentName Value="spatial_Form"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="59"/>
-        <CursorPos X="2" Y="93"/>
-        <UsageCount Value="11"/>
+        <TopLine Value="199"/>
+        <CursorPos X="86" Y="211"/>
+        <UsageCount Value="25"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit10>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <Caret Line="85" TopLine="58"/>
+        <Filename Value="lynx_define_units.pas"/>
+        <Caret Line="66" Column="17" TopLine="34"/>
       </Position1>
       <Position2>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <Caret Line="86" TopLine="59"/>
+        <Filename Value="lynx_vital_rates.pas"/>
+        <Caret Line="336" Column="44" TopLine="318"/>
       </Position2>
       <Position3>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <Caret Line="69" TopLine="59"/>
+        <Filename Value="lynx_define_units.pas"/>
+        <Caret Line="92" Column="28" TopLine="61"/>
       </Position3>
       <Position4>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <Caret Line="71" TopLine="59"/>
+        <Filename Value="lynx_population_dynamics_GUI.pas"/>
+        <Caret Line="166" Column="6" TopLine="80"/>
       </Position4>
       <Position5>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <Caret Line="73" TopLine="59"/>
+        <Filename Value="lynx_vital_rates.pas"/>
+        <Caret Line="326" TopLine="309"/>
       </Position5>
       <Position6>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <Caret Line="75" TopLine="59"/>
+        <Filename Value="lynx_vital_rates.pas"/>
+        <Caret Line="328" TopLine="309"/>
       </Position6>
       <Position7>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <Caret Line="78" TopLine="59"/>
+        <Filename Value="lynx_vital_rates.pas"/>
+        <Caret Line="329" TopLine="309"/>
       </Position7>
       <Position8>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <Caret Line="94" TopLine="76"/>
+        <Filename Value="lynx_vital_rates.pas"/>
+        <Caret Line="330" TopLine="309"/>
       </Position8>
       <Position9>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <Caret Line="78" TopLine="72"/>
+        <Filename Value="lynx_vital_rates.pas"/>
+        <Caret Line="331" TopLine="309"/>
       </Position9>
       <Position10>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <Caret Line="94" TopLine="72"/>
+        <Filename Value="lynx_vital_rates.pas"/>
+        <Caret Line="332" TopLine="309"/>
       </Position10>
       <Position11>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <Caret Line="95" Column="28" TopLine="82"/>
+        <Filename Value="lynx_vital_rates.pas"/>
+        <Caret Line="333" TopLine="309"/>
       </Position11>
       <Position12>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <Caret Line="94" TopLine="82"/>
+        <Filename Value="lynx_vital_rates.pas"/>
+        <Caret Line="334" TopLine="309"/>
       </Position12>
       <Position13>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <Caret Line="9" Column="20"/>
+        <Filename Value="lynx_population_dynamics_GUI.pas"/>
+        <Caret Line="82" Column="82" TopLine="63"/>
       </Position13>
       <Position14>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <Caret Line="94" TopLine="78"/>
+        <Filename Value="lynx_vital_rates.pas"/>
+        <Caret Line="326" TopLine="307"/>
       </Position14>
       <Position15>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <Caret Line="95" TopLine="78"/>
+        <Filename Value="lynx_vital_rates.pas"/>
+        <Caret Line="328" TopLine="307"/>
       </Position15>
       <Position16>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <Caret Line="93" TopLine="78"/>
+        <Filename Value="lynx_vital_rates.pas"/>
+        <Caret Line="329" TopLine="307"/>
       </Position16>
       <Position17>
         <Filename Value="lynx_vital_rates.pas"/>
-        <Caret Line="672" TopLine="656"/>
+        <Caret Line="330" TopLine="307"/>
       </Position17>
       <Position18>
         <Filename Value="lynx_vital_rates.pas"/>
-        <Caret Line="673" TopLine="656"/>
+        <Caret Line="331" TopLine="307"/>
       </Position18>
       <Position19>
         <Filename Value="lynx_vital_rates.pas"/>
-        <Caret Line="672" TopLine="656"/>
+        <Caret Line="332" TopLine="307"/>
       </Position19>
       <Position20>
         <Filename Value="lynx_vital_rates.pas"/>
-        <Caret Line="928" Column="9" TopLine="854"/>
+        <Caret Line="333" TopLine="307"/>
       </Position20>
       <Position21>
         <Filename Value="lynx_vital_rates.pas"/>
+        <Caret Line="334" TopLine="307"/>
       </Position21>
       <Position22>
-        <Filename Value="lynx_vital_rates.pas"/>
-        <Caret Line="412" Column="27" TopLine="373"/>
+        <Filename Value="lynx_define_units.pas"/>
+        <Caret Line="92" Column="28" TopLine="61"/>
       </Position22>
       <Position23>
-        <Filename Value="lynx_vital_rates.pas"/>
-        <Caret Line="875" Column="59" TopLine="577"/>
+        <Filename Value="lynx_population_dynamics_GUI.pas"/>
+        <Caret Line="208" Column="42" TopLine="193"/>
       </Position23>
       <Position24>
-        <Filename Value="lynx_vital_rates.pas"/>
-        <Caret Line="344" Column="36" TopLine="245"/>
+        <Filename Value="lynx_population_dynamics_GUI.pas"/>
+        <Caret Line="236" Column="77" TopLine="206"/>
       </Position24>
       <Position25>
-        <Filename Value="lynx_vital_rates.pas"/>
-        <Caret Line="892" Column="76" TopLine="825"/>
+        <Filename Value="lynx_population_dynamics_GUI.pas"/>
+        <Caret Line="238" Column="50" TopLine="208"/>
       </Position25>
       <Position26>
-        <Filename Value="lynx_vital_rates.pas"/>
-        <Caret Line="898" Column="40" TopLine="825"/>
+        <Filename Value="lynx_population_dynamics_GUI.pas"/>
+        <Caret Line="247" Column="62" TopLine="217"/>
       </Position26>
       <Position27>
-        <Filename Value="lynx_vital_rates.pas"/>
-        <Caret Line="344" Column="36" TopLine="328"/>
+        <Filename Value="lynx_population_dynamics_GUI.pas"/>
+        <Caret Line="161" Column="49" TopLine="143"/>
       </Position27>
       <Position28>
-        <Filename Value="lynx_vital_rates.pas"/>
-        <Caret Line="884" TopLine="825"/>
+        <Filename Value="lynx_population_dynamics_GUI.pas"/>
+        <Caret Line="215" Column="3" TopLine="202"/>
       </Position28>
       <Position29>
-        <Filename Value="Model_lynx_GUI.pas"/>
+        <Filename Value="lynx_define_units.pas"/>
+        <Caret Line="91" Column="33" TopLine="72"/>
       </Position29>
       <Position30>
-        <Filename Value="Model_lynx_GUI.pas"/>
-        <Caret Line="15" Column="57"/>
+        <Filename Value="lynx_population_dynamics_GUI.pas"/>
+        <Caret Line="254" Column="5" TopLine="233"/>
       </Position30>
     </JumpHistory>
     <RunParams>
@@ -279,6 +284,18 @@
       </Item>
       <Item>
         <Expression Value="mapname"/>
+      </Item>
+      <Item>
+        <Expression Value="HabitatMap"/>
+      </Item>
+      <Item>
+        <Expression Value="ParkMap"/>
+      </Item>
+      <Item>
+        <Expression Value="MigrationEvent"/>
+      </Item>
+      <Item>
+        <Expression Value="each_pop_sizes"/>
       </Item>
     </Watches>
   </Debugging>

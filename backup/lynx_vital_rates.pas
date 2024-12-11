@@ -18,6 +18,7 @@ procedure Step_probabilities;
 
 function CanMoveHere(x,y: integer): boolean;
 Function inPark(x,y:integer):boolean;
+function whichPop(x,y:integer):integer;
 Function ReproductionQuality(x,y:integer):boolean;
 
 function MoveDir: integer;
@@ -92,6 +93,10 @@ begin
                       Individual^.status := 0;
                       Individual^.Coor_X := Temp_X;
                       Individual^.Coor_Y := Temp_Y;
+
+                      Individual^.Natal_pop := whichPop(temp_X, temp_Y);
+                      Individual^.Current_pop := whichPop(temp_X, temp_Y);
+                      Individual^.Previous_pop := whichPop(temp_X, temp_Y);
 
                       setLength(Individual^.TerritoryX, Tsize);
                       setLength(Individual^.TerritoryY, Tsize);
@@ -311,10 +316,30 @@ begin
           if (HabitatMap[TestCoordX, TestCoordY] = 2) and tohome = True then
             Individual^.return_home := False;
 
-          {Move individual and update memory}
+          {Move individual and update memory and population}
           Individual^.Coor_X := TestCoordX;
           Individual^.Coor_Y := TestCoordY;
           if (new_dir <> 0) then Individual^.mov_mem := new_dir;
+
+          if (Individual^.Current_pop <> whichPop(TestCoordX, TestCoordY)) then
+          begin
+           new(MigrationEvent);
+
+           MigrationEvent^.simulation := current_sim;
+           MigrationEvent^.year := current_year;
+           MigrationEvent^.sex := Individual^.Sex;
+           MigrationEvent^.age := Individual^.Age;
+           MigrationEvent^.natal_pop := Individual^.Natal_pop;
+           MigrationEvent^.old_pop := whichPop(TestCoordX, TestCoordY);
+           MigrationEvent^.new_pop := Individual^.Current_pop;
+
+           MigrationList.Add(NewMigration);
+
+           Individual^.Previous_pop := Individual^.Current_pop;
+           Individual^.Current_pop := whichPop(TestCoordX, TestCoordY);
+
+          end;
+
 
           {Increase daily steps in open, if new coordinates are in an open habitat}
           if HabitatMap[TestCoordX, TestCoordY] = 1 then Individual^.DailyStepsOpen:= Individual^.DailyStepsOpen + 1;
@@ -383,6 +408,7 @@ begin
                      end;
 
                    if not already_terr then
+                    if CanMoveHere(xi, yi) then
                     if ((HabitatMap[xi, yi] = 2) and (ReproductionQuality(xi, yi))) then
                     begin
                     c_available := False;
@@ -518,53 +544,26 @@ Function inPark(x,y:integer):boolean;
 begin
   Result:=False;   // false = not in park, true = in NP
 
-  if (mapname = 'input_data/old_donana.txt') then
-  begin
-  if ((x >= 122) and (x <= 135)) then
-  if((y >= 85) and (y <= 115)) then Result:=True;
-
-  if ((x >= 140) and (x <= 147)) then
-  if ((y >=140) and (y <= 146)) then Result:= True;
-
-  if ((x >= 135) and (x <= 141)) then
-  if ((y >= 75) and (y <= 82)) then Result:= True;
-  end
-else
+  if (ParkMap[x,y] = 1) then Result := True
+{else
    ShowErrorAndExit('No in-park areas defined for this map file');
+ }
+end;
 
+function whichPop(x,y:integer):integer;
+begin
+  Result := PopsMap[x,y];
 end;
 
 Function ReproductionQuality(x,y:integer):boolean;
 
 begin
   Result:=False;
+  if (BreedingHabitatMap[x,y] = 1) then Result := True
 
-  if (mapname = 'input_data/old_donana.txt') then
-  begin
-  if ((x >= 122) and (x <= 135)) then
-  if((y >= 85) and (y <= 115)) then Result:=True;
-
-  if ((x >= 140) and (x <= 147)) then
-  if ((y >=140) and (y <= 146)) then Result:= True;
-
-  if ((x >= 135) and (x <= 141)) then
-  if ((y >= 75) and (y <= 82)) then Result:= True;
-
-  if ((x >= 106) and (x <= 114)) then
-  if ((y >=89) and (y <= 96)) then Result:= True;
-
-  if ((x >= 68) and (x <= 72)) then
-  if ((y >= 53) and (y <= 62)) then Result:= True;
-
-  if ((x >= 151) and (x <= 156)) then
-  if ((y >= 67) and (y <= 74)) then Result:=True;
-
-  if ((x >= 138) and (x <= 142)) then
-  if ((y >= 37) and (y <= 41)) then Result:=True;
-
-  end else
+  {else
   ShowErrorAndExit('No reproduction quality areas defined for this map file');
-
+   }
 
 end;
 

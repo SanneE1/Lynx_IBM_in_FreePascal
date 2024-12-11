@@ -8,18 +8,20 @@ uses
   Classes, SysUtils,
   lynx_define_units, general_functions;
 
-procedure ReadMap(mapname: string);
+procedure ReadMap(mapname, mapBHname, mapiPname, mapPops: string);
 procedure ReadParameters(paramname: string);
 procedure UpdateAbundanceMap;
-procedure WriteMapCSV(filename: string; var arrayData: Array3Dbyte; dimx, dimy, dimz: integer);
+procedure WriteMapCSV(filename: string; var arrayData: Array3Dinteger; dimx, dimy, dimz: integer);
 procedure WritePopulationToCSV(population: TList; filename: string; current_sim, year: integer);
 
 implementation
 
-procedure ReadMap(mapname: string);
+procedure ReadMap(mapname, mapBHname, mapiPname, mapPops: string);
 var
-  ix, iy, Value: integer;
+  ix, iy, Value, bhdim_x, bhdim_y: integer;
 begin
+
+  {Read in Habitat map}
   Assign(filename, mapName);
   reset(filename);
   readln(filename, Mapdimx, Mapdimy);
@@ -41,14 +43,92 @@ begin
     end;
     readln(filename);
   end;
-
   Close(filename);
+
+  {Do the same for the Breeding Habitat Map}
+  Assign(filename, mapBHname);
+  reset(filename);
+  readln(filename, bhdim_x, bhdim_y);
+  if (MapdimX <> bhdim_x) or (MapdimY <> bhdim_y) then
+    ShowErrorAndExit('Dimensions of Habitat map and Breeding Habitat map are not the same');
+
+  SetLength(BreedingHabitatMap, Mapdimx + 1, Mapdimy + 1);
+
+  for iy := 1 to Mapdimy do
+  begin
+    begin
+      for ix := 1 to Mapdimx do
+      begin
+        Read(filename, Value);
+        if Value < 0 then BreedingHabitatMap[ix, iy] := 0
+        else
+          BreedingHabitatMap[ix, iy] := Value;
+      end;
+    end;
+    readln(filename);
+  end;
+  Close(filename);
+
+  {Do the same for the inPark Map}
+  bhdim_x := 0;
+  bhdim_y := 0;
+
+  Assign(filename, mapiPname);
+  reset(filename);
+  readln(filename, bhdim_x, bhdim_y);
+  if (MapdimX <> bhdim_x) or (MapdimY <> bhdim_y) then
+    ShowErrorAndExit('Dimensions of Habitat map and Park map are not the same');
+
+  SetLength(ParkMap, Mapdimx + 1, Mapdimy + 1);
+
+  for iy := 1 to Mapdimy do
+  begin
+    begin
+      for ix := 1 to Mapdimx do
+      begin
+        Read(filename, Value);
+        if Value < 0 then ParkMap[ix, iy] := 0
+        else
+          ParkMap[ix, iy] := Value;
+      end;
+    end;
+    readln(filename);
+  end;
+  Close(filename);
+
+  {Do the same for the Population Map}
+  bhdim_x := 0;
+  bhdim_y := 0;
+
+  Assign(filename, mapPops);
+  reset(filename);
+  readln(filename, bhdim_x, bhdim_y);
+  if (MapdimX <> bhdim_x) or (MapdimY <> bhdim_y) then
+    ShowErrorAndExit('Dimensions of Habitat map and Population map are not the same');
+
+  SetLength(PopsMap, Mapdimx + 1, Mapdimy + 1);
+
+  for iy := 1 to Mapdimy do
+  begin
+    begin
+      for ix := 1 to Mapdimx do
+      begin
+        Read(filename, Value);
+        if Value < 0 then PopsMap[ix, iy] := 0
+        else
+          PopsMap[ix, iy] := Value;
+      end;
+    end;
+    readln(filename);
+  end;
+  Close(filename);
+
 end;
 
 
 procedure ReadParameters(paramname: string);
 var
-  par_seq: array[1..32] of string;
+  par_seq: array[1..37] of string;
   val_seq: array of real;
   r, spacePos: integer;
   a, param: string;
@@ -89,7 +169,12 @@ begin
    par_seq[29]:= 'n_ini';
    par_seq[30]:= 'max_years';
    par_seq[31]:= 'n_sim';
-   par_seq[32]:= 'mapname';
+   par_seq[32]:= 'startpoint_X';
+   par_seq[33]:= 'startpoint_Y';
+   par_seq[34]:= 'mapname';
+   par_seq[35]:= 'mapBHname';
+   par_seq[36]:= 'mapiPname';
+   par_seq[37]:= 'mapPops';
 
 
    SetLength(val_seq, High(par_seq)+1);
@@ -110,6 +195,12 @@ begin
 
         if (param = 'mapname') then
           mapname := Trim(Copy(a, spacePos + 1, Length(a)))
+          else if (param = 'mapBHname') then
+          mapBHname := Trim(Copy(a, spacePos + 1, Length(a)))
+          else if (param = 'mapiPname') then
+          mapiPname := Trim(Copy(a, spacePos + 1, Length(a)))
+          else if (param = 'mapPops') then
+          mapPops := Trim(Copy(a, spacePos + 1, Length(a)))
           else
         Val(Trim(Copy(a, spacePos + 1, Length(a))), value);     // Convert value part to real - any integers are converted below to correct type
 
@@ -153,7 +244,8 @@ begin
    n_ini              := Round(val_seq[29]);
    max_years          := Round(val_seq[30]);
    n_sim              := Round(val_seq[31]);
-
+   startpoint_X       := Round(val_seq[32]);
+   startpoint_Y       := Round(val_seq[33]);
 
 end;
 
@@ -206,7 +298,7 @@ begin
 
 end;
 
-procedure WriteMapCSV(filename: string; var arrayData: Array3Dbyte; dimx, dimy, dimz: integer);
+procedure WriteMapCSV(filename: string; var arrayData: Array3Dinteger; dimx, dimy, dimz: integer);
 var
   ix, iy: integer;
   outfile: Text;
