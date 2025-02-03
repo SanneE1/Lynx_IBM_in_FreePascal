@@ -32,8 +32,36 @@ begin
         Individual^.sex := 'm';
       Individual^.status := 1;
 
-      Individual^.Coor_X := 130;
-      Individual^.Coor_Y := 100;
+      if a < 75 then
+      begin
+        Individual^.Coor_X := 546;   // Donana for Peninsula
+        Individual^.Coor_Y := 1572;
+      end
+      else if a < 103 then
+      begin
+        Individual^.Coor_X := 687;   // Matachel for Peninsula
+        Individual^.Coor_Y := 1266;
+      end
+      else if a < 126 then
+      begin
+        Individual^.Coor_X := 833;  // Montes de Toledo for Peninsula
+        Individual^.Coor_Y := 1001;
+      end
+      else if a < 465 then
+      begin
+        Individual^.Coor_X := 726;   // Sierra Morena for Peninsula
+        Individual^.Coor_Y := 1463;
+      end
+      else
+      begin
+        Individual^.Coor_X := 336;   // Vale do Guadiana
+        Individual^.Coor_Y := 1400;
+      end;
+
+      Individual^.Natal_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
+      Individual^.Current_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
+      Individual^.Previous_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
+
 
       setLength(Individual^.TerritoryX, Tsize);
       setLength(Individual^.TerritoryY, Tsize);
@@ -95,39 +123,24 @@ begin
     for a := 1 to max_years do
     begin
       day := 0;  // Start the year
-      while day < 366 do //Let's pretend there's no such thing as leap years
+      while (day < 366) and (populationsize > 0) do //Let's pretend there's no such thing as leap years
       begin
         day := day + 1;
+        populationsize := population.Count;
 
         if day = 90 then
           if populationsize > 2 then
-            Reproduction;               // Reproduction happens at the end of March
-
-        populationsize := population.Count;
+            reproduction;               // Reproduction happens at the end of March
 
         Dispersal(day);                 // Dispersal of surviving individuals (also includes dispersion start for subadults)
-        Survival;                       // Determine which individuals survive this day
 
-        populationsize := population.Count;
-
-        UpdateAbundanceMap;
+        survival;                       // Determine which individuals survive this day
       end;
-
-      WritePopulationToCSV(population, 'output_data/Yearly_census_ind.csv', current_sim, a);
-
-      if (a mod 5 = 0) then
-        begin
-        WriteMapCSV('output_data/FemalesMap_status_' + IntToStr(current_sim) + '_' + IntToStr(a) + '.csv', Femalesmap, MapdimX, MapdimY, 0);
-        WriteMapCSV('output_data/FemalesMap_age_' + IntToStr(current_sim) + '_' + IntToStr(a) + '.csv', Femalesmap, MapdimX, MapdimY, 1);
-        WriteMapCSV('output_data/MalesMap_status_' + IntToStr(current_sim) + '_' + IntToStr(a) + '.csv', Malesmap, MapdimX, MapdimY, 0);
-        WriteMapCSV('output_data/MalesMap_age_' +  IntToStr(current_sim) + '_' + IntToStr(a) + '.csv', Malesmap, MapdimX, MapdimY, 1);
-        end;
-
 
       populationsize := population.Count;
       if populationsize > 0 then
       begin
-        for b := 0 to populationsize - 1 do
+      for b := 0 to populationsize - 1 do
         begin
           Individual := Items[b];
           Individual^.Age := Individual^.Age + 1;
