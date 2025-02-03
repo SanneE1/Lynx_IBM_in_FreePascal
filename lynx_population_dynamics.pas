@@ -103,16 +103,42 @@ begin
           begin
           Tcheck := 0;
           for xy := 0 to Tsize - 1 do
+          if ((Individual^.TerritoryX[xy] > 0) and (Individual^.TerritoryY[xy] > 0)) then Tcheck := Tcheck + 1;
+
+          if Tcheck = Tsize then
           begin
-            if ((Individual^.TerritoryX[xy] > 0) and (Individual^.TerritoryY[xy] > 0)) then Tcheck := Tcheck + 1;
+          Individual^.Status := 3;
+
+          new(MigrationEvent);
+
+          MigrationEvent^.simulation := current_sim;
+          MigrationEvent^.year := current_year;
+          MigrationEvent^.sex := Individual^.Sex;
+          MigrationEvent^.age := Individual^.Age;
+          MigrationEvent^.natal_pop := Individual^.Natal_pop;
+          MigrationEvent^.old_pop := Individual^.Previous_pop;
+          MigrationEvent^.new_pop := Individual^.Current_pop;
+
+           SettledList.Add(MigrationEvent);
           end;
-          if Tcheck = Tsize then Individual^.Status := 3;
           end;
+
+          each_pop_sizes[Individual^.current_pop, current_year] := each_pop_sizes[Individual^.current_pop, current_year] + 1;
+
         end;
       end;
 
-      pop_size[a] := populationsize;
-      sum_pop_size[a] := sum_pop_size[a] + populationsize;
+      UpdateAbundanceMap;
+
+      if (current_year = max_years) then
+    begin
+    WriteMapCSV('output_data/FemalesMap_status_yr_' + IntToStr(current_year) + '.csv', Femalesmap, MapdimX, MapdimY, 0);
+    WriteMapCSV('output_data/FemalesMap_age_yr_' + IntToStr(current_year) + '.csv', Femalesmap, MapdimX, MapdimY, 1);
+    WriteMapCSV('output_data/MalesMap_status_yr_' + IntToStr(current_year) + '.csv', Malesmap, MapdimX, MapdimY, 0);
+    WriteMapCSV('output_data/MalesMap_age_yr_' + IntToStr(current_year) + '.csv', Malesmap, MapdimX, MapdimY, 1);
+    end;
+
+    WritePopulationToCSV(population, 'output_data/Population_data.csv', current_sim, current_year);
 
     end;
   end;
@@ -120,24 +146,41 @@ end;
 
 procedure RunPopSim;
 var
-  a,b: integer;
+  a,b, i: integer;
 begin
 
   randomize; {initialize the pseudorandom number generator}
   ReadParameters(paramname);
-  readmap(mapname);
+
+  readmap(mapname, mapBHname, mapiPname, mapPops);
 
   SetLength(MalesMap, Mapdimx + 1, Mapdimy + 1, 2);
   SetLength(FemalesMap, Mapdimx + 1, Mapdimy + 1, 2);
 
   AssignFile(to_file_out, file_name);
   rewrite(to_file_out); {create txt file}
+  writeln(to_file_out, 'current_sim,year,pop1, pop2, pop3, pop4, pop5');
+
+  AssignFile(mig_file_out, 'output_data/migration.csv');
+  rewrite(mig_file_out); {create txt file}
+  writeln(mig_file_out, 'EventID,Simulation,Year,Sex,Age,Natal_pop,Old_pop,New_pop');
+
+  AssignFile(migS_file_out, 'output_data/migration_settled.csv');
+  rewrite(migS_file_out); {create txt file}
+  writeln(migS_file_out, 'EventID,Simulation,Year,Sex,Age,Natal_pop,Old_pop,New_pop');
 
   for a := 1 to max_years do sum_pop_size[a] := 0;
   for a := 1 to max_years do n_sim_no_ext[a] := 0;
 
+  SetLength(each_pop_sizes, 6);
+  for i := 0 to High(each_pop_sizes) do
+    SetLength(each_pop_sizes[i], max_years+1);
+
   // Calculate array of step probabilities (here once) to be used in dispersal procedure later
   Step_probabilities;
+
+  MigrationList := TList.Create;
+  SettledList := Tlist.Create;
 
   for current_sim := 1 to n_sim do
   begin
@@ -150,14 +193,52 @@ begin
     {save the results to a text file}
     append(to_file_out);
     for b := 1 to max_years do
-      writeln(to_file_out, current_sim, ' ', b, ' ', pop_size[b]);
+    begin
+      writeln(to_file_out, current_sim, ',', b, ',',
+      each_pop_sizes[0,b], ',',
+      each_pop_sizes[1,b], ',',
+      each_pop_sizes[2,b], ',',
+      each_pop_sizes[3,b], ',',
+      each_pop_sizes[4,b], ',',
+      each_pop_sizes[5,b], ',');
+    end;
 
-    {we save all simulations}
-    if current_sim = n_sim then
-      for b := 1 to max_years do
-        writeln(to_file_out, 'avg', ' ', b, ' ', sum_pop_size[b] / current_sim);
-    {and the average of all simulations}
     CloseFile(to_file_out);
+
+    {Write Migration list to file}
+    append(mig_file_out);
+    with MigrationList do
+    for b := 0 to MigrationList.Count - 1 do
+    begin
+      MigrationEvent := items[b];
+
+      writeln(mig_file_out, b , ',', MigrationEvent^.simulation, ',',
+      MigrationEvent^.year, ',',
+      MigrationEvent^.sex, ',',
+      MigrationEvent^.age, ',',
+      MigrationEvent^.natal_pop, ',',
+      MigrationEvent^.old_pop, ',',
+      MigrationEvent^.new_pop);
+    end;
+    CloseFile(mig_file_out);
+
+
+    {Write Migration list to file}
+    append(migS_file_out);
+    with SettledList do
+    for b := 0 to SettledList.Count - 1 do
+    begin
+      MigrationEvent := items[b];
+
+      writeln(migS_file_out, b , ',', MigrationEvent^.simulation, ',',
+      MigrationEvent^.year, ',',
+      MigrationEvent^.sex, ',',
+      MigrationEvent^.age, ',',
+      MigrationEvent^.natal_pop, ',',
+      MigrationEvent^.old_pop, ',',
+      MigrationEvent^.new_pop);
+    end;
+    CloseFile(migS_file_out);
 
     WriteLn('Done with simulation ', current_sim);
 end;

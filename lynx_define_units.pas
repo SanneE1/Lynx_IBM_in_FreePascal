@@ -63,6 +63,7 @@ var               {here you declare global variables}
   Individual: PAgent;
 
   MigrationList: TList;
+  SettledList: TList;
   MigrationEvent: PMigration;
 
   n_ini: integer;
@@ -90,7 +91,7 @@ var               {here you declare global variables}
   sum_pop_size: array[1..100] of integer;
   each_pop_sizes: array of array of integer;
   n_sim_no_ext: array[1..100] of integer;
-  to_file_out, mig_file_out: TextFile;
+  to_file_out, mig_file_out, migS_file_out: TextFile;
   filename: Text;
   HabitatMap: Array2Dinteger;
   BreedingHabitatMap: Array2Dinteger;
@@ -98,6 +99,7 @@ var               {here you declare global variables}
   PopsMap: Array2Dinteger;
   MalesMap: Array3Dinteger;
   FemalesMap: Array3Dinteger;
+  ConnectionMap: Array3Dinteger;
   Mapdimx, Mapdimy: integer;
   mapname, mapBHname, mapiPname, mapPops, paramname: string;
   dx: array[0..8] of integer = (0, 0, 1, 1, 1, 0, -1, -1, -1);
