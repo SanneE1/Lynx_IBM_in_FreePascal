@@ -128,7 +128,7 @@ end;
 
 procedure ReadParameters(paramname: string);
 var
-  par_seq: array[1..37] of string;
+  par_seq: array[1..36] of string;
   val_seq: array of real;
   r, spacePos: integer;
   a, param: string;
@@ -153,7 +153,7 @@ begin
    par_seq[13]:= 'surv_resident_iNP';
    par_seq[14]:= 'surv_resident_oNP';
    par_seq[15]:= 'surv_disperse_iNP';
-   par_seq[16]:= 'surv_resident_oNP';
+   par_seq[16]:= 'surv_disperse_oNP';
    par_seq[17]:= 'surv_disp_rho';
    par_seq[18]:= 'surv_old_iNP';
    par_seq[19]:= 'surv_old_oNP';
@@ -169,12 +169,11 @@ begin
    par_seq[29]:= 'n_ini';
    par_seq[30]:= 'max_years';
    par_seq[31]:= 'n_sim';
-   par_seq[32]:= 'startpoint_X';
-   par_seq[33]:= 'startpoint_Y';
-   par_seq[34]:= 'mapname';
-   par_seq[35]:= 'mapBHname';
-   par_seq[36]:= 'mapiPname';
-   par_seq[37]:= 'mapPops';
+   par_seq[32]:= 'n_cycles';
+   par_seq[33]:= 'mapname';
+   par_seq[34]:= 'mapBHname';
+   par_seq[35]:= 'mapiPname';
+   par_seq[36]:= 'mapPops';
 
 
    SetLength(val_seq, High(par_seq)+1);
@@ -244,13 +243,11 @@ begin
    n_ini              := Round(val_seq[29]);
    max_years          := Round(val_seq[30]);
    n_sim              := Round(val_seq[31]);
-   startpoint_X       := Round(val_seq[32]);
-   startpoint_Y       := Round(val_seq[33]);
+   n_cycles           := Round(val_seq[32]);
 
 end;
 
 procedure UpdateAbundanceMap;
-// Update the availability of males + local abundances. NOTE: DOESN'T CHECK IF MALE IS OF REPRODUCTIVE AGE
 var
   a, b, c, x, y: integer;
   s: string;
@@ -332,13 +329,13 @@ begin
   AssignFile(csvFile, filename);
 
   if (current_sim = 1) and (year = 1) then
-    begin
+  begin
     Rewrite(csvFile);
     // Write header
-    WriteLn(csvFile, 'Simulation,Year,Sex,Age,Status,Coor_X,Coor_Y,Territory_XY');
-    end
-  else append(csvFile);
+    WriteLn(csvFile, 'Simulation,Year,Sex,Age,Status,Coor_X,Coor_Y,Natal_pop,Previous_pop,Current_pop,Territory_XY');
+  end;
 
+  append(csvFile);
   // Write data for each individual
   for i := 0 to population.Count - 1 do
   begin
@@ -351,6 +348,9 @@ begin
     Write(csvFile, individual^.Status, ',');
     Write(csvFile, individual^.Coor_X, ',');
     Write(csvFile, individual^.Coor_Y, ',');
+    Write(csvFile, individual^.Natal_pop, ',');
+    Write(csvFile, individual^.Previous_pop, ',');
+    Write(csvFile, individual^.Current_pop, ',');
 
     // Write territory coordinates
     for j := 0 to length(individual^.TerritoryX) - 1 do
