@@ -567,11 +567,7 @@ Function ReproductionQuality(x,y:integer):boolean;
 
 begin
   Result:=False;
-  if (BreedingHabitatMap[x,y] = 1) then Result := True
-
-  {else
-  ShowErrorAndExit('No reproduction quality areas defined for this map file');
-   }
+  if (BreedingHabitatMap[x,y] = 1) and (whichPop(x,y) > 0) then Result := True
 
 end;
 
