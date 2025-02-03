@@ -16,7 +16,7 @@ implementation
 
 procedure Startpopulation;
 var
-  a: integer;
+  a, b, TCheck, xy: integer;
 begin
   Population := TList.Create;
   with population do
@@ -32,8 +32,36 @@ begin
         Individual^.sex := 'm';
       Individual^.status := 1;
 
-      Individual^.Coor_X := 130;
-      Individual^.Coor_Y := 100;
+      if a < 75 then
+      begin
+        Individual^.Coor_X := 546;   // Donana for Peninsula
+        Individual^.Coor_Y := 1572;
+      end
+      else if a < 103 then
+      begin
+        Individual^.Coor_X := 687;   // Matachel for Peninsula
+        Individual^.Coor_Y := 1266;
+      end
+      else if a < 126 then
+      begin
+        Individual^.Coor_X := 833;  // Montes de Toledo for Peninsula
+        Individual^.Coor_Y := 1001;
+      end
+      else if a < 465 then
+      begin
+        Individual^.Coor_X := 726;   // Sierra Morena for Peninsula
+        Individual^.Coor_Y := 1463;
+      end
+      else
+      begin
+        Individual^.Coor_X := 336;   // Vale do Guadiana
+        Individual^.Coor_Y := 1400;
+      end;
+
+      Individual^.Natal_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
+      Individual^.Current_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
+      Individual^.Previous_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
+
 
       setLength(Individual^.TerritoryX, Tsize);
       setLength(Individual^.TerritoryY, Tsize);
@@ -51,7 +79,39 @@ begin
       Population.add(Individual);
 
     end;
+
+    {Go through some dispersal cycles, to get individuals settled}
+    with population do
+    for a := 0 to n_cycles do
+    begin
+      writeLn('current dispersal cycle ', a);
+
+      dispersal(a);
+
+      for b := 0 to population.count - 1 do
+      begin
+      Individual := Items[b];
+
+      if (Individual^.Status = 2) then
+      if (Individual^.Age < max_rep_age) then
+      begin
+          Tcheck := 0;
+          for xy := 0 to Tsize - 1 do
+          if ((Individual^.TerritoryX[xy] > 0) and (Individual^.TerritoryY[xy] > 0)) then
+          Tcheck := Tcheck + 1;
+
+          if Tcheck = Tsize then
+          Individual^.Status := 3;
+
+      end;
+
+      UpdateAbundanceMap;
+
+    end;
+
   end;
+end;
+
 end;
 
 procedure Pop_dynamics;
@@ -63,39 +123,24 @@ begin
     for a := 1 to max_years do
     begin
       day := 0;  // Start the year
-      while day < 366 do //Let's pretend there's no such thing as leap years
+      while (day < 366) and (populationsize > 0) do //Let's pretend there's no such thing as leap years
       begin
         day := day + 1;
+        populationsize := population.Count;
 
         if day = 90 then
           if populationsize > 2 then
-            Reproduction;               // Reproduction happens at the end of March
-
-        populationsize := population.Count;
+            reproduction;               // Reproduction happens at the end of March
 
         Dispersal(day);                 // Dispersal of surviving individuals (also includes dispersion start for subadults)
-        Survival;                       // Determine which individuals survive this day
 
-        populationsize := population.Count;
-
-        UpdateAbundanceMap;
+        survival;                       // Determine which individuals survive this day
       end;
-
-      WritePopulationToCSV(population, 'output_data/Yearly_census_ind.csv', current_sim, a);
-
-      if (a mod 5 = 0) then
-        begin
-        WriteMapCSV('output_data/FemalesMap_status_' + IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Femalesmap, MapdimX, MapdimY, 0);
-        WriteMapCSV('output_data/FemalesMap_age_' + IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Femalesmap, MapdimX, MapdimY, 1);
-        WriteMapCSV('output_data/MalesMap_status_' + IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Malesmap, MapdimX, MapdimY, 0);
-        WriteMapCSV('output_data/MalesMap_age_' +  IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Malesmap, MapdimX, MapdimY, 1);
-        end;
-
 
       populationsize := population.Count;
       if populationsize > 0 then
       begin
-        for b := 0 to populationsize - 1 do
+      for b := 0 to populationsize - 1 do
         begin
           Individual := Items[b];
           Individual^.Age := Individual^.Age + 1;
@@ -103,16 +148,42 @@ begin
           begin
           Tcheck := 0;
           for xy := 0 to Tsize - 1 do
+          if ((Individual^.TerritoryX[xy] > 0) and (Individual^.TerritoryY[xy] > 0)) then Tcheck := Tcheck + 1;
+
+          if Tcheck = Tsize then
           begin
-            if ((Individual^.TerritoryX[xy] > 0) and (Individual^.TerritoryY[xy] > 0)) then Tcheck := Tcheck + 1;
+          Individual^.Status := 3;
+
+          new(MigrationEvent);
+
+          MigrationEvent^.simulation := current_sim;
+          MigrationEvent^.year := current_year;
+          MigrationEvent^.sex := Individual^.Sex;
+          MigrationEvent^.age := Individual^.Age;
+          MigrationEvent^.natal_pop := Individual^.Natal_pop;
+          MigrationEvent^.old_pop := Individual^.Previous_pop;
+          MigrationEvent^.new_pop := Individual^.Current_pop;
+
+           SettledList.Add(MigrationEvent);
           end;
-          if Tcheck = Tsize then Individual^.Status := 3;
           end;
+
+          each_pop_sizes[Individual^.current_pop, current_year] := each_pop_sizes[Individual^.current_pop, current_year] + 1;
+
         end;
       end;
 
-      pop_size[a] := populationsize;
-      sum_pop_size[a] := sum_pop_size[a] + populationsize;
+      UpdateAbundanceMap;
+
+      if (current_year = max_years) then
+    begin
+    WriteMapCSV('output_data/FemalesMap_status_yr_' + IntToStr(current_year) + '.csv', Femalesmap, MapdimX, MapdimY, 0);
+    WriteMapCSV('output_data/FemalesMap_age_yr_' + IntToStr(current_year) + '.csv', Femalesmap, MapdimX, MapdimY, 1);
+    WriteMapCSV('output_data/MalesMap_status_yr_' + IntToStr(current_year) + '.csv', Malesmap, MapdimX, MapdimY, 0);
+    WriteMapCSV('output_data/MalesMap_age_yr_' + IntToStr(current_year) + '.csv', Malesmap, MapdimX, MapdimY, 1);
+    end;
+
+    WritePopulationToCSV(population, 'output_data/Population_data.csv', current_sim, current_year);
 
     end;
   end;
@@ -120,24 +191,41 @@ end;
 
 procedure RunPopSim;
 var
-  a,b: integer;
+  a,b, i: integer;
 begin
 
   randomize; {initialize the pseudorandom number generator}
   ReadParameters(paramname);
-  readmap(mapname);
+
+  readmap(mapname, mapBHname, mapiPname, mapPops);
 
   SetLength(MalesMap, Mapdimx + 1, Mapdimy + 1, 2);
   SetLength(FemalesMap, Mapdimx + 1, Mapdimy + 1, 2);
 
   AssignFile(to_file_out, file_name);
   rewrite(to_file_out); {create txt file}
+  writeln(to_file_out, 'current_sim,year,pop1, pop2, pop3, pop4, pop5');
+
+  AssignFile(mig_file_out, 'output_data/migration.csv');
+  rewrite(mig_file_out); {create txt file}
+  writeln(mig_file_out, 'EventID,Simulation,Year,Sex,Age,Natal_pop,Old_pop,New_pop');
+
+  AssignFile(migS_file_out, 'output_data/migration_settled.csv');
+  rewrite(migS_file_out); {create txt file}
+  writeln(migS_file_out, 'EventID,Simulation,Year,Sex,Age,Natal_pop,Old_pop,New_pop');
 
   for a := 1 to max_years do sum_pop_size[a] := 0;
   for a := 1 to max_years do n_sim_no_ext[a] := 0;
 
+  SetLength(each_pop_sizes, 6);
+  for i := 0 to High(each_pop_sizes) do
+    SetLength(each_pop_sizes[i], max_years+1);
+
   // Calculate array of step probabilities (here once) to be used in dispersal procedure later
   Step_probabilities;
+
+  MigrationList := TList.Create;
+  SettledList := Tlist.Create;
 
   for current_sim := 1 to n_sim do
   begin
@@ -150,14 +238,52 @@ begin
     {save the results to a text file}
     append(to_file_out);
     for b := 1 to max_years do
-      writeln(to_file_out, current_sim, ' ', b, ' ', pop_size[b]);
+    begin
+      writeln(to_file_out, current_sim, ',', b, ',',
+      each_pop_sizes[0,b], ',',
+      each_pop_sizes[1,b], ',',
+      each_pop_sizes[2,b], ',',
+      each_pop_sizes[3,b], ',',
+      each_pop_sizes[4,b], ',',
+      each_pop_sizes[5,b], ',');
+    end;
 
-    {we save all simulations}
-    if current_sim = n_sim then
-      for b := 1 to max_years do
-        writeln(to_file_out, 'avg', ' ', b, ' ', sum_pop_size[b] / current_sim);
-    {and the average of all simulations}
     CloseFile(to_file_out);
+
+    {Write Migration list to file}
+    append(mig_file_out);
+    with MigrationList do
+    for b := 0 to MigrationList.Count - 1 do
+    begin
+      MigrationEvent := items[b];
+
+      writeln(mig_file_out, b , ',', MigrationEvent^.simulation, ',',
+      MigrationEvent^.year, ',',
+      MigrationEvent^.sex, ',',
+      MigrationEvent^.age, ',',
+      MigrationEvent^.natal_pop, ',',
+      MigrationEvent^.old_pop, ',',
+      MigrationEvent^.new_pop);
+    end;
+    CloseFile(mig_file_out);
+
+
+    {Write Migration list to file}
+    append(migS_file_out);
+    with SettledList do
+    for b := 0 to SettledList.Count - 1 do
+    begin
+      MigrationEvent := items[b];
+
+      writeln(migS_file_out, b , ',', MigrationEvent^.simulation, ',',
+      MigrationEvent^.year, ',',
+      MigrationEvent^.sex, ',',
+      MigrationEvent^.age, ',',
+      MigrationEvent^.natal_pop, ',',
+      MigrationEvent^.old_pop, ',',
+      MigrationEvent^.new_pop);
+    end;
+    CloseFile(migS_file_out);
 
     WriteLn('Done with simulation ', current_sim);
 end;

@@ -63,6 +63,7 @@ var               {here you declare global variables}
   Individual: PAgent;
 
   MigrationList: TList;
+  SettledList: TList;
   MigrationEvent: PMigration;
 
   n_ini: integer;
@@ -88,9 +89,9 @@ var               {here you declare global variables}
   step_probs: array of double;
   pop_size: array[1..100] of integer;
   sum_pop_size: array[1..100] of integer;
-  each_pop_sizes: array[0..5] of array of integer;
+  each_pop_sizes: array of array of integer;
   n_sim_no_ext: array[1..100] of integer;
-  to_file_out, mig_file_out: TextFile;
+  to_file_out, mig_file_out, migS_file_out: TextFile;
   filename: Text;
   HabitatMap: Array2Dinteger;
   BreedingHabitatMap: Array2Dinteger;
@@ -107,6 +108,8 @@ var               {here you declare global variables}
   homeX, homeY, startpoint_X, startpoint_Y, steps, s, new_dir, mem: integer;
   tohome: boolean;
   current_year: integer;
+  n_cycles: integer;
+  pop_status_array: Array2Dinteger;
 
   {Vital rate variables}
   min_rep_age, min_rep_age_m, max_rep_age, max_age: integer;

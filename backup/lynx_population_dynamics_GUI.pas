@@ -19,6 +19,7 @@ Tspatial_Form = class(TForm)
     Chart1: TChart;
     Chart1LineSeries1: TLineSeries;
     Chart1LineSeries2: TLineSeries;
+    CheckBox1: TCheckBox;
     Edit1: TEdit;
     Edit10: TEdit;
     Edit2: TEdit;
@@ -58,7 +59,7 @@ implementation
 
 procedure Startpopulation;
 var
-  a: integer;
+  a,b, Tcheck, xy: integer;
 begin
   Population := TList.Create;
   with population do
@@ -72,10 +73,33 @@ begin
       if random < 0.5 then Individual^.sex := 'f'
       else
         Individual^.sex := 'm';
-      Individual^.status := 1;
+        Individual^.status := 1;
 
-      Individual^.Coor_X := 550;   // For old_donana 130;  // For Peninsula = 550
-      Individual^.Coor_Y := 1550;  // For old_donana 100;  // For Peninsula = 1550
+      if a < 75 then
+      begin
+        Individual^.Coor_X := 546;   // Donana for Peninsula
+        Individual^.Coor_Y := 1568;
+      end
+      else if a < 103 then
+      begin
+        Individual^.Coor_X := 699;   // Matachel for Peninsula
+        Individual^.Coor_Y := 1272;
+      end
+      else if a < 126 then
+      begin
+        Individual^.Coor_X := 1008;  // Montes de Toledo for Peninsula
+        Individual^.Coor_Y := 1057;
+      end
+      else if a < 465 then
+      begin
+        Individual^.Coor_X := 1144;   // Sierra Morena for Peninsula
+        Individual^.Coor_Y := 1369;
+      end
+      else
+      begin
+        Individual^.Coor_X := 364;   // Vale do Guadiana
+        Individual^.Coor_Y := 1394;
+      end;
 
       Individual^.Natal_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
       Individual^.Current_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
@@ -98,6 +122,36 @@ begin
       Population.add(Individual);
 
     end;
+
+    {Go through some dispersal cycles, to get individuals settled}
+    with population do
+    for a := 1 to n_cycles do
+    begin
+
+      dispersal(a);
+
+      for b := 0 to population.count - 1 do
+      begin
+      Individual := Items[b];
+
+      if (Individual^.Status = 2) then
+      if (Individual^.Age < max_rep_age) then
+      begin
+          Tcheck := 0;
+          for xy := 0 to Tsize - 1 do
+          if ((Individual^.TerritoryX[xy] > 0) and (Individual^.TerritoryY[xy] > 0)) then
+          Tcheck := Tcheck + 1;
+
+          if Tcheck = Tsize then
+          Individual^.Status := 3;
+
+      end;
+
+      UpdateAbundanceMap;
+
+    end;
+
+  end;
   end;
 end;
 
@@ -116,8 +170,6 @@ begin
         day := day + 1;
         populationsize := population.Count;
 
-        //UpdateAbundanceMap;
-
         if day = 90 then
           if populationsize > 2 then
             reproduction;               // Reproduction happens at the end of March
@@ -128,6 +180,7 @@ begin
       end;
 
       populationsize := population.Count;
+
       if populationsize > 0 then
       begin
       for b := 0 to populationsize - 1 do
@@ -140,12 +193,38 @@ begin
           for xy := 0 to Tsize - 1 do
           if ((Individual^.TerritoryX[xy] > 0) and (Individual^.TerritoryY[xy] > 0)) then Tcheck := Tcheck + 1;
 
-          if Tcheck = Tsize then Individual^.Status := 3;
+          if Tcheck = Tsize then
+          begin
+
+          Individual^.Status := 3;
+
+          if (Individual^.natal_pop <> Individual^.Current_pop) then
+          begin
+          new(MigrationEvent);
+          MigrationEvent^.simulation := current_sim;
+          MigrationEvent^.year := current_year;
+          MigrationEvent^.sex := Individual^.Sex;
+          MigrationEvent^.age := Individual^.Age;
+          MigrationEvent^.natal_pop := Individual^.Natal_pop;
+          MigrationEvent^.old_pop := Individual^.Previous_pop;
+          MigrationEvent^.new_pop := Individual^.Current_pop;
+          SettledList.Add(MigrationEvent);
           end;
 
-          each_pop_sizes[Individual^.current_pop, current_year] := each_pop_sizes[Individual^.current_pop, current_year] + 1;
-
+          end
+          else
+          begin
+            {Reset individual to disperser and empty territory info}
+            Individual^.Status := 1;
+            for xy := 0 to length(Individual^.TerritoryX) - 1 do
+          begin
+            if (Individual^.TerritoryX[xy] = -1) then Continue;
+            Individual^.TerritoryX[xy] := -1;
+            Individual^.TerritoryY[xy] := -1;
+            end;
+          end;
         end;
+        each_pop_sizes[Individual^.current_pop, current_year] := each_pop_sizes[Individual^.current_pop, current_year] + 1;
       end;
 
       UpdateAbundanceMap;
@@ -163,24 +242,25 @@ begin
       {plot trajectory}
       Chart1LineSeries1.addxy(current_year, populationsize);
 
-    {if (current_year mod 5 = 0) then
+    if (current_year = 1) or (current_year mod 10 = 0) then
     begin
-    WriteMapCSV('output_data/FemalesMap_status_yr_' + IntToStr(current_year) + '.csv', Femalesmap, MapdimX, MapdimY, 0);
-    WriteMapCSV('output_data/FemalesMap_age_yr_' + IntToStr(current_year) + '.csv', Femalesmap, MapdimX, MapdimY, 1);
-    WriteMapCSV('output_data/MalesMap_status_yr_' + IntToStr(current_year) + '.csv', Malesmap, MapdimX, MapdimY, 0);
-    WriteMapCSV('output_data/MalesMap_age_yr_' + IntToStr(current_year) + '.csv', Malesmap, MapdimX, MapdimY, 1);
-    end;
-    }
+    WriteMapCSV('output_data/maps/FemalesMap_status_yr_' + IntToStr(current_year) + '.csv', Femalesmap, MapdimX, MapdimY, 0);
+    //WriteMapCSV('output_data/maps/FemalesMap_age_yr_' + IntToStr(current_year) + '.csv', Femalesmap, MapdimX, MapdimY, 1);
+    WriteMapCSV('output_data/maps/MalesMap_status_yr_' + IntToStr(current_year) + '.csv', Malesmap, MapdimX, MapdimY, 0);
+    //WriteMapCSV('output_data/maps/MalesMap_age_yr_' + IntToStr(current_year) + '.csv', Malesmap, MapdimX, MapdimY, 1);
     end;
 
-    if populationsize = 0 then N_extint := N_extint + 1;
+    WritePopulationToCSV(population, 'output_data/Population_data.csv', current_sim, current_year);
+
+    end;
+    end;
 
    end;
 end;
 
 procedure Tspatial_Form.Run_ButtonClick(Sender: TObject);
 var
-  a, b, i: integer;
+  a, b, c, i: integer;
   t: string;
 begin
   randomize; {initialize the pseudorandom number generator}
@@ -188,19 +268,27 @@ begin
   paramname := Edit3.Text;
   ReadParameters(paramname);
 
-  {These values should overwrite the values in the file with the input from the GUI}
-  val(Edit1.Text, n_ini);  {read parameter values from the form}
+  if CheckBox1.Checked then
+  begin
+  {These values overwrite the values in the file with the input from the GUI}
+  val(Edit1.Text, n_ini);
   val(Edit2.Text, max_years);
-
   mapname := Edit10.Text;
   mapBHname := Edit4.Text;
+  end;
 
   readmap(mapname, mapBHname, mapiPname, mapPops);
 
   SetLength(MalesMap, Mapdimx + 1, Mapdimy + 1, 2);
   SetLength(FemalesMap, Mapdimx + 1, Mapdimy + 1, 2);
 
-  N_extint := 0;
+  SetLength(ConnectionMap, Mapdimx + 1, Mapdimy + 1, 2);
+  for a := 0 to High(ConnectionMap) do
+    for b := 0 to High(ConnectionMap[a]) do
+      for c := 0 to 1 do           // where 0 is female, 1 is male
+    begin
+      ConnectionMap[a, b, c] := 0;      // Empty maps to fill with status and age below
+    end;
 
   AssignFile(to_file_out, file_name);
   rewrite(to_file_out); {create txt file}
@@ -210,6 +298,9 @@ begin
   rewrite(mig_file_out); {create txt file}
   writeln(mig_file_out, 'EventID,Simulation,Year,Sex,Age,Natal_pop,Old_pop,New_pop');
 
+  AssignFile(migS_file_out, 'output_data/migration_settled.csv');
+  rewrite(migS_file_out); {create txt file}
+  writeln(migS_file_out, 'EventID,Simulation,Year,Sex,Age,Natal_pop,Old_pop,New_pop');
 
   for a := 1 to max_years do sum_pop_size[a] := 0;
   for a := 1 to max_years do n_sim_no_ext[a] := 0;
@@ -222,6 +313,7 @@ begin
   Step_probabilities;
 
   MigrationList := TList.Create;
+  SettledList := Tlist.Create;
 
   for current_sim := 1 to n_sim do
   begin
@@ -230,7 +322,6 @@ begin
     Startpopulation; {call the procedure to initialize your population}
     Pop_dynamics_GUI;    {call the procedure to run the population dynamics}
 
-
     {plot population trayectories}
     Chart1LineSeries1.Clear;
     Chart1LineSeries2.Clear;
@@ -238,14 +329,15 @@ begin
     for b := 1 to max_years do Chart1LineSeries1.addxy(b, pop_size[b]);
     application.ProcessMessages;
     if (current_sim > 1) then
-      if (n_sim > 1) and (n_extint <> n_sim) then
+      if (n_sim > 1) then
         //   for b:=1 to max_years do Chart1LineSeries2.addxy(b,sum_pop_size[b]/n_sim_no_ext[b]);  //now we calculate the avg only when the population is not extinct
         for b := 1 to max_years do
           Chart1LineSeries2.addxy(b, sum_pop_size[b] / current_sim);
 
     {save the results to a text file}
     append(to_file_out);
-    for b :=  to max_years do
+    for b := 1 to max_years do
+    begin
       writeln(to_file_out, current_sim, ',', b, ',',
       each_pop_sizes[0,b], ',',
       each_pop_sizes[1,b], ',',
@@ -253,6 +345,7 @@ begin
       each_pop_sizes[3,b], ',',
       each_pop_sizes[4,b], ',',
       each_pop_sizes[5,b], ',');
+    end;
 
     CloseFile(to_file_out);
 
@@ -272,6 +365,29 @@ begin
       MigrationEvent^.new_pop);
     end;
     CloseFile(mig_file_out);
+
+
+    {Write Settled Migrants list to file}
+    append(migS_file_out);
+    with SettledList do
+    for b := 0 to SettledList.Count - 1 do
+    begin
+      MigrationEvent := items[b];
+
+      writeln(migS_file_out, b , ',', MigrationEvent^.simulation, ',',
+      MigrationEvent^.year, ',',
+      MigrationEvent^.sex, ',',
+      MigrationEvent^.age, ',',
+      MigrationEvent^.natal_pop, ',',
+      MigrationEvent^.old_pop, ',',
+      MigrationEvent^.new_pop);
+    end;
+    CloseFile(migS_file_out);
+
+    {Write connection map}
+    WriteMapCSV('output_data/maps/FemalesMap_traveled_' + IntToStr(current_sim) + '.csv', ConnectionMap, MapdimX, MapdimY, 0);
+    WriteMapCSV('output_data/maps/MalesMap_traveled_' + IntToStr(current_sim) + '.csv', ConnectionMap, MapdimX, MapdimY, 1);
+
 
   end;
 

@@ -49,9 +49,6 @@ begin
 
         male_present:= false;
 
-        //Might need this later for density dependence
-        //Localpop:=Abundancemap[Individual^.Coor_X,Individual^.Coor_Y]; // get local population size
-
         {Figure out in if the individual is in a NP}
         if inPark(Individual^.Coor_X, Individual^.Coor_Y) then
           rep_prob := rep_prob_iNP
@@ -68,7 +65,10 @@ begin
                 begin
                   if Individual^.TerritoryX[xy] = -1 then Continue;
                     if Malesmap[Individual^.TerritoryX[xy], Individual^.TerritoryY[xy], 0] >=2 then
+                    begin
                     male_present := true;
+                    Break;
+                    end;
                 end;
 
                 if male_present then
@@ -321,7 +321,13 @@ begin
           Individual^.Coor_Y := TestCoordY;
           if (new_dir <> 0) then Individual^.mov_mem := new_dir;
 
-          if (Individual^.Current_pop <> whichPop(TestCoordX, TestCoordY)) then
+          {Add new location to connection map}
+          if Individual^.Sex = 'f' then ConnectionMap[TextCoordX, TextCoordY, 0] := ConnectionMap[TextCoordX, TextCoordY, 0] + 1
+          else ConnectionMap[TextCoordX, TextCoordY, 1] := ConnectionMap[TextCoordX, TextCoordY, 1] + 1;
+
+
+          if  (Individual^.Current_pop = 0) and (whichPop(TestCoordX, TestCoordY) <> 0) and
+          (Individual^.Previous_pop <> whichPop(TestCoordX, TestCoordY)) then
           begin
            new(MigrationEvent);
 
@@ -330,14 +336,16 @@ begin
            MigrationEvent^.sex := Individual^.Sex;
            MigrationEvent^.age := Individual^.Age;
            MigrationEvent^.natal_pop := Individual^.Natal_pop;
-           MigrationEvent^.old_pop := whichPop(TestCoordX, TestCoordY);
-           MigrationEvent^.new_pop := Individual^.Current_pop;
+           MigrationEvent^.old_pop := Individual^.Previous_pop;
+           MigrationEvent^.new_pop := whichPop(TestCoordX, TestCoordY);
 
-           MigrationList.Add(NewMigration);
+           MigrationList.Add(MigrationEvent);
+          end;
 
+          if (Individual^.Current_pop <> whichPop(TestCoordX, TestCoordY)) then
+          begin
            Individual^.Previous_pop := Individual^.Current_pop;
            Individual^.Current_pop := whichPop(TestCoordX, TestCoordY);
-
           end;
 
 
@@ -559,11 +567,7 @@ Function ReproductionQuality(x,y:integer):boolean;
 
 begin
   Result:=False;
-  if (BreedingHabitatMap[x,y] = 1) then Result := True
-
-  {else
-  ShowErrorAndExit('No reproduction quality areas defined for this map file');
-   }
+  if (BreedingHabitatMap[x,y] = 1) and (whichPop(x,y) > 0) then Result := True
 
 end;
 

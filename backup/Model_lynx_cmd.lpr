@@ -33,7 +33,7 @@ begin
   RunPopSim;
 
   end;
-
+  WriteLn('All simulations finished');
   ReadLn;
 
 end.
