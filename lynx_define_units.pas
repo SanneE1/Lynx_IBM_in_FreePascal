@@ -109,6 +109,8 @@ var               {here you declare global variables}
   homeX, homeY, startpoint_X, startpoint_Y, steps, s, new_dir, mem: integer;
   tohome: boolean;
   current_year: integer;
+  n_cycles: integer;
+  pop_status_array: Array2Dinteger;
 
   {Vital rate variables}
   min_rep_age, min_rep_age_m, max_rep_age, max_age: integer;

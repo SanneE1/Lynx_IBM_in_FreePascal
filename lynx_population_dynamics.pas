@@ -16,7 +16,7 @@ implementation
 
 procedure Startpopulation;
 var
-  a: integer;
+  a, b, TCheck, xy: integer;
 begin
   Population := TList.Create;
   with population do
@@ -51,7 +51,39 @@ begin
       Population.add(Individual);
 
     end;
+
+    {Go through some dispersal cycles, to get individuals settled}
+    with population do
+    for a := 1 to n_cycles do
+    begin
+      writeLn('Dispersal cycle ', a);
+
+      dispersal(a);
+
+      for b := 0 to population.count - 1 do
+      begin
+      Individual := Items[b];
+
+      if (Individual^.Status = 2) then
+      if (Individual^.Age < max_rep_age) then
+      begin
+          Tcheck := 0;
+          for xy := 0 to Tsize - 1 do
+          if ((Individual^.TerritoryX[xy] > 0) and (Individual^.TerritoryY[xy] > 0)) then
+          Tcheck := Tcheck + 1;
+
+          if Tcheck = Tsize then
+          Individual^.Status := 3;
+
+      end;
+
+      UpdateAbundanceMap;
+
+    end;
+
   end;
+end;
+
 end;
 
 procedure Pop_dynamics;
