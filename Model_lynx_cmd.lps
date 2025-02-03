@@ -8,8 +8,9 @@
       <Unit>
         <Filename Value="Model_lynx_cmd.lpr"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <TopLine Value="13"/>
-        <CursorPos X="36" Y="36"/>
+        <CursorPos X="31" Y="18"/>
         <UsageCount Value="91"/>
         <Loaded Value="True"/>
       </Unit>
@@ -49,7 +50,6 @@
       </Unit>
       <Unit>
         <Filename Value="lynx_input_output_functions.pas"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <CursorPos X="80" Y="215"/>
         <UsageCount Value="44"/>
@@ -59,7 +59,6 @@
         <Filename Value="lynx_vital_rates.pas"/>
         <EditorIndex Value="3"/>
         <CursorPos X="24" Y="387"/>
-        <FoldState Value=" T3W0{1115 PlAsW0g"/>
         <UsageCount Value="33"/>
         <Loaded Value="True"/>
       </Unit>
