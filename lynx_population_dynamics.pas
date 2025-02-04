@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils,
-  lynx_define_units, lynx_vital_rates, general_functions, lynx_input_output_functions;
+  lynx_define_units, lynx_vital_rates, general_functions, lynx_input_output_functions, lynx_dispersal_assist_functions;
 
 procedure Startpopulation;
 procedure Pop_dynamics;

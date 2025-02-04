@@ -33,6 +33,10 @@
         <Filename Value="lynx_population_dynamics.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="lynx_dispersal_assist_functions.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
