@@ -201,6 +201,7 @@ begin
 
   SetLength(MalesMap, Mapdimx + 1, Mapdimy + 1, 2);
   SetLength(FemalesMap, Mapdimx + 1, Mapdimy + 1, 2);
+  SetLength(ConnectionMap, Mapdimx + 1, Mapdimy + 1, 2);
 
   AssignFile(to_file_out, file_name);
   rewrite(to_file_out); {create txt file}
