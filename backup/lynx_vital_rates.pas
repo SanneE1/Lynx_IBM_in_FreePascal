@@ -17,7 +17,6 @@ function Nsteps(step_probs: array of double): integer;
 procedure Step_probabilities;
 
 function CanMoveHere(x,y: integer): boolean;
-Function inPark(x,y:integer):boolean;
 function whichPop(x,y:integer):integer;
 Function ReproductionQuality(x,y:integer):boolean;
 
@@ -38,6 +37,8 @@ var
   temp_X, temp_Y, Temp_mem: word;
   male_present: boolean;
 begin
+  rep_prob := rep_prob;
+
   with population do
   begin
     populationsize := population.Count;
@@ -48,11 +49,6 @@ begin
         if Individual^.Sex = 'm' then Continue;
 
         male_present:= false;
-
-        {Figure out in if the individual is in a NP}
-        if inPark(Individual^.Coor_X, Individual^.Coor_Y) then
-          rep_prob := rep_prob_iNP
-        else rep_prob := rep_prob_oNP;
 
         {Check that the individual is capable of reproduction}
           if Individual^.status = 3 then
@@ -138,39 +134,21 @@ begin
       surv_p := -1;
 
       {Assign yearly survival probabilities}
-      if (Individual^.Status = 1) then
-      begin
-        if inPark(Individual^.Coor_X, Individual^.Coor_Y) then  surv_p:= surv_disperse_iNP
-        else surv_p := surv_disperse_oNP
-      end
+      if (Individual^.Status = 1) then surv_p := surv_disperse
       else
-        if inPark(Individual^.Coor_X, Individual^.Coor_Y) then
         begin
           if (Individual^.Status = 0) and (Individual^.Age = 0) then
-            surv_p := surv_cub_iNP
+            surv_p := surv_cub
             else
           // the status statement shouldn't be necessary (cubs shouldn't be able to have another status but just to make sure)
           if (Individual^.Status = 0) and (Individual^.Age > 0) then
-            surv_p := surv_sub_iNP
+            surv_p := surv_sub
             else
           if (Individual^.Status > 1) and (Individual^.Age <= max_rep_age) then
-            surv_p := surv_resident_iNP
+            surv_p := surv_resident
             else
-          if (Individual^.Age > max_rep_age) then surv_p := surv_old_iNP;
-        end
-        else
-        begin
-            if (Individual^.Age = 0) and (Individual^.Status = 0) then
-              surv_p := surv_cub_oNP
-            else
-              if (Individual^.Age > 0) and (Individual^.Status = 0) then
-                surv_p := surv_sub_oNP
-              else
-                if (Individual^.Status > 1) and (Individual^.Age <= max_rep_age) then
-                  surv_p := surv_resident_oNP
-                else
-                  if (Individual^.Age > max_rep_age) then surv_p := surv_old_oNP;
-          end;
+          if (Individual^.Age > max_rep_age) then surv_p := surv_old;
+        end;
 
 
       {Transform annual survival (surv_p) to daily survival (surv_day)}
@@ -322,8 +300,8 @@ begin
           if (new_dir <> 0) then Individual^.mov_mem := new_dir;
 
           {Add new location to connection map}
-          if Individual^.Sex = 'f' then ConnectionMap[TextCoordX, TextCoordY, 0] := ConnectionMap[TextCoordX, TextCoordY, 0] + 1
-          else ConnectionMap[TextCoordX, TextCoordY, 1] := ConnectionMap[TextCoordX, TextCoordY, 1] + 1;
+          if Individual^.Sex = 'f' then ConnectionMap[TestCoordX, TestCoordY, 0] := ConnectionMap[TestCoordX, TestCoordY, 0] + 1
+          else ConnectionMap[TestCoordX, TestCoordY, 1] := ConnectionMap[TestCoordX, TestCoordY, 1] + 1;
 
 
           if  (Individual^.Current_pop = 0) and (whichPop(TestCoordX, TestCoordY) <> 0) and
@@ -547,8 +525,6 @@ begin
     else
       Result := True;
 end;
-
-Function inPark(x,y:integer):boolean;
 begin
   Result:=False;   // false = not in park, true = in NP
 

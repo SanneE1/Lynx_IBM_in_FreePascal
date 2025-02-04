@@ -95,12 +95,12 @@ var               {here you declare global variables}
   filename: Text;
   HabitatMap: Array2Dinteger;
   BreedingHabitatMap: Array2Dinteger;
-  ParkMap: Array2Dinteger;
   PopsMap: Array2Dinteger;
   MalesMap: Array3Dinteger;
   FemalesMap: Array3Dinteger;
+  ConnectionMap: Array3Dinteger;
   Mapdimx, Mapdimy: integer;
-  mapname, mapBHname, mapiPname, mapPops, paramname: string;
+  mapname, mapBHname, mapPops, paramname: string;
   dx: array[0..8] of integer = (0, 0, 1, 1, 1, 0, -1, -1, -1);
   dy: array[0..8] of integer = (0, 1, 1, 0, -1, -1, -1, 0, 1);
   xp, yp: integer;
@@ -114,8 +114,8 @@ var               {here you declare global variables}
   {Vital rate variables}
   min_rep_age, min_rep_age_m, max_rep_age, max_age: integer;
   Tsize: integer;
-  litter_size, litter_size_sd, rep_prob_oNP, rep_prob_iNP: real;
-  surv_cub_iNP, surv_cub_oNP, surv_sub_iNP, surv_sub_oNP, surv_resident_iNP, surv_resident_oNP, surv_disperse_iNP, surv_disperse_oNP, surv_disp_rho, surv_old_iNP, surv_old_oNP: real;
+  litter_size, litter_size_sd, rep_prob: real;
+  surv_cub, surv_sub, surv_resident, surv_disperse, surv_disp_rho, surv_old: real;
   alpha_steps: real;
   theta_d, theta_delta, delta_theta_long, delta_theta_f, L, N_d, beta, gamma: real;
 

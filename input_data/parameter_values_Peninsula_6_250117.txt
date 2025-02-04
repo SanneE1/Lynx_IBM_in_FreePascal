@@ -4,19 +4,13 @@ max_age 13
 Tsize 4
 litter_size 1.9
 litter_size_sd 0.54
-rep_prob_iNP 0.5
-rep_prob_oNP 0.5
-surv_cub_iNP 0.386
-surv_cub_oNP 0.386
-surv_sub_iNP 0.59
-surv_sub_oNP 0.59
-surv_resident_iNP 0.88
-surv_resident_oNP 0.88
-surv_disperse_iNP 0.88
-surv_disperse_oNP 0.88
+rep_prob 0.5
+surv_cub 0.386
+surv_sub 0.59
+surv_resident 0.88
+surv_disperse 0.88
 surv_disp_rho 5.8
-surv_old_iNP 0.6
-surv_old_oNP 0.6
+surv_old 0.6
 alpha_steps 0.00027
 theta_d 0.4
 theta_delta 0.65
@@ -32,6 +26,5 @@ n_sim 1
 n_cycles 3
 mapname input_data/maps/HabitatMap_500_Peninsula_Revilla_2015_1.txt
 mapBHname input_data/maps/BreedingHabitat_500_Peninsula_Fordham_2013.txt
-mapiPname input_data/maps/inPark_500_Peninsula_Revilla_2004.txt
 mapPops input_data/maps/populations_500_Peninsula_IUCN6.txt
 

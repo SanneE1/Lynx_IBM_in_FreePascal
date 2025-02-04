@@ -51,10 +51,11 @@
       <Unit5>
         <Filename Value="lynx_vital_rates.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="319"/>
-        <CursorPos Y="325"/>
-        <FoldState Value=" T3X0{51 Pj8j20E"/>
+        <TopLine Value="232"/>
+        <CursorPos Y="218"/>
+        <FoldState Value=" T3X0{5117 pp8yK0S2 piXjO0{qd"/>
         <UsageCount Value="339"/>
         <Loaded Value="True"/>
       </Unit5>
@@ -94,7 +95,6 @@
         <ComponentName Value="spatial_Form"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <TopLine Value="275"/>
         <CursorPos Y="285"/>

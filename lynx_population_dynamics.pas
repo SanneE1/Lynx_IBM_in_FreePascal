@@ -197,7 +197,11 @@ begin
   randomize; {initialize the pseudorandom number generator}
   ReadParameters(paramname);
 
-  readmap(mapname, mapBHname, mapiPname, mapPops);
+  WriteLn('Running ', n_sim, ' lynx population simulation(s) with ',n_ini, ' initial population size, for ', max_years, ' years');
+  WriteLn('Using parameter file: ', paramname);
+  WriteLn('Map file name: ', mapname);
+
+  readmap(mapname, mapBHname, mapPops);
 
   SetLength(MalesMap, Mapdimx + 1, Mapdimy + 1, 2);
   SetLength(FemalesMap, Mapdimx + 1, Mapdimy + 1, 2);

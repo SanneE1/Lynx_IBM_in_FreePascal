@@ -277,7 +277,7 @@ begin
   mapBHname := Edit4.Text;
   end;
 
-  readmap(mapname, mapBHname, mapiPname, mapPops);
+  readmap(mapname, mapBHname, mapPops);
 
   SetLength(MalesMap, Mapdimx + 1, Mapdimy + 1, 2);
   SetLength(FemalesMap, Mapdimx + 1, Mapdimy + 1, 2);

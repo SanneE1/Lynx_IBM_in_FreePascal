@@ -283,12 +283,12 @@ begin
   SetLength(FemalesMap, Mapdimx + 1, Mapdimy + 1, 2);
 
   SetLength(ConnectionMap, Mapdimx + 1, Mapdimy + 1, 2);
-  for a := 0 to High(ConnectionMap) do
+  {for a := 0 to High(ConnectionMap) do
     for b := 0 to High(ConnectionMap[a]) do
       for c := 0 to 1 do           // where 0 is female, 1 is male
     begin
       ConnectionMap[a, b, c] := 0;      // Empty maps to fill with status and age below
-    end;
+    end;}
 
   AssignFile(to_file_out, file_name);
   rewrite(to_file_out); {create txt file}
