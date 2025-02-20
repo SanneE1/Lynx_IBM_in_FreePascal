@@ -5,49 +5,10 @@
     <Version Value="12"/>
     <Units>
       <Unit>
-        <Filename Value="general_functions.pas"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="lynx_define_units.pas"/>
-        <EditorIndex Value="1"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <EditorIndex Value="2"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="lynx_population_dynamics.pas"/>
-        <EditorIndex Value="3"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="lynx_population_dynamics_GUI.pas"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="217"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="lynx_vital_rates.pas"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="5"/>
-        <TopLine Value="316"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="lynx_population_dynamics_GUI.lfm"/>
-        <EditorIndex Value="6"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="-1"/>

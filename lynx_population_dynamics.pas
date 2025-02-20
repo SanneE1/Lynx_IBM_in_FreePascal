@@ -63,7 +63,7 @@ begin
     for a := 1 to max_years do
     begin
       day := 0;  // Start the year
-      while day < 366 do //Let's pretend there's no such thing as leap years
+      while day < 366 do
       begin
         day := day + 1;
 
@@ -85,10 +85,10 @@ begin
 
       if (a mod 5 = 0) then
         begin
-        WriteMapCSV('output_data/FemalesMap_status_' + IntToStr(current_sim) + '_' + IntToStr(a) + '.csv', Femalesmap, MapdimX, MapdimY, 0);
-        WriteMapCSV('output_data/FemalesMap_age_' + IntToStr(current_sim) + '_' + IntToStr(a) + '.csv', Femalesmap, MapdimX, MapdimY, 1);
-        WriteMapCSV('output_data/MalesMap_status_' + IntToStr(current_sim) + '_' + IntToStr(a) + '.csv', Malesmap, MapdimX, MapdimY, 0);
-        WriteMapCSV('output_data/MalesMap_age_' +  IntToStr(current_sim) + '_' + IntToStr(a) + '.csv', Malesmap, MapdimX, MapdimY, 1);
+        WriteMapCSV('output_data/FemalesMap_status_' + IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Femalesmap, MapdimX, MapdimY, 0);
+        WriteMapCSV('output_data/FemalesMap_age_' + IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Femalesmap, MapdimX, MapdimY, 1);
+        WriteMapCSV('output_data/MalesMap_status_' + IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Malesmap, MapdimX, MapdimY, 0);
+        WriteMapCSV('output_data/MalesMap_age_' +  IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Malesmap, MapdimX, MapdimY, 1);
         end;
 
 

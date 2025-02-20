@@ -322,3 +322,5 @@ Opening map file: input_data/old_donana.txt
 Map successfully loaded.
 Opening map file: input_data/old_donana.txt
 Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.

@@ -59,10 +59,10 @@ begin
   Population := TList.Create;
 
   //Create/initiate the Famtree (array of array)
-  SetLength(Famtree, n_ini);   //creation of the dinamic array with n_ini rows and 4 columts (specified in 'lynx_defined_units') or i_ini,4 ?
+  SetLength(Famtree, n_ini);
 
   //Initialization of UniqueID at 0 (the first ind will hav an ID of 0)
-  UniqueIDnext:= 0;             //non ci piace aver lo stesso nome per il vettore che crea i diversi numeri di unique id and the actual columns of the unniqueID affinche no ci sia confusione su cosa stiamo usando
+  UniqueIDnext:= 0;
 
   with population do
   begin
@@ -76,11 +76,11 @@ begin
       else
       Individual^.sex := 'm';
       Individual^.status := 1;
-      Individual^.UniqueID :=UniqueIDnext;                  //cosi che cambi ogni volta che riranna
-
+      Individual^.UniqueID :=UniqueIDnext;
+      Individual^.IC := 0;
 
       Individual^.Coor_X := 130;
-      Individual^.Coor_Y := 100;
+      Individual^.Coor_Y := 120;
 
       setLength(Individual^.TerritoryX, Tsize);
       setLength(Individual^.TerritoryY, Tsize);
@@ -95,12 +95,11 @@ begin
       Individual^.DailySteps := 0;
       Individual^.DailyStepsOpen := 0;
 
-      //add the genes here based on file lungo 742
       setLength(Individual^.Genome, 25, 2);
 
 
       for i := 1 to 24 do
-      begin                                    //magari qui la cambi  e inverti: per ogni genome guarda i due alleli
+      begin
         for k := 0 to 1 do
         begin
           tmic := random;
@@ -115,22 +114,13 @@ begin
           end;
         end;
 
-      // Create a uniqueID
-      //add ID TO IND
-
-
-
       Population.add(Individual);
 
-      //assign  Add uniqueID to Famtree[UniqueID,0]
-      // Add IC (0) to Famtree[UniqueID, 1]
-      // Add FatherID to Famtree[UniqueID,2]
-      // Add MotherID to Famtree[UniqueID,3]
       SetLength(Famtree, n_ini, 4);
-      Famtree[Individual^.UniqueID,0]:=Individual^.UniqueID;       //UniqueID
-      Famtree[Individual^.UniqueID,1]:=0;              //IC
-      Famtree[Individual^.UniqueID,2]:= -1;            //FatherID
-      Famtree[Individual^.UniqueID,3]:= -1;            //MotherID
+      Famtree[Individual^.UniqueID,0]:=Individual^.UniqueID;  //UniqueID
+      Famtree[Individual^.UniqueID,1]:=0;                     //IC
+      Famtree[Individual^.UniqueID,2]:= -1;                   //FatherID
+      Famtree[Individual^.UniqueID,3]:= -1;                   //MotherID
 
 
       UniqueIDnext:= UniqueIDnext+1
@@ -141,17 +131,17 @@ begin
 end;
 
 
-procedure Tspatial_Form.Pop_dynamics_GUI;          //simulate the population cycle, update the graphs, save new datas of the pop, save and write the tree.
+procedure Tspatial_Form.Pop_dynamics_GUI;
 var
   a, b, xy, day, Tcheck, current_sim: integer;
 begin
-  current_sim:= 1; //initialisation of simulation
+  current_sim:= 1;
   with population do
   begin
     for a := 1 to max_years do
     begin
       day := 0;  // Start the year
-      while day < 366 do //Let's pretend there's no such thing as leap years
+      while day < 366 do
       begin
         day := day + 1;
         populationsize := population.Count;
@@ -160,7 +150,8 @@ begin
 
         if day = 90 then
           if populationsize > 2 then
-            reproduction;               // Reproduction happens at the end of March
+
+          reproduction;                 // Reproduction happens at the end of March
 
         Dispersal(day);                 // Dispersal of surviving individuals (also includes dispersion start for subadults)
 
@@ -201,7 +192,7 @@ begin
 
       if (a <= 5) then
       begin
-         WritePopulationToCSV(population,'PopulationYear.csv', current_sim, a );      // for what is curren_sim, a
+         WritePopulationToCSV(population,'PopulationYear.csv', current_sim, a );
       end;
 
     end;
@@ -224,6 +215,7 @@ begin
   randomize; {initialize the pseudorandom number generator}
 
   paramname := Edit3.Text;
+  ShowMessage('DEBUG: Paramname = ' + paramname);
   ReadParameters(paramname);
 
   {These values should overwrite the values in the file with the input from the GUI}
@@ -271,7 +263,6 @@ begin
     application.ProcessMessages;
     if (current_sim > 1) then
       if (n_sim > 1) and (n_extint <> n_sim) then
-        //   for b:=1 to max_years do Chart1LineSeries2.addxy(b,sum_pop_size[b]/n_sim_no_ext[b]);  //now we calculate the avg only when the population is not extinct
         for b := 1 to max_years do
           Chart1LineSeries2.addxy(b, sum_pop_size[b] / current_sim);
 

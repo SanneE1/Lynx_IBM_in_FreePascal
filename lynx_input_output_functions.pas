@@ -39,9 +39,23 @@ var
 
 begin
 
+  DebugLog('Opening map file: ' + mapname);
+
+
+  if not FileExists(mapName) then
+  begin
+    DebugLog('ERROR: The map file does not exist!');
+    ShowErrorAndExit('Map file not found: ' + mapname);
+  end;
+
   Assign(filename, mapName);
   reset(filename);
   readln(filename, Mapdimx, Mapdimy);
+
+
+
+
+
   SetLength(HabitatMap, Mapdimx + 1, Mapdimy + 1);
 
 
@@ -62,6 +76,8 @@ begin
     readln(filename);
   end;
 
+  DebugLog('Map successfully loaded.');
+
   Close(filename);
 end;
 
@@ -77,6 +93,8 @@ begin
   {This function is probably much longer than it needs to be. I just need to make absolutely sure
   that if I at some point change or mess with the param file, I get a warning here, so
   I don't accedentily work with parameter values in the wrong variable!}
+
+  //ShowMessage('Current Working Directory: ' + GetCurrentDir);
 
    par_seq[1]:= 'min_rep_age';
    par_seq[2]:= 'max_rep_age';
@@ -114,23 +132,33 @@ begin
 
    SetLength(val_seq, High(par_seq)+1);
 
+   if not FileExists(ExpandFileName(paramname)) then
+  begin
+    Halt(1)
+  end;
+
    Assign(filename, paramname);
    reset(filename);
+
 
      for r:=1 to High(par_seq) do
      begin
        readln(filename, a);
+
        // Find the first space to split the string
       spacePos := Pos(' ', a);
 
       if spacePos > 0 then
       begin
         // Extract parameter name and convert the rest to a real
-        param := Copy(a, 1, spacePos - 1);                      // Get parameter name
+        param := Trim(Copy(a, 1, spacePos - 1));                      // Get parameter name
 
-        if (param = 'mapname') then
-          mapname := Trim(Copy(a, spacePos + 1, Length(a)))
-          else
+        if (param = 'mapname') then        //CABIO
+        begin
+          mapname := Trim(Copy(a, spacePos + 1, Length(a)));
+          Continue;
+        end;
+
         Val(Trim(Copy(a, spacePos + 1, Length(a))), value);     // Convert value part to real - any integers are converted below to correct type
 
     if (param = par_seq[r]) then
@@ -141,6 +169,10 @@ begin
      end
       else ShowErrorAndExit('No space found. Check parameter file');
      end;
+
+
+    Close(filename);
+
 
      min_rep_age        := Round(val_seq[1]);
      max_rep_age        := Round(val_seq[2]);
@@ -173,6 +205,7 @@ begin
    n_ini              := Round(val_seq[29]);
    max_years          := Round(val_seq[30]);
    n_sim              := Round(val_seq[31]);
+
 
 
 end;
@@ -239,19 +272,18 @@ begin
   begin
     for ix := 1 to dimx do
     begin
-      // Write each value, followed by a comma, except for the last value in the row
       if ix < dimx then
         Write(outfile, arrayData[ix, iy, dimz], ',')
       else
-        Write(outfile, arrayData[ix, iy, dimz]);  // No comma at the end of the row
+        Write(outfile, arrayData[ix, iy, dimz]);
     end;
-    writeln(outfile);  // Move to the next line in the CSV file
+    writeln(outfile);
   end;
 
   Close(outfile);
 end;
 
-procedure WritePopulationToCSV(population: TList; filename: string; current_sim, year: integer);   //capire come funzionano le simulazioni, capire come scrivere il file csv
+procedure WritePopulationToCSV(population: TList; filename: string; current_sim, year: integer);
 var
   csvFile: TextFile;
   i, j, l, UniqueID: integer;
@@ -264,15 +296,13 @@ begin
     begin
     Rewrite(csvFile);
     // Write header
-    WriteLn(csvFile, 'Simulation,Year,UniqueID,Sex,Age,Status,Coor_X,Coor_Y,Territory_XY,Genome, Homozygosity');
+    WriteLn(csvFile, 'Simulation,Year,UniqueID,Sex,Age,Status,Coor_X,Coor_Y,IC, Territory_XY,Genome, Homozygosity');
     end
   else append(csvFile);
 
   // Write data for each individual
   for l := 0 to population.Count - 1 do
   begin
-    //reset homozigosity for each ind
-    //homozygosity :=0;
     Write(csvFile, current_sim, ',', year, ',');
     individual := PAgent(population[l]);
 
@@ -283,48 +313,33 @@ begin
     Write(csvFile, individual^.Status, ',');
     Write(csvFile, individual^.Coor_X, ',');
     Write(csvFile, individual^.Coor_Y, ',');
+    Write(csvFile, individual^.IC, ',');
 
     // Write territory coordinates
     for j := 0 to length(individual^.TerritoryX) - 1 do
     begin
 
-      Write(csvFile, Individual^.TerritoryX[j], '/');   // X and Y on the same line??
+      Write(csvFile, Individual^.TerritoryX[j], '/');
       Write(csvFile, individual^.TerritoryY[j]);
 
       // Add comma if not last coordinate
       if j < length(individual^.TerritoryX) - 1 then
-        Write(csvFile, ';')        //devo aggiungere che dopo le coordinate deve aggiungere una , o magari e sottointeso??
+        Write(csvFile, ';')
       else
-      Write(csvFile, ',');          // or I have to write end and the the ',' thing?
+      Write(csvFile, ',');
     end;
 
 
     // Write genetics
     for i := 1 to 24 do
       begin
-      Write(csvFile, Individual^.Genome[i,0], ':', Individual^.Genome[i,1]);    //instead of:  Write(csvFile, Individual^.Genome[i,0], ':', Individual^.Genome[i,1], ',')non dovrebbe essere ;? mica la , fa passare al prossimo elemento
+      Write(csvFile, Individual^.Genome[i,0], ':', Individual^.Genome[i,1]);
       if i < 24 then
         Write(csvFile, ';')
       else
         Write(csvFile, ',');
       end;
 
-
-    //alternative with less coding i think MAYBE INCORRECT
-    // Write territory coordinates
-    //for j := 0 to length(individual^.TerritoryX) - 1 do
-    //begin
-
-     // Write(csvFile, Individual^.TerritoryX[j], '/', individual^.TerritoryY[j], ';' );   // X and Y on the same line??
-     // end;
-     // Write(csvFile, ',');
-
-    // Write genetics
-    //for i := 1 to 24 do
-    //  begin
-    //    Write(csvFile, Individual^.Genome[i,0], ':', Individual^.Genome[i,1], ';');    //instead of:  Write(csvFile, Individual^.Genome[i,0], ':', Individual^.Genome[i,1], ',')non dovrebbe essere ;? mica la , fa passare al prossimo elemento
-    //  end;
-    //  Write(csvFile, ',');
 
     //percentage homogeneity x ind
     for i:= 1 to 24 do
@@ -335,7 +350,7 @@ begin
           homozygosity := homozygosity + 1;
       end;
 
-    WriteLn(csvFile, ',', Individual^.P_homogeneity:0:4); // End of current individual's data   // devo mettere WriteLn(csvFile, ',', (homozygosity / 24) * 100:0:2);??
+    WriteLn(csvFile, ',', Individual^.P_homogeneity:0:4);
   end;
 
   CloseFile(csvFile);
@@ -357,12 +372,13 @@ begin
   // write into CSV
   for i := 0 to Length(Famtree) - 1 do
   begin
-    IC:= Famtree[i,1]; //copy the IC coefficient as a temporal variable
+    IC:= Famtree[i,1];
+
     WriteLn(csvFile,
-            Famtree[i, 0], ',',   // UniqueID data in ind i for the first column 0
-            IC:0:2, ',',          // IC (Coefficient of Inbreeding), written with  2 decimals
-            Famtree[i, 2], ',',   // FatherID
-            Famtree[i, 3]);      // MotherID
+            Famtree[i, 0]:0:0, ',',   // UniqueID
+            IC:0:3, ',',              // IC (Coefficient of Inbreeding), written with  3 decimals
+            Famtree[i, 2]:0:0, ',',   // FatherID
+            Famtree[i, 3]:0:0);      // MotherID
   end;
 
   CloseFile(csvFile);
