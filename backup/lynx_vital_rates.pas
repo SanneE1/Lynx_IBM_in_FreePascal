@@ -1,12 +1,12 @@
 unit lynx_vital_rates;
 
 {$mode ObjFPC}{$H+}
-
+{$OPTIMIZATION OFF}
 interface
 
 uses
   Classes, SysUtils, Math,
-  lynx_define_units, general_functions;
+  lynx_define_units, general_functions, Dialogs;
 
 
 procedure Reproduction;
@@ -26,6 +26,8 @@ function FindTerrOwner(population: TList; targetSex: string; targetX, targetY: w
 function Fight(AgeDisperser, AgeEarlySettler: integer; Sex: string): boolean;
 function TerritoryCellAvailable(x,y: integer; Sex:string; disperser_age: integer): boolean;
 procedure ClaimNewTerrOrStartDispersal;
+function CalculateIC(child_ID: integer; Famtree: Array2Dreal): real;
+function FindClosestCommonAncestors(Famtree:  Array2Dreal; child_ID: integer): Array2Dinteger;
 
 implementation
 
@@ -33,11 +35,12 @@ implementation
 procedure Reproduction;
 var
   a, g, i, k, current_litter_size, ls, xy, male_x, male_y, homogeneity_count: integer;
-  rep_prob, tmic: real;
+  rep_prob, tmic, IC_kittens : real;
   temp_X, temp_Y, Temp_mem: word;
   male_present: boolean;
   PotentialFather: PAgent;
   father, mother: array of array of integer;
+  mother_ID, father_ID, selected_kitten: integer;
 begin
   with population do
   begin
@@ -82,7 +85,6 @@ begin
                   PotentialFather := nil;
                 PotentialFather := FindTerrOwner(population, 'm', male_x, male_y);
                 if (PotentialFather <> nil) then
-                for xy := 0 to Length(PotentialFather^.TerritoryX) - 1 do
                 begin
                 for i:= 1 to 24 do
                 begin
@@ -92,7 +94,12 @@ begin
                       father[i,k]:= PotentialFather^.Genome[i,k];
                     end;
                end;
-                end;
+                father_ID := PotentialFather^.UniqueID
+                end
+                else
+                begin
+                  male_present:=false;
+                  end;
                 end;
 
 
@@ -100,6 +107,10 @@ begin
                   if random < rep_prob then
                   begin
                     current_litter_size := Round(randg(litter_size, litter_size_sd));
+                    mother_ID := Individual^.UniqueID;
+                    IC_kittens:= -1;       //something goes wrong, -1 and not the before liiter IC
+
+
 
                     //Save location of the mother, to give to offspring
                     Temp_X := Individual^.Coor_X;
@@ -118,6 +129,8 @@ begin
                       Individual^.status := 0;
                       Individual^.Coor_X := Temp_X;
                       Individual^.Coor_Y := Temp_Y;
+                      Individual^.UniqueID := UniqueIDnext;
+                      UniqueIDnext:= UniqueIDnext+1;
 
                       setLength(Individual^.TerritoryX, Tsize);
                       setLength(Individual^.TerritoryY, Tsize);
@@ -132,21 +145,21 @@ begin
                       Individual^.DailySteps := 0;
                       Individual^.DailyStepsOpen := 0;
 
-                      //create the genome 0.5--> per ogni locus della mamma ed ogni coppia di allele, il kitten può ereditare ognuno dei due possibiliy alleli che sono 0 o 1.
-                      //prima: quando l'ind ha il gene calcoliamo la percentuale di homogeneity e la diamo ad ogni individuo
-                      //add the 0.5
-                      //madre-----
+
+                      //inherit genes of mother
                       setLength(Individual^.Genome, 25, 2);
+                      homogeneity_count := 0;
+
 
                       for i := 1 to 24 do
                       begin
-                        tmic:=random;   //sceglie nbumero tra 0 e 1
+                        tmic:=random;
                         if tmic < 0.5 then
-                           Individual^.Genome[i, 0] := mother[i, 0]     //magari non c'è bisogno di specificare che si tratta di micropadre o madre
+                           Individual^.Genome[i, 0] := mother[i, 0]
                         else
-                           Individual^.Genome[i, 0] := mother[i, 1];     //non importa quale prendi sarà sempre nella stessa posizione. ma proviene dall allele della mamma 1
+                           Individual^.Genome[i, 0] := mother[i, 1];
 
-                       //padre                                      //gli fa dire se tmic minore di 0.5 Fai che l'individual prenda da genome l'allele 0.
+                       //inherit genes of father
 
                         tmic := random;
                         if tmic < 0.5 then
@@ -154,20 +167,70 @@ begin
                         else
                            Individual^.Genome[i, 1] := father[i, 1];
 
-                      //check for homogeneity                 //se il primo individuo^genome è diver
-                      if Individual^.Genome[i, 0] = Individual^.Genome[i, 1] then   //ma allora non c'è bisogno //appunto dentro Individual^Genome [i,k]= è 1,2,3 o 4.
+                      //check for homogeneity
+                      if Individual^.Genome[i, 0] = Individual^.Genome[i, 1] then
                       homogeneity_count := homogeneity_count + 1;
                       end;
 
                       //ratio of homogeneity
                        Individual^.P_homogeneity := homogeneity_count / 24.0;
 
+
+                       {Inbreeding calculations}
+                       // Add new individual to Famtree
+                      SetLength(Famtree, Length(Famtree) + 1, 4);
+                      Famtree[High(Famtree), 0] := Individual^.UniqueID;
+                      Famtree[High(Famtree), 2] := father_ID;
+                      Famtree[High(Famtree), 3] := mother_ID;
+
+
+                      //Only one kitten gets CA and IC calculation
+                      if ls = 1 then
+                      begin
+                      IC_kittens := CalculateIC(Individual^.UniqueID, Famtree);
+                      end;
+
+
+                      Individual^.IC:= IC_kittens;
+                      Famtree[High(Famtree), 1] := IC_kittens;
+
                       Population.add(Individual);
+
+
                     end;
                   end;
               end;
       end;
   end;
+end;
+// Placeholder for function CalculateIC
+
+function CalculateIC(child_ID: integer; Famtree: Array2Dreal): real;
+var
+  CA: Array2Dinteger;
+  Steps, a: integer;
+  IC_sum, b, c: real;
+begin
+
+ setLength(CA, 2);
+ CA := FindClosestCommonAncestors(Famtree,child_ID);
+
+ if CA <> nil then
+ begin
+ IC_sum := 0;
+
+ for a:=0 to Length(CA) - 1 do
+ begin
+  c:= Famtree[CA[a,0], 1];
+  b := power(0.5, CA[a,1]-1) * (1 + c);
+  IC_sum := IC_sum + b;
+ end;
+
+ Result := IC_sum;
+ end
+ else
+ Result := 0;
+
 end;
 
 procedure Survival;
@@ -573,7 +636,7 @@ end;
 
 Function inPark(x,y:integer):boolean;
 begin
-  Result:=False;   // false = not in park, true = in NP
+  Result:=False;
 
   if (mapname = 'input_data/old_donana.txt') then
   begin
@@ -992,6 +1055,7 @@ var
                      end;
 
                    if not already_terr then
+                   if CanMoveHere(xi, yi) then
                     if ((HabitatMap[xi, yi] = 2) and (ReproductionQuality(xi, yi))) then
                     begin
                     c_available := False;
@@ -1081,5 +1145,142 @@ var
         end;
       end;
 
+
+function FindClosestCommonAncestors(Famtree: Array2Dreal; child_ID: integer): Array2Dinteger;
+
+var
+  ID, i, j, q, t, a, min_steps: integer;
+  common_ancestors, queue_mother, queue_father, visited_mother, visited_father: array of array of integer;
+  closest_ancestors : Array2Dinteger;
+  current_mother, current_father: array[0..1] of integer;
+  Steps: integer;
+
+begin
+  // Initialize the mother's queue
+  SetLength(queue_mother, 1, 2);
+  queue_mother[0,0] := Round(Famtree[child_ID, 3]);
+  queue_mother[0,1] := 1;
+
+  // Initialize the father's queue
+  SetLength(queue_father, 1, 2);
+  queue_father[0,0] := Round(Famtree[child_ID, 2]);
+  queue_father[0,1] := 1;
+
+  // Expansion of the mother's ancestors//
+
+  while Length(queue_mother) > 0 do
+  begin
+    current_mother[0] := queue_mother[High(queue_mother),0];
+    current_mother[1] := queue_mother[High(queue_mother),1];
+
+    SetLength(queue_mother, Length(queue_mother) - 1);
+
+    // Add to visited
+    SetLength(visited_mother, Length(visited_mother) + 1, 2);
+    visited_mother[High(visited_mother),0] := current_mother[0];
+    visited_mother[High(visited_mother),1] := current_mother[1];
+
+    // Expand to parents of current node
+    if (current_mother[0] <> -1) and (current_mother[0] < Length(Famtree)) then
+    begin
+     if Famtree[current_mother[0], 2] <> -1 then               //father of current mother
+     begin
+      SetLength(queue_mother, Length(queue_mother) + 1,2);     //add new line to the queue to add father of current_mother
+      queue_mother[High(queue_mother),0] := Round(Famtree[current_mother[0], 2]);
+      queue_mother[High(queue_mother),1] := current_mother[1] + 1;          //number of steps correspond to the previous one +1
+     end;
+    end;
+
+    if (current_mother[0] <> -1) and (current_mother[0] < Length(Famtree)) then
+    begin
+     if Famtree[current_mother[0], 3] <> -1 then                            //mother of current_mother
+     begin
+      SetLength(queue_mother, Length(queue_mother) + 1,2);
+      queue_mother[High(queue_mother),0] := Round(Famtree[current_mother[0], 3]);
+      queue_mother[High(queue_mother),1] := current_mother[1] + 1;
+    end;
+    end;
+  end;
+
+  // Expansion of the mother's ancestors//
+
+  while Length(queue_father) > 0 do
+  begin
+    current_father[0] := queue_father[High(queue_father),0];
+    current_father[1] := queue_father[High(queue_father),1];
+    SetLength(queue_father, Length(queue_father) - 1);
+
+    //Add to visited
+    SetLength(visited_father, Length(visited_father) + 1,2);
+    visited_father[High(visited_father),0] := current_father[0];
+    visited_father[High(visited_father),1] := current_father[1];
+
+    // Expand to parents of current node
+    if (current_father[0] <> -1) and (current_father[0] < Length(Famtree)) then
+    begin
+     if Famtree[current_father[0], 2] <> -1 then
+     begin
+      SetLength(queue_father, Length(queue_father) + 1,2);
+      queue_father[High(queue_father),0] := Round(Famtree[current_father[0], 2 ]);
+      queue_father[High(queue_father),1] := current_father[1] + 1;
+     end;
+    end;
+
+    if (current_father[0] <> -1) and (current_father[0] < Length(Famtree)) then
+    begin
+    if Famtree[current_father[0], 3] <> -1 then
+    begin
+      SetLength(queue_father, Length(queue_father) + 1,2);
+      queue_father[High(queue_father),0] := Round(Famtree[current_father[0], 3]);
+      queue_father[High(queue_father),1] := current_father[1] + 1;
+    end;
+    end;
+  end;
+
+  // find CA
+  SetLength(common_ancestors, 0);
+  for i := 0 to Length(visited_mother) - 1 do
+    for j := 0 to Length(visited_father) - 1 do
+      if visited_mother[i,0] = visited_father[j,0] then
+      begin
+        SetLength(common_ancestors, Length(common_ancestors) + 1, 2);
+        common_ancestors[High(common_ancestors),0] := visited_mother[i,0];
+        common_ancestors[High(common_ancestors),1] :=
+          visited_mother[i,1] + visited_father[j,1];
+      end;
+
+  //Find min number of steps
+  min_steps := MaxInt;
+  for q := 0 to Length(common_ancestors) - 1 do
+    if common_ancestors[q,1] < min_steps then
+      min_steps := common_ancestors[q,1];
+
+  //Filter Common Ancestors with the minimum number of steps
+  if(common_ancestors <> nil) then
+  begin
+  setLength(closest_ancestors,1);
+  SetLength(closest_ancestors[0], 2);
+  a := 0;
+
+  for t := 0 to Length(common_ancestors) - 1 do
+    if common_ancestors[t,1] = min_steps then
+    begin
+
+      SetLength(closest_ancestors, a + 1);
+      SetLength(closest_ancestors[a], 2);
+
+      closest_ancestors[a][0] := common_ancestors[t,0];
+      closest_ancestors[a][1] := common_ancestors[t,1];
+
+      a := a+1;
+    end;
+  Result := closest_ancestors;
+   end
+  else
+  begin
+    Result := nil;
+    end;
+
+end;
 end.
 

@@ -11,7 +11,17 @@ uses
 type           {here you declare the data structure for you individuals}
   Array2Dbyte = array of array of byte;
   Array3Dbyte = array of array of array of byte;
-  GenomeArray
+  Array1Dinteger = array of integer;
+  Array2Dinteger = array of array of integer;
+  Array2Dreal = array of array of real;
+
+  TQueueRecord = record
+    ID: integer;
+    Steps: integer;
+
+  end;
+
+
   PAgent = ^Agent;
 
   Agent = record
@@ -35,6 +45,8 @@ type           {here you declare the data structure for you individuals}
 
     Genome: array of array of integer;
     P_homogeneity: real;
+    UniqueID: integer;
+    IC: real;
 
   end;
 
@@ -81,6 +93,9 @@ var               {here you declare global variables}
   tempX, tempY: integer;
   homeX, homeY, steps, s, new_dir, mem: integer;
   tohome: boolean;
+  Famtree: array of array of real ;
+  UniqueIDnext: integer;
+
 
   {Vital rate variables}
   min_rep_age, min_rep_age_m, max_rep_age, max_age: integer;

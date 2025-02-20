@@ -63,7 +63,7 @@ begin
     for a := 1 to max_years do
     begin
       day := 0;  // Start the year
-      while day < 366 do //Let's pretend there's no such thing as leap years
+      while day < 366 do
       begin
         day := day + 1;
 

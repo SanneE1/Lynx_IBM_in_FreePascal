@@ -5,7 +5,7 @@ unit lynx_input_output_functions;
 interface
 
 uses
-  Classes, SysUtils,
+  Classes, SysUtils, Dialogs,
   lynx_define_units, general_functions;
 
 procedure ReadMap(mapname: string);
@@ -13,17 +13,37 @@ procedure ReadParameters(paramname: string);
 procedure UpdateAbundanceMap;
 procedure WriteMapCSV(filename: string; var arrayData: Array3Dbyte; dimx, dimy, dimz: integer);
 procedure WritePopulationToCSV(population: TList; filename: string; current_sim, year: integer);
+Procedure WriteFamtreeToCSV(filename: string);
+Procedure DebugLog (msg: string);
 
 implementation
+
+procedure DebugLog(msg: string);
+var
+  LogFile: TextFile;
+begin
+  AssignFile(LogFile, 'debug_log.txt');
+  if FileExists('debug_log.txt') then
+    Append(LogFile)
+  else
+    Rewrite(LogFile);
+
+  WriteLn(LogFile, msg);
+  CloseFile(LogFile);
+end;
+
 
 procedure ReadMap(mapname: string);
 var
   ix, iy, Value: integer;
+
 begin
+
   Assign(filename, mapName);
   reset(filename);
   readln(filename, Mapdimx, Mapdimy);
   SetLength(HabitatMap, Mapdimx + 1, Mapdimy + 1);
+
 
   for iy := 1 to Mapdimy do
   begin
@@ -231,10 +251,11 @@ begin
   Close(outfile);
 end;
 
-procedure WritePopulationToCSV(population: TList; filename: string; current_sim, year: integer);
+procedure WritePopulationToCSV(population: TList; filename: string; current_sim, year: integer);   //capire come funzionano le simulazioni, capire come scrivere il file csv
 var
   csvFile: TextFile;
-  i, j, l: integer;
+  i, j, l, UniqueID: integer;
+  allele1,allele2,homozygosity: integer;
 begin
 
   AssignFile(csvFile, filename);
@@ -243,17 +264,20 @@ begin
     begin
     Rewrite(csvFile);
     // Write header
-    WriteLn(csvFile, 'Simulation,Year,Sex,Age,Status,Coor_X,Coor_Y,Territory_XY');
+    WriteLn(csvFile, 'Simulation,Year,UniqueID,Sex,Age,Status,Coor_X,Coor_Y,Territory_XY,Genome, Homozygosity');
     end
   else append(csvFile);
 
   // Write data for each individual
   for l := 0 to population.Count - 1 do
   begin
+    //reset homozigosity for each ind
+    //homozygosity :=0;
     Write(csvFile, current_sim, ',', year, ',');
-    individual := PAgent(population[i]);
+    individual := PAgent(population[l]);
 
     // Write individual information
+    Write(csvFile, individual^.UniqueID, ',');
     Write(csvFile, individual^.sex, ',');
     Write(csvFile, individual^.Age, ',');
     Write(csvFile, individual^.Status, ',');
@@ -264,21 +288,81 @@ begin
     for j := 0 to length(individual^.TerritoryX) - 1 do
     begin
 
-      Write(csvFile, Individual^.TerritoryX[j], '/');
+      Write(csvFile, Individual^.TerritoryX[j], '/');   // X and Y on the same line??
       Write(csvFile, individual^.TerritoryY[j]);
 
       // Add comma if not last coordinate
       if j < length(individual^.TerritoryX) - 1 then
-        Write(csvFile, ';');
+        Write(csvFile, ';')        //devo aggiungere che dopo le coordinate deve aggiungere una , o magari e sottointeso??
+      else
+      Write(csvFile, ',');          // or I have to write end and the the ',' thing?
     end;
+
 
     // Write genetics
     for i := 1 to 24 do
       begin
-        Write(csvFile, Individual^.Genome[i,0], ':', Individual^.Genome[i,1], ',');
+      Write(csvFile, Individual^.Genome[i,0], ':', Individual^.Genome[i,1]);    //instead of:  Write(csvFile, Individual^.Genome[i,0], ':', Individual^.Genome[i,1], ',')non dovrebbe essere ;? mica la , fa passare al prossimo elemento
+      if i < 24 then
+        Write(csvFile, ';')
+      else
+        Write(csvFile, ',');
       end;
 
-    WriteLn(csvFile); // End of current individual's data
+
+    //alternative with less coding i think MAYBE INCORRECT
+    // Write territory coordinates
+    //for j := 0 to length(individual^.TerritoryX) - 1 do
+    //begin
+
+     // Write(csvFile, Individual^.TerritoryX[j], '/', individual^.TerritoryY[j], ';' );   // X and Y on the same line??
+     // end;
+     // Write(csvFile, ',');
+
+    // Write genetics
+    //for i := 1 to 24 do
+    //  begin
+    //    Write(csvFile, Individual^.Genome[i,0], ':', Individual^.Genome[i,1], ';');    //instead of:  Write(csvFile, Individual^.Genome[i,0], ':', Individual^.Genome[i,1], ',')non dovrebbe essere ;? mica la , fa passare al prossimo elemento
+    //  end;
+    //  Write(csvFile, ',');
+
+    //percentage homogeneity x ind
+    for i:= 1 to 24 do
+      begin
+        allele1 := Individual^.Genome[i,0];
+        allele2 := Individual^.Genome[i,1];
+        if allele1 = allele2 then
+          homozygosity := homozygosity + 1;
+      end;
+
+    WriteLn(csvFile, ',', Individual^.P_homogeneity:0:4); // End of current individual's data   // devo mettere WriteLn(csvFile, ',', (homozygosity / 24) * 100:0:2);??
+  end;
+
+  CloseFile(csvFile);
+end;
+
+Procedure WriteFamtreeToCSV(filename: string);
+var
+  csvFile: TextFile;
+  i: integer;
+  IC: real; //temporal variable for IC
+begin
+  // assign and open file CSV
+  AssignFile(csvFile, filename);
+  Rewrite(csvFile);
+
+  //write name of columns
+  WriteLn(csvFile, 'UniqueID,IC,FatherID,MotherID');
+
+  // write into CSV
+  for i := 0 to Length(Famtree) - 1 do
+  begin
+    IC:= Famtree[i,1]; //copy the IC coefficient as a temporal variable
+    WriteLn(csvFile,
+            Famtree[i, 0], ',',   // UniqueID data in ind i for the first column 0
+            IC:0:2, ',',          // IC (Coefficient of Inbreeding), written with  2 decimals
+            Famtree[i, 2], ',',   // FatherID
+            Famtree[i, 3]);      // MotherID
   end;
 
   CloseFile(csvFile);

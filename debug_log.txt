@@ -1,0 +1,324 @@
+Before ReadMap, mapname = input_data/small_BH_map.txt
+Opening map file: input_data/small_BH_map.txt
+Map dimensions read: X=20, Y=20
+Map successfully loaded.
+After ReadMap, MapdimX = 20, MapdimY = 20
+Before ReadMap, mapname = input_data/small_BH_map.txt
+Opening map file: input_data/small_BH_map.txt
+Map dimensions read: X=20, Y=20
+Map successfully loaded.
+After ReadMap, MapdimX = 20, MapdimY = 20
+Before ReadMap, mapname = input_data/small_BH_map.txt
+Opening map file: input_data/small_BH_map.txt
+Map successfully loaded.
+After ReadMap, MapdimX = 20, MapdimY = 20
+Before ReadMap, mapname = input_data/small_BH_map.txt
+Opening map file: input_data/small_BH_map.txt
+Map successfully loaded.
+After ReadMap, MapdimX = 20, MapdimY = 20
+Before ReadMap, mapname = input_data/small_BH_map.txt
+Opening map file: input_data/small_BH_map.txt
+Map successfully loaded.
+After ReadMap, MapdimX = 20, MapdimY = 20
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.
+Opening map file: input_data/old_donana.txt
+Map successfully loaded.

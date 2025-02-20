@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, TAGraph, TASeries, Forms, Controls, Graphics,
-  Dialogs, StdCtrls, ExtCtrls, Math, LCLType,
+  Dialogs, StdCtrls, ExtCtrls, Math, LCLType,            //Math not used
   lynx_define_units, general_functions, lynx_input_output_functions,
   lynx_vital_rates;
 
@@ -57,6 +57,13 @@ var
   tmic: real;
 begin
   Population := TList.Create;
+
+  //Create/initiate the Famtree (array of array)
+  SetLength(Famtree, n_ini);
+
+  //Initialization of UniqueID at 0 (the first ind will hav an ID of 0)
+  UniqueIDnext:= 0;
+
   with population do
   begin
     for a := 1 to n_ini do
@@ -67,11 +74,13 @@ begin
 
       if random < 0.5 then Individual^.sex := 'f'
       else
-        Individual^.sex := 'm';
+      Individual^.sex := 'm';
       Individual^.status := 1;
+      Individual^.UniqueID :=UniqueIDnext;
+      Individual^.IC := 0;
 
       Individual^.Coor_X := 130;
-      Individual^.Coor_Y := 100;
+      Individual^.Coor_Y := 120;
 
       setLength(Individual^.TerritoryX, Tsize);
       setLength(Individual^.TerritoryY, Tsize);
@@ -86,9 +95,11 @@ begin
       Individual^.DailySteps := 0;
       Individual^.DailyStepsOpen := 0;
 
-      //add the genes here based on file lungo 742
+      setLength(Individual^.Genome, 25, 2);
+
+
       for i := 1 to 24 do
-      begin                                    //magari qui la cambi  e inverti: per ogni genome guarda i due alleli
+      begin
         for k := 0 to 1 do
         begin
           tmic := random;
@@ -105,6 +116,16 @@ begin
 
       Population.add(Individual);
 
+      SetLength(Famtree, n_ini, 4);
+      Famtree[Individual^.UniqueID,0]:=Individual^.UniqueID;  //UniqueID
+      Famtree[Individual^.UniqueID,1]:=0;                     //IC
+      Famtree[Individual^.UniqueID,2]:= -1;                   //FatherID
+      Famtree[Individual^.UniqueID,3]:= -1;                   //MotherID
+
+
+      UniqueIDnext:= UniqueIDnext+1
+
+
     end;
   end;
 end;
@@ -112,14 +133,15 @@ end;
 
 procedure Tspatial_Form.Pop_dynamics_GUI;
 var
-  a, b, xy, day, Tcheck: integer;
+  a, b, xy, day, Tcheck, current_sim: integer;
 begin
+  current_sim:= 1;
   with population do
   begin
     for a := 1 to max_years do
     begin
       day := 0;  // Start the year
-      while day < 366 do //Let's pretend there's no such thing as leap years
+      while day < 366 do
       begin
         day := day + 1;
         populationsize := population.Count;
@@ -128,7 +150,8 @@ begin
 
         if day = 90 then
           if populationsize > 2 then
-            reproduction;               // Reproduction happens at the end of March
+
+          reproduction;                 // Reproduction happens at the end of March
 
         Dispersal(day);                 // Dispersal of surviving individuals (also includes dispersion start for subadults)
 
@@ -167,6 +190,11 @@ begin
       {plot trajectory}
       Chart1LineSeries1.addxy(a, populationsize);
 
+      if (a <= 5) then
+      begin
+         WritePopulationToCSV(population,'PopulationYear.csv', current_sim, a );
+      end;
+
     end;
     if populationsize = 0 then N_extint := N_extint + 1;
 
@@ -174,6 +202,7 @@ begin
     WriteMapCSV('FemalesMap_age.csv', Femalesmap, MapdimX, MapdimY, 1);
     WriteMapCSV('MalesMap_status.csv', Malesmap, MapdimX, MapdimY, 0);
     WriteMapCSV('MalesMap_age.csv', Malesmap, MapdimX, MapdimY, 1);
+    WriteFamtreeToCSV('Famtree.csv');
 
   end;
 end;
@@ -181,11 +210,12 @@ end;
 procedure Tspatial_Form.Run_ButtonClick(Sender: TObject);
 var
   a, b: integer;
-  t: string;
+  t: string;      //not used
 begin
   randomize; {initialize the pseudorandom number generator}
 
   paramname := Edit3.Text;
+  ShowMessage('DEBUG: Paramname = ' + paramname);
   ReadParameters(paramname);
 
   {These values should overwrite the values in the file with the input from the GUI}
@@ -193,16 +223,23 @@ begin
   val(Edit2.Text, max_years);
   val(Edit5.Text, n_sim);
 
-  mapname := Edit10.Text;
+
+  mapname :='input_data/old_donana.txt';
+
   readmap(mapname);
+
 
   SetLength(MalesMap, Mapdimx + 1, Mapdimy + 1, 2);
   SetLength(FemalesMap, Mapdimx + 1, Mapdimy + 1, 2);
 
   N_extint := 0;
 
-  AssignFile(to_file_out, file_name);
-  rewrite(to_file_out); {create txt file}
+  if not DirectoryExists('output_data') then
+    MkDir('output_data');
+
+  try
+  AssignFile(to_file_out, 'output_data/popsize.txt');
+  Rewrite(to_file_out); {create txt file}
 
   for a := 1 to max_years do sum_pop_size[a] := 0;
   for a := 1 to max_years do n_sim_no_ext[a] := 0;
@@ -226,7 +263,6 @@ begin
     application.ProcessMessages;
     if (current_sim > 1) then
       if (n_sim > 1) and (n_extint <> n_sim) then
-        //   for b:=1 to max_years do Chart1LineSeries2.addxy(b,sum_pop_size[b]/n_sim_no_ext[b]);  //now we calculate the avg only when the population is not extinct
         for b := 1 to max_years do
           Chart1LineSeries2.addxy(b, sum_pop_size[b] / current_sim);
 
@@ -239,6 +275,8 @@ begin
       for b := 1 to max_years do
         writeln(to_file_out, 'avg', ' ', b, ' ', sum_pop_size[b] / current_sim);
     {and the average of all simulations}
+    end;
+  finally
     CloseFile(to_file_out);
 
 

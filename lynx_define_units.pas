@@ -11,6 +11,21 @@ uses
 type           {here you declare the data structure for you individuals}
   Array2Dbyte = array of array of byte;
   Array3Dbyte = array of array of array of byte;
+  Array1Dinteger = array of integer;
+  Array2Dinteger = array of array of integer;
+
+  //PCommonAncestor = ^CommonAncestor;
+
+  //CommonAncestor = record
+    //CA_ID: integer;  // ID of the common ancestor
+    //Steps: integer;  // Steps to reach the ancestor
+
+  //end;
+  //TQueueRecord = record
+    //ID: integer;
+    //Steps: integer;
+  //end;
+
 
   PAgent = ^Agent;
 
@@ -35,6 +50,9 @@ type           {here you declare the data structure for you individuals}
 
     Genome: array of array of integer;
     P_homogeneity: real;
+    UniqueID: integer;
+    IC: real;
+    //add Unique ID and IC
 
   end;
 
@@ -43,6 +61,7 @@ type           {here you declare the data structure for you individuals}
 var               {here you declare global variables}
 
   Population: TList;
+  //ArrayCA =
   Individual: PAgent;
   n_ini: integer;
   max_years: integer;
@@ -81,6 +100,10 @@ var               {here you declare global variables}
   tempX, tempY: integer;
   homeX, homeY, steps, s, new_dir, mem: integer;
   tohome: boolean;
+  //famtree  //TFamtree since it is a table or no, i dont think so
+  Famtree:  Array2Dinteger;
+  UniqueIDnext: integer;
+
 
   {Vital rate variables}
   min_rep_age, min_rep_age_m, max_rep_age, max_age: integer;
