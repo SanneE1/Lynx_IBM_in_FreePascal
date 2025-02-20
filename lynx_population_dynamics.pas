@@ -137,6 +137,7 @@ begin
         survival;                       // Determine which individuals survive this day
       end;
 
+      
       populationsize := population.Count;
       if populationsize > 0 then
       begin
@@ -175,13 +176,14 @@ begin
 
       UpdateAbundanceMap;
 
-      if (current_year = max_years) then
-    begin
-    WriteMapCSV('output_data/FemalesMap_status_yr_' + IntToStr(current_year) + '.csv', Femalesmap, MapdimX, MapdimY, 0);
-    WriteMapCSV('output_data/FemalesMap_age_yr_' + IntToStr(current_year) + '.csv', Femalesmap, MapdimX, MapdimY, 1);
-    WriteMapCSV('output_data/MalesMap_status_yr_' + IntToStr(current_year) + '.csv', Malesmap, MapdimX, MapdimY, 0);
-    WriteMapCSV('output_data/MalesMap_age_yr_' + IntToStr(current_year) + '.csv', Malesmap, MapdimX, MapdimY, 1);
-    end;
+   if (a mod 5 = 0) then
+        begin
+        WriteMapCSV('output_data/FemalesMap_status_' + IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Femalesmap, MapdimX, MapdimY, 0);
+        WriteMapCSV('output_data/FemalesMap_age_' + IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Femalesmap, MapdimX, MapdimY, 1);
+        WriteMapCSV('output_data/MalesMap_status_' + IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Malesmap, MapdimX, MapdimY, 0);
+        WriteMapCSV('output_data/MalesMap_age_' +  IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Malesmap, MapdimX, MapdimY, 1);
+        end;
+
 
     WritePopulationToCSV(population, 'output_data/Population_data.csv', current_sim, current_year);
 
