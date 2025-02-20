@@ -32,6 +32,7 @@
       <Unit>
         <Filename Value="lynx_population_dynamics.pas"/>
         <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
       </Unit>
     </Units>
   </ProjectOptions>

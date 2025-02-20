@@ -11,7 +11,6 @@
       <Title Value="Model_lynx_GUI"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
-      <Icon Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -23,9 +22,18 @@
       <Version Value="2"/>
     </PublishOptions>
     <RunParams>
+      <local>
+        <WorkingDirectory Value="C:\Users\Chiara\Documents\Lynx_IBM_in_FreePascal\"/>
+        <Display Use="True"/>
+      </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
-        <Mode0 Name="default"/>
+        <Mode0 Name="default">
+          <local>
+            <WorkingDirectory Value="C:\Users\Chiara\Documents\Lynx_IBM_in_FreePascal\"/>
+            <Display Use="True"/>
+          </local>
+        </Mode0>
       </Modes>
     </RunParams>
     <RequiredPackages Count="2">
@@ -67,6 +75,7 @@
       <Unit6>
         <Filename Value="lynx_population_dynamics.pas"/>
         <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
       </Unit6>
     </Units>
   </ProjectOptions>
@@ -93,6 +102,8 @@
     <Linking>
       <Debugging>
         <DebugInfoType Value="dsDwarf3"/>
+        <StripSymbols Value="True"/>
+        <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <Options>
         <Win32>

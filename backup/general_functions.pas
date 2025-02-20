@@ -77,12 +77,14 @@ end;
 
 procedure ShowErrorAndExit(const errMsg: string);
 begin
-  {$IFDEF GUI}
+  {$IFDEF LCL}
   // If in GUI mode, use MessageDlg for graphical error display
   MessageDlg('Error: ' + errMsg, mtError, [mbOK], 0);
   {$ELSE}
   // In non-GUI mode, use console output
   Writeln('Error: ', errMsg);
+ // else
+ //   ShowMessage('Error: ' + errMsg);
   {$ENDIF}
 
   Halt(1);  // Exit the program with a non-zero code to indicate error
