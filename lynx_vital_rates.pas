@@ -145,10 +145,6 @@ begin
       begin
        daily_mortality_p := (1-surv_day) + ((1-surv_day) * surv_disp_rho * (Individual^.DailyStepsOpen / Individual^.DailySteps));
        surv_day := 1-daily_mortality_p;
-      end
-    else
-    begin
-
       end;
 
       {Determine fate of individuals}
@@ -190,7 +186,7 @@ var
   Iwin, test_cell_available, c_available, already_terr: boolean;
 
 begin
-
+  check_daily_movement_i := 0;
   with population do
   begin
     populationsize := population.Count;
@@ -234,10 +230,6 @@ begin
 
       {Now start dispersal IF individual has dispersal status}
 
-      { #todo : Include a step to check if the current location is breeding habitat that is free -
-      Survival happens after this, so it is possible for an individual to be in breeding habitat
-      that it couldn't take over in the previous day, but can now. In that case it doesn't make sense to move }
-
       if (Individual^.Status = 1) then
       begin
         SetLength(temp_terrX, Tsize);
@@ -254,6 +246,14 @@ begin
         Individual^.DailyStepsOpen := 0;
         s := 1;
 
+        {Movement check - fill in array}
+        if check_daily_movement_i < 1000 then
+        begin
+        if Individual^.sex = 'f' then check_daily_movement[check_daily_movement_i, 0] := 0
+        else check_daily_movement[check_daily_movement_i, 0] := 1;
+        check_daily_movement[check_daily_movement_i, 1] := Individual^.Age;
+        end;
+
         while s <= steps do
         begin
 
@@ -266,6 +266,10 @@ begin
 
           {Calculate new movement direction}
           new_dir := MoveDir;
+
+          {Movement check - fill in array}
+          if check_daily_movement_i < 1000 then
+          check_daily_movement[check_daily_movement_i, s+1]:= new_dir;
 
           {Calculate coordinates to move to}
           TestCoordX := xp + dx[new_dir];
@@ -463,7 +467,8 @@ begin
               end;
               Inc(s);
           end;
-
+        if check_daily_movement_i < 1000 then
+        check_daily_movement_i := check_daily_movement_i + 1;
         end;
 
         end;

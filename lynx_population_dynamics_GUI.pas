@@ -9,7 +9,7 @@ uses
   Classes, SysUtils, FileUtil, TAGraph, TASeries, Forms, Controls, Graphics,
   Dialogs, StdCtrls, ExtCtrls, Math, LCLType,
   lynx_define_units, general_functions, lynx_input_output_functions,
-  lynx_vital_rates;
+  lynx_vital_rates, lynx_dispersal_assist_functions;
 
 type
 
@@ -260,7 +260,7 @@ end;
 
 procedure Tspatial_Form.Run_ButtonClick(Sender: TObject);
 var
-  a, b, c, i: integer;
+  a, b, c, i, r: integer;
   t: string;
 begin
   randomize; {initialize the pseudorandom number generator}
@@ -283,12 +283,7 @@ begin
   SetLength(FemalesMap, Mapdimx + 1, Mapdimy + 1, 2);
 
   SetLength(ConnectionMap, Mapdimx + 1, Mapdimy + 1, 2);
-  {for a := 0 to High(ConnectionMap) do
-    for b := 0 to High(ConnectionMap[a]) do
-      for c := 0 to 1 do           // where 0 is female, 1 is male
-    begin
-      ConnectionMap[a, b, c] := 0;      // Empty maps to fill with status and age below
-    end;}
+  SetLength(check_daily_movement, 1000, 102);
 
   AssignFile(to_file_out, file_name);
   rewrite(to_file_out); {create txt file}
@@ -301,6 +296,13 @@ begin
   AssignFile(migS_file_out, 'output_data/migration_settled.csv');
   rewrite(migS_file_out); {create txt file}
   writeln(migS_file_out, 'EventID,Simulation,Year,Sex,Age,Natal_pop,Old_pop,New_pop');
+
+  {Check to compare daily movement with Revilla 2015}
+  AssignFile(check_move_file_out, 'output_data/check_movement.csv');
+  rewrite(check_move_file_out); {create txt file}
+  writeln(check_move_file_out, 'Sex,Age,directions');
+
+
 
   for a := 1 to max_years do sum_pop_size[a] := 0;
   for a := 1 to max_years do n_sim_no_ext[a] := 0;
@@ -388,6 +390,18 @@ begin
     WriteMapCSV('output_data/maps/FemalesMap_traveled_' + IntToStr(current_sim) + '.csv', ConnectionMap, MapdimX, MapdimY, 0);
     WriteMapCSV('output_data/maps/MalesMap_traveled_' + IntToStr(current_sim) + '.csv', ConnectionMap, MapdimX, MapdimY, 1);
 
+    {Write movement check to file}
+    append(check_move_file_out);
+    for r := 0 to 1000 - 1 do
+    begin
+      for b := 0 to 101 do
+      begin
+        write(check_move_file_out, check_daily_movement[r,b], ',');
+
+      end;
+      WriteLn(check_move_file_out);
+    end;
+    CloseFile(check_move_file_out);
 
   end;
 

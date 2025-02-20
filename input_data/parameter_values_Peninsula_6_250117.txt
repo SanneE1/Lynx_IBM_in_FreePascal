@@ -1,7 +1,7 @@
 min_rep_age 3
 max_rep_age 8
 max_age 13
-Tsize 4
+Tsize 8
 litter_size 1.9
 litter_size_sd 0.54
 rep_prob 0.5
