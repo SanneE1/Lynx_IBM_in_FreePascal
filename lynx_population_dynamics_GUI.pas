@@ -9,7 +9,7 @@ uses
   Classes, SysUtils, FileUtil, TAGraph, TASeries, Forms, Controls, Graphics,
   Dialogs, StdCtrls, ExtCtrls, Math, LCLType,            //Math not used
   lynx_define_units, general_functions, lynx_input_output_functions,
-  lynx_vital_rates;
+  lynx_vital_rates, lynx_dispersal_assist_functions;
 
 type
 
@@ -82,6 +82,7 @@ begin
       else
         Individual^.sex := 'm';
         Individual^.status := 1;
+        Individual^.UniqueID := UniqueIDnext;
 
       if a < 75 then
       begin
@@ -318,23 +319,17 @@ begin
   val(Edit1.Text, n_ini);
   val(Edit2.Text, max_years);
   val(Edit5.Text, n_sim);
-
-  mapname :='input_data/old_donana.txt';
+  mapname:= Edit10.Text;
+  mapBHname:= Edit4.Text;
 end;
 
-  readmap(mapname);
+  readmap(mapname, mapBHname, mapPops);
 
 
   SetLength(MalesMap, Mapdimx + 1, Mapdimy + 1, 2);
   SetLength(FemalesMap, Mapdimx + 1, Mapdimy + 1, 2);
 
   SetLength(ConnectionMap, Mapdimx + 1, Mapdimy + 1, 2);
-  {for a := 0 to High(ConnectionMap) do
-    for b := 0 to High(ConnectionMap[a]) do
-      for c := 0 to 1 do           // where 0 is female, 1 is male
-    begin
-      ConnectionMap[a, b, c] := 0;      // Empty maps to fill with status and age below
-    end;}
 
   AssignFile(to_file_out, file_name);
   rewrite(to_file_out); {create txt file}

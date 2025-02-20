@@ -1,48 +1,48 @@
 object spatial_Form: Tspatial_Form
   Left = 113
-  Height = 502
+  Height = 516
   Top = 109
-  Width = 1158
+  Width = 1148
   Caption = 'spatial model'
-  ClientHeight = 0
-  ClientWidth = 0
+  ClientHeight = 516
+  ClientWidth = 1148
   DesignTimePPI = 120
   LCLVersion = '3.8.0.0'
   object Run_Button: TButton
-    Left = 905
+    Left = 1008
     Height = 30
-    Top = 271
+    Top = 386
     Width = 92
-    Anchors = []
+    Anchors = [akRight, akBottom]
     Caption = 'Run'
     TabOrder = 0
     OnClick = Run_ButtonClick
   end
   object Exit_Button: TButton
-    Left = 905
+    Left = 1010
     Height = 32
-    Top = 300
+    Top = 427
     Width = 90
-    Anchors = []
+    Anchors = [akTop, akRight]
     Caption = 'Exit'
     TabOrder = 1
     OnClick = Exit_ButtonClick
   end
   object Abort_Button: TButton
-    Left = 905
+    Left = 1010
     Height = 32
-    Top = 332
+    Top = 462
     Width = 90
-    Anchors = []
+    Anchors = [akRight, akBottom]
     Caption = 'Abort'
     TabOrder = 2
     OnClick = Abort_ButtonClick
   end
   object Chart1: TChart
-    Left = 490
-    Height = 222
-    Top = 20
-    Width = 630
+    Left = 506
+    Height = 340
+    Top = -5
+    Width = 640
     AxisList = <    
       item
         Grid.Color = clSilver
@@ -78,6 +78,7 @@ object spatial_Form: Tspatial_Form
     Title.Text.Strings = (
       'TAChart'
     )
+    Anchors = [akRight, akBottom]
     object Chart1LineSeries1: TLineSeries
       Title = 'current run'
       AxisIndexX = 0
@@ -89,42 +90,24 @@ object spatial_Form: Tspatial_Form
       LinePen.Width = 2
     end
   end
-  object Edit5: TEdit
-    Left = 568
-    Height = 28
-    Top = 265
-    Width = 93
-    Anchors = []
-    TabOrder = 4
-    Text = '1'
-  end
-  object Edit10: TEdit
-    Left = 583
-    Height = 28
-    Top = 299
-    Width = 282
-    Anchors = []
-    TabOrder = 5
-    Text = 'input_data/old_donana.txt'
-  end
   object Panel1: TPanel
-    Left = -127
-    Height = 930
-    Top = 20
-    Width = 443
-    ClientHeight = 930
-    ClientWidth = 443
-    TabOrder = 6
+    Left = 27
+    Height = 332
+    Top = 160
+    Width = 507
+    ClientHeight = 332
+    ClientWidth = 507
+    TabOrder = 4
     object Edit1: TEdit
-      Left = 300
+      Left = 180
       Height = 28
-      Top = 35
+      Top = 40
       Width = 93
       TabOrder = 0
-      Text = '100'
+      Text = '476'
     end
     object Label1: TLabel
-      Left = 142
+      Left = 10
       Height = 20
       Top = 40
       Width = 143
@@ -132,7 +115,7 @@ object spatial_Form: Tspatial_Form
       ParentColor = False
     end
     object Label2: TLabel
-      Left = 170
+      Left = 90
       Height = 20
       Top = 10
       Width = 90
@@ -140,52 +123,90 @@ object spatial_Form: Tspatial_Form
       ParentColor = False
     end
     object Edit2: TEdit
-      Left = 298
+      Left = 180
       Height = 28
-      Top = 82
+      Top = 70
       Width = 95
       TabOrder = 1
       Text = '100'
     end
     object Label3: TLabel
-      Left = 160
+      Left = 10
       Height = 20
-      Top = 82
+      Top = 70
       Width = 110
       Caption = 'Number of years'
     end
-  end
-  object Label4: TLabel
-    Left = 408
-    Height = 20
-    Top = 269
-    Width = 151
-    Anchors = []
-    Caption = 'Number of simulations'
-  end
-  object Label5: TLabel
-    Left = 489
-    Height = 20
-    Top = 301
-    Width = 55
-    Anchors = []
-    Caption = 'Map file'
+    object Label4: TLabel
+      Left = 10
+      Height = 20
+      Top = 110
+      Width = 151
+      Caption = 'Number of simulations'
+    end
+    object Edit5: TEdit
+      Left = 182
+      Height = 28
+      Top = 110
+      Width = 93
+      TabOrder = 2
+      Text = '1'
+    end
+    object Label5: TLabel
+      Left = 8
+      Height = 20
+      Top = 120
+      Width = 55
+      Align = alCustom
+      Alignment = taCenter
+      Caption = 'Map file'
+    end
+    object Edit10: TEdit
+      Left = 10
+      Height = 28
+      Top = 180
+      Width = 440
+      TabOrder = 3
+      Text = 'input_data/maps/HabitatMap_500_Peninsula_Revilla_2015_1.txt'
+    end
+    object Label7: TLabel
+      Left = 8
+      Height = 20
+      Top = 184
+      Width = 148
+      Align = alCustom
+      Caption = 'Breeding Habitat Map'
+    end
   end
   object Edit3: TEdit
-    Left = 585
+    Left = 27
     Height = 28
-    Top = 336
-    Width = 278
-    Anchors = []
-    TabOrder = 7
-    Text = 'input_data/parameter_values.txt'
+    Top = 60
+    Width = 427
+    TabOrder = 5
+    Text = 'input_data/parameter_values_Peninsula_6.txt'
+  end
+  object Edit4: TEdit
+    Left = 40
+    Height = 28
+    Top = 417
+    Width = 442
+    TabOrder = 6
+    Text = 'input_data/maps/BreedingHabitat_500_Peninsula_Fordham_2013.txt'
   end
   object Label6: TLabel
-    Left = 456
+    Left = 28
     Height = 20
-    Top = 340
+    Top = 32
     Width = 92
-    Anchors = []
     Caption = 'Parameter file'
+  end
+  object CheckBox1: TCheckBox
+    Left = 23
+    Height = 24
+    Top = 120
+    Width = 180
+    Caption = 'Use custom input below'
+    TabOrder = 7
   end
 end

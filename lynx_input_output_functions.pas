@@ -43,12 +43,7 @@ begin
   reset(filename);
   readln(filename, Mapdimx, Mapdimy);
 
-
-
-
-
   SetLength(HabitatMap, Mapdimx + 1, Mapdimy + 1);
-
 
   for iy := 1 to Mapdimy do
   begin

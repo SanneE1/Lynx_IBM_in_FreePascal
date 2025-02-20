@@ -437,6 +437,8 @@ var
                    xi := temp_terrX[j] + dx[i];
                    yi := temp_terrY[j] + dy[i];
 
+                   if not CanMoveHere(xi,yi) then Continue;
+
                    already_terr := false;
                    for g := 0 to TCount - 1 do
                      begin
