@@ -268,7 +268,7 @@ begin
           new_dir := MoveDir;
 
           {Movement check - fill in array}
-          if check_daily_movement_i < 1001 then
+          if check_daily_movement_i < 1000 then
           check_daily_movement[check_daily_movement_i, s+1]:= new_dir;
 
           {Calculate coordinates to move to}
@@ -332,6 +332,8 @@ begin
 
             if test_cell_available then
             begin
+              if Individual^.Sex = 'f' then
+              begin
               {Look for more breeding habitat until teritory is big enough}
 
               temp_terrX[0] := TestCoordX;
@@ -363,7 +365,8 @@ begin
 
                   end;
 
-                {Keep looking in adjacent cells if not enough territory has been found yet}
+
+              {Keep looking in adjacent cells if not enough territory has been found yet}
                 if TCount < Tsize then
                 begin
                   first_Tcount := TCount;
@@ -406,6 +409,21 @@ begin
                  end;
                   end;
 
+              end
+              else
+              begin
+               {Males just take all the territory of a single settled female}
+
+               temp_ind := FindTerrOwner(population, 'f', TestCoordX, TestCoordY);
+
+               for i := 0 to Length(temp_ind^.TerritoryX) - 1 do
+               begin
+                  temp_terrX[i] := temp_ind^.TerritoryX[i];
+                  temp_terrY[i] := temp_ind^.TerritoryY[i];
+
+                  Inc(TCount);
+               end;
+              end;
 
 
                   {Check that enough territory has been foundso territory can be removed and assigned according}
@@ -420,6 +438,7 @@ begin
                           for d := 0 to population.Count - 1 do
                           begin
                             temp_ind := Items[d];
+                            if temp_ind^.Status > 1 then
                             if temp_ind^.Sex = Individual^.Sex then
                             begin
                               with temp_ind^ do
@@ -463,7 +482,6 @@ begin
               ArrayToNegOne(temp_terrY);
               TCount := 0;
               end;
-
               end;
               Inc(s);
           end;
