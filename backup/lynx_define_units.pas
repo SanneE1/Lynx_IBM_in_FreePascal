@@ -9,8 +9,20 @@ uses
   Classes, SysUtils;
 
 type           {here you declare the data structure for you individuals}
-  Array2Dinteger = array of array of integer;
+
   Array3Dinteger = array of array of array of integer;
+  Array2Dbyte = array of array of byte;
+  Array3Dbyte = array of array of array of byte;
+  Array1Dinteger = array of integer;
+  Array2Dinteger = array of array of integer;
+  Array2Dreal = array of array of real;
+
+  TQueueRecord = record
+    ID: integer;
+    Steps: integer;
+
+  end;
+
 
   PAgent = ^Agent;
 
@@ -36,6 +48,11 @@ type           {here you declare the data structure for you individuals}
     // into Open habitat, for them to return to the last known Dispersal habitat they've visited
     homeX: integer;
     homeY: integer;
+
+    Genome: array of array of integer;
+    P_homogeneity: real;
+    UniqueID: integer;
+    IC: real;
 
   end;
 
@@ -68,7 +85,6 @@ var               {here you declare global variables}
 
   n_ini: integer;
   max_years: integer;
-  rep_prob: real;
   AlphaR: real;
   BetaR: real;
   surv_prob: real;
@@ -110,6 +126,8 @@ var               {here you declare global variables}
   current_year: integer;
   n_cycles: integer;
   pop_status_array: Array2Dinteger;
+  Famtree: array of array of real ;
+  UniqueIDnext: integer;
 
   {Vital rate variables}
   min_rep_age, min_rep_age_m, max_rep_age, max_age: integer;

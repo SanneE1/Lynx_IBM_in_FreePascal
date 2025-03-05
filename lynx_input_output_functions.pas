@@ -122,15 +122,13 @@ procedure ReadParameters(paramname: string);
 var
   par_seq: array[1..29] of string;
   val_seq: array of real;
-  r, spacePos: integer;
-  a, param: string;
+  r, spacePos, code: integer;
+  a, param, raw_value, processed_value: string;
   value: real;
 begin
   {This function is probably much longer than it needs to be. I just need to make absolutely sure
   that if I at some point change or mess with the param file, I get a warning here, so
   I don't accedentily work with parameter values in the wrong variable!}
-
-  //ShowMessage('Current Working Directory: ' + GetCurrentDir);
 
    par_seq[1]:= 'min_rep_age';
    par_seq[2]:= 'max_rep_age';
@@ -178,15 +176,36 @@ begin
      begin
        readln(filename, a);
 
+       a :=Trim(a);
+
        // Find the first space to split the string
       spacePos := Pos(' ', a);
 
-      if spacePos > 0 then
-      begin
-        // Extract parameter name and convert the rest to a real
-        param := Trim(Copy(a, 1, spacePos - 1));                      // Get parameter name
 
-        if (param = 'mapname') then        //CABIO
+     if spacePos > 0 then
+     begin
+       param := Trim(Copy(a, 1, spacePos - 1));
+       raw_value := Trim(Copy(a, spacePos + 1, Length(a)));
+
+
+     if (param = 'mapname') then
+     begin
+       mapname := raw_value;
+       Continue;
+     end
+     else if (param = 'mapBHname') then
+     begin
+       mapBHname := raw_value;
+       Continue;
+     end
+     else if (param = 'mapPops') then
+     begin
+       mapPops := raw_value;
+       Continue;
+      end;
+
+
+    if (param = 'mapname') then        //CABIO
         begin
           mapname := Trim(Copy(a, spacePos + 1, Length(a)));
           Continue;
@@ -201,13 +220,21 @@ begin
           else
         Val(Trim(Copy(a, spacePos + 1, Length(a))), value);     // Convert value part to real - any integers are converted below to correct type
 
+
     if (param = par_seq[r]) then
      val_seq[r] := value
      else
-     // stop program and get error message that parameter name not expected
-     ShowErrorAndExit('One of the parameter names is not as expected. Check parameter file');
-     end
-      else ShowErrorAndExit('No space found. Check parameter file');
+       begin
+          ShowMessage('ERROR: Unexpected parameter in file: ' + param);
+          ShowErrorAndExit('Check parameter file!');
+        end;
+      end
+      //stop program and get error message that parameter name not expected
+     else
+      begin
+       ShowErrorAndExit('No space found. Check parameter file');
+       ShowErrorAndExit('Incorrect format in parameter file! Line: ' + a);
+     end;
      end;
 
 
@@ -243,6 +270,8 @@ begin
 
 
 end;
+
+
 
 procedure UpdateAbundanceMap;
 var

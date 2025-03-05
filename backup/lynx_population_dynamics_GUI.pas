@@ -82,6 +82,7 @@ begin
       else
         Individual^.sex := 'm';
         Individual^.status := 1;
+        Individual^.UniqueID := UniqueIDnext;
 
       if a < 75 then
       begin

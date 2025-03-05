@@ -1,7 +1,7 @@
 object spatial_Form: Tspatial_Form
-  Left = 113
+  Left = 483
   Height = 516
-  Top = 109
+  Top = 230
   Width = 1148
   Caption = 'spatial model'
   ClientHeight = 516

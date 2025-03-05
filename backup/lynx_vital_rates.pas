@@ -22,23 +22,26 @@ implementation
 procedure Reproduction;
 var
   a, g, i, k, current_litter_size, ls, xy, male_x, male_y, homogeneity_count: integer;
-  rep_prob, tmic, IC_kittens : real;
+  tmic, IC_kittens, rand_val : real;
   temp_X, temp_Y, Temp_mem: word;
   male_present: boolean;
   PotentialFather: PAgent;
   father, mother: array of array of integer;
   mother_ID, father_ID, selected_kitten: integer;
 begin
-  rep_prob := rep_prob;
+  //rep_prob := rep_prob;
+ // ShowMessage('Entered Reproduction procedure.');
 
   with population do
   begin
     populationsize := population.Count;
+    //ShowMessage('Population size: ' + IntToStr(populationsize));
     if (populationsize > 1) then
       for a := 0 to populationsize - 1 do
       begin
         Individual := Items[a];
         if Individual^.Sex = 'm' then Continue;
+       // ShowMessage('Checking female ID: ' + IntToStr(Individual^.UniqueID));
 
         male_present:= false;
 
@@ -49,27 +52,39 @@ begin
               if Individual^.age <= max_rep_age then
               // Check that there is a local male
               begin
+            //  ShowMessage('Female ' + IntToStr(Individual^.UniqueID) + ' is reproductively active.');
                 for xy := 0 to length(Individual^.TerritoryX)-1 do
                 begin
                   if Individual^.TerritoryX[xy] = -1 then Continue;
                     if Malesmap[Individual^.TerritoryX[xy], Individual^.TerritoryY[xy], 0] >=2 then
                     begin
                     male_present := true;
-					male_x := Individual^.TerritoryX[xy];
+		    male_x := Individual^.TerritoryX[xy];
                     male_y := Individual^.TerritoryY[xy];
+                  //  ShowMessage('Male found at ' + IntToStr(male_x) + ', ' + IntToStr(male_y));
                     Break;
                     end;
                 end;
 
+                //if male_present then
+               // ShowMessage('Father found for mother ID: ' + IntToStr(Individual^.UniqueID))
+             // else
+               // ShowMessage('No father found for mother ID: ' + IntToStr(Individual^.UniqueID));
+
                 if male_present then
                 begin
+            //    ShowMessage('Male is present, proceeding to reproduction.');
                   setLength(mother, 25, 2);
                   setLength(father, 25, 2);
 
                   PotentialFather := nil;
+            //   ShowMessage('Finding father...');
                 PotentialFather := FindTerrOwner(population, 'm', male_x, male_y);
-                if (PotentialFather <> nil) then
+
+                  if (PotentialFather <> nil) then
                 begin
+               // ShowMessage('Father found with ID: ' + IntToStr(PotentialFather^.UniqueID));
+
                 for i:= 1 to 24 do
                 begin
                     for k:= 0 to 1 do
@@ -78,22 +93,34 @@ begin
                       father[i,k]:= PotentialFather^.Genome[i,k];
                     end;
                end;
+
                 father_ID := PotentialFather^.UniqueID
-                end
-                else
+                end;
+                if (PotentialFather = nil) then
                 begin
+                //  ShowMessage('No father found!');
                   male_present:=false;
                   end;
+
                 end;
 
 
                 if male_present then
-                  if random < rep_prob then
+                begin
+                //ShowMessage('Male present? ' + BoolToStr(male_present, True));
+                // ShowMessage('Checking reproduction block...');
+                 rand_val := random;
+                // ShowMessage('Generated random value: ' + FloatToStr(rand_val));
+                 //ShowMessage('Reproduction probability: ' + FloatToStr(rep_prob));
+
+                 //  ShowMessage('Generated random value: ' + FloatToStr(rand_val) + ' | Reproduction probability: ' + FloatToStr(rep_prob));
+
+                   if rand_val < rep_prob then
                   begin
+                  //ShowMessage('Reproduction probability: ' + FloatToStr(rep_prob));
                     current_litter_size := Round(randg(litter_size, litter_size_sd));
                     mother_ID := Individual^.UniqueID;
                     IC_kittens:= -1;       //something goes wrong, -1 and not the before liiter IC
-
 
 
                     //Save location of the mother, to give to offspring
@@ -101,10 +128,12 @@ begin
                     Temp_Y := Individual^.Coor_Y;
                     Temp_mem := Individual^.mov_mem;
 
+                   // ShowMessage('Checking reproduction... Current litter size: ' + IntToStr(current_litter_size));
+
                     {Create a number of new individuals}
                     for ls := 1 to current_litter_size do
                     begin
-
+                     // ShowMessage('Creating cub ' + IntToStr(ls) + ' out of ' + IntToStr(current_litter_size));
                       New(Individual);
                       Individual^.age := 0;
                       if random < 0.5 then Individual^.sex := 'f'
@@ -115,6 +144,8 @@ begin
                       Individual^.Coor_Y := Temp_Y;
                       Individual^.UniqueID := UniqueIDnext;
                       UniqueIDnext:= UniqueIDnext+1;
+
+                     // ShowMessage('New cub born with ID : '+IntToStr(Individual^.UniqueID));
 
                       Individual^.Natal_pop := whichPop(temp_X, temp_Y);
                       Individual^.Current_pop := whichPop(temp_X, temp_Y);
@@ -155,6 +186,13 @@ begin
                         else
                            Individual^.Genome[i, 1] := father[i, 1];
 
+                        // MODIFICA: Controllo per verificare la presenza di geni corretti
+                      if (Individual^.Genome[i, 0] = -1) or (Individual^.Genome[i, 1] = -1) then
+                      begin
+                        //ShowMessage('ERROR: Invalid genome detected in cub ID: ' + IntToStr(Individual^.UniqueID));
+                         Exit;
+                      end;
+
                       //check for homogeneity
                       if Individual^.Genome[i, 0] = Individual^.Genome[i, 1] then
                       homogeneity_count := homogeneity_count + 1;
@@ -180,6 +218,7 @@ begin
 
 
                       Individual^.IC:= IC_kittens;
+                      //ShowMessage('Adding cub ID: '+IntToStr(Individual^.UniqueID) + 'to population.');
                       Famtree[High(Famtree), 1] := IC_kittens;
 
                       Population.add(Individual);
@@ -187,6 +226,8 @@ begin
 
                     end;
                   end;
+
+                end;
               end;
       end;
   end;
@@ -726,6 +767,5 @@ begin
     end;
 
 end;
->>>>>>> 787e4fe01b1680e718cd926fec18e93cf00b538a
 end.
 

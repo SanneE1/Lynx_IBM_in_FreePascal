@@ -310,7 +310,7 @@ begin
   randomize; {initialize the pseudorandom number generator}
 
   paramname := Edit3.Text;
-  ShowMessage('DEBUG: Paramname = ' + paramname);
+  //ShowMessage('DEBUG: Paramname = ' + paramname);
   ReadParameters(paramname);
 
   if CheckBox1.Checked then
