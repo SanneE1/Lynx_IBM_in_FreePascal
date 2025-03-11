@@ -268,7 +268,6 @@ begin
    n_sim              := Round(val_seq[25]);
    n_cycles           := Round(val_seq[26]);
 
-   ShowMessage('Finished reading parameters.');
 
 end;
 
@@ -360,8 +359,9 @@ begin
     Rewrite(csvFile);
     // Write header
     WriteLn(csvFile, 'Simulation,Year,UniqueID,Sex,Age,Status,Coor_X,Coor_Y,IC, Natal_pop,Previous_pop,Current_pop,Territory_XY, Genome, Homozygosity');
-    end
-  else append(csvFile);
+  end
+
+  append(csvFile);
 
   append(csvFile);
   // Write data for each individual

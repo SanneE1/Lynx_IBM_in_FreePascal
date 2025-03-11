@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils,
-  lynx_define_units, lynx_vital_rates, general_functions, lynx_input_output_functions;
+  lynx_define_units, lynx_vital_rates, general_functions, lynx_input_output_functions, lynx_dispersal_assist_functions;
 
 procedure Startpopulation;
 procedure Pop_dynamics;
@@ -117,12 +117,33 @@ end;
 procedure Pop_dynamics;
 var
   a, b, xy, day, Tcheck: integer;
+  sumIC: array[0..5] of real;
+  countInd: array[0..5] of integer;
+  avgIC: array[0..5] of real;
+  ic_file_out: TextFile;
 begin
  with population do
   begin
+    AssignFile(ic_file_out, 'output_data/average_IC.csv');
+    if FileExists('output_data/average_IC.csv') then
+      Append(ic_file_out)
+    else
+    begin
+      Rewrite(ic_file_out);
+      writeln(ic_file_out, 'Simulation,Year,Pop0,Pop1,Pop2,Pop3,Pop4,Pop5');
+    end;
+
     for a := 1 to max_years do
     begin
       day := 0;  // Start the year
+      current_year := a;
+
+      for i := 0 to 5 do
+      begin
+        sumIC[i] := 0;
+        countInd[i] := 0;
+      end;
+
       while (day < 366) and (populationsize > 0) do //Let's pretend there's no such thing as leap years
       begin
         day := day + 1;
@@ -137,6 +158,7 @@ begin
         survival;                       // Determine which individuals survive this day
       end;
 
+      
       populationsize := population.Count;
       if populationsize > 0 then
       begin
@@ -169,23 +191,52 @@ begin
           end;
 
           each_pop_sizes[Individual^.current_pop, current_year] := each_pop_sizes[Individual^.current_pop, current_year] + 1;
-
+           //  Aggiorna sumIC e countInd per il calcolo della media
+          if (Individual^.Current_pop >= 0) and (Individual^.Current_pop <= 5) then
+          begin
+            sumIC[Individual^.Current_pop] := sumIC[Individual^.Current_pop] + Famtree[Individual^.UniqueID, 1];
+            countInd[Individual^.Current_pop] := countInd[Individual^.Current_pop] + 1;
+          end;
         end;
       end;
 
+      //  Calcolo della media IC per popolazione
+      for i := 0 to 5 do
+      begin
+        if countInd[i] > 0 then
+          avgIC[i] := sumIC[i] / countInd[i]
+        else
+          avgIC[i] := 0;
+      end;
+
+      // Scrittura della media IC nel file CSV
+      Write(ic_file_out, current_sim, ',', current_year, ',');
+      for i := 0 to 5 do
+      begin
+        if i < 5 then
+          Write(ic_file_out, avgIC[i]:0:4, ',')
+        else
+          WriteLn(ic_file_out, avgIC[i]:0:4);
+      end;
+
+      Flush(ic_file_out);
+
+
       UpdateAbundanceMap;
 
-      if (current_year = max_years) then
-    begin
-    WriteMapCSV('output_data/FemalesMap_status_yr_' + IntToStr(current_year) + '.csv', Femalesmap, MapdimX, MapdimY, 0);
-    WriteMapCSV('output_data/FemalesMap_age_yr_' + IntToStr(current_year) + '.csv', Femalesmap, MapdimX, MapdimY, 1);
-    WriteMapCSV('output_data/MalesMap_status_yr_' + IntToStr(current_year) + '.csv', Malesmap, MapdimX, MapdimY, 0);
-    WriteMapCSV('output_data/MalesMap_age_yr_' + IntToStr(current_year) + '.csv', Malesmap, MapdimX, MapdimY, 1);
-    end;
+   if (a mod 5 = 0) then
+        begin
+        WriteMapCSV('output_data/FemalesMap_status_' + IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Femalesmap, MapdimX, MapdimY, 0);
+        WriteMapCSV('output_data/FemalesMap_age_' + IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Femalesmap, MapdimX, MapdimY, 1);
+        WriteMapCSV('output_data/MalesMap_status_' + IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Malesmap, MapdimX, MapdimY, 0);
+        WriteMapCSV('output_data/MalesMap_age_' +  IntToStr(current_sim) + '_' + IntToStr(a) + '_' + IntToStr(day) + '.csv', Malesmap, MapdimX, MapdimY, 1);
+        end;
+
 
     WritePopulationToCSV(population, 'output_data/Population_data.csv', current_sim, current_year);
-
     end;
+
+    CloseFile(ic_file_ou);
   end;
 end;
 
@@ -292,7 +343,6 @@ begin
 
     WriteLn('Done with simulation ', current_sim);
 end;
-
 end;
 
 

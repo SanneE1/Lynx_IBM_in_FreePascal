@@ -67,7 +67,7 @@ begin
   //Create/initiate the Famtree (array of array)
   SetLength(Famtree, n_ini);
 
-  //Initialization of UniqueID at 0 (the first ind will hav an ID of 0)
+  //Initialization of UniqueID at 0 (the first ind will have an ID of 0)
   UniqueIDnext:= 0;
 
   with population do
@@ -123,6 +123,7 @@ begin
       Individual^.homeX := Individual^.Coor_X;
       Individual^.homeY := Individual^.Coor_Y;
       Individual^.return_home := False;
+      Individual^.IC :=0;
 
       Individual^.DailySteps := 0;
       Individual^.DailyStepsOpen := 0;
@@ -195,9 +196,18 @@ end;
 
 procedure Tspatial_Form.Pop_dynamics_GUI;
 var
-  a, b, xy, day, Tcheck, current_sim: integer;
-begin
-  current_sim:= 1;
+  i, a, b, xy, day, Tcheck, current_sim: integer;
+  sumIC: array[0..5] of real;
+  countInd: array[0..5] of integer;
+  avgIC: array[0..5] of real;
+  ic_file_out: TextFile;
+
+  begin
+    AssignFile(ic_file_out, 'output_data/average_IC.csv');
+    Rewrite(ic_file_out);
+    writeln(ic_file_out, 'Simulation,Year,Pop0,Pop1,Pop2,Pop3,Pop4,Pop5');
+
+
   with population do
   begin
     for current_year := 1 to max_years do
@@ -264,7 +274,36 @@ begin
           end;
         end;
         each_pop_sizes[Individual^.current_pop, current_year] := each_pop_sizes[Individual^.current_pop, current_year] + 1;
+         //  Aggiorna sumIC e countInd per il calcolo della media
+          if (Individual^.Current_pop >= 0) and (Individual^.Current_pop <= 5) then
+          begin
+            sumIC[Individual^.Current_pop] := sumIC[Individual^.Current_pop] + Famtree[Individual^.UniqueID, 1];
+            countInd[Individual^.Current_pop] := countInd[Individual^.Current_pop] + 1;
+          end;
+        end;
       end;
+
+      //  Calcolo della media IC per popolazione
+      for i := 0 to 5 do
+      begin
+        if countInd[i] > 0 then
+          avgIC[i] := sumIC[i] / countInd[i]
+        else
+          avgIC[i] := 0;
+      end;
+
+      // Scrittura della media IC nel file CSV
+      Append(ic_file_out);
+      Write(ic_file_out, current_sim, ',', current_year, ',');
+      for i := 0 to 5 do
+      begin
+        if i < 5 then
+          Write(ic_file_out, avgIC[i]:0:4, ',')
+        else
+          WriteLn(ic_file_out, avgIC[i]:0:4);
+      end;
+
+      Flush(ic_file_out);
 
       UpdateAbundanceMap;
 
@@ -295,8 +334,7 @@ begin
       begin
          WritePopulationToCSV(population,'PopulationYear.csv', current_sim, a );
       end;
-
-    end;
+     CloseFile(ic_file_out);
     end;
 
    end;
@@ -310,7 +348,7 @@ begin
   randomize; {initialize the pseudorandom number generator}
 
   paramname := Edit3.Text;
-  ShowMessage('DEBUG: Paramname = ' + paramname);
+  //ShowMessage('DEBUG: Paramname = ' + paramname);
   ReadParameters(paramname);
 
   if CheckBox1.Checked then
