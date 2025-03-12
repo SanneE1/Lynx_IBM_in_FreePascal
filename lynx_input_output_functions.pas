@@ -159,13 +159,13 @@ begin
    par_seq[20]:= 'N_d';
    par_seq[21]:= 'beta';
    par_seq[22]:= 'gamma';
-   par_seq[23]:= 'n_ini';
-   par_seq[24]:= 'max_years';
-   par_seq[25]:= 'n_sim';
-   par_seq[26]:= 'n_cycles';
-   par_seq[27]:= 'mapname';
-   par_seq[28]:= 'mapBHname';
-   par_seq[29]:= 'mapPops';
+   par_seq[23]:= 'max_years';
+   par_seq[24]:= 'n_sim';
+   par_seq[25]:= 'n_cycles';
+   par_seq[26]:= 'mapname';
+   par_seq[27]:= 'mapBHname';
+   par_seq[28]:= 'mapPops';
+   par_seq[29]:= 'start_pop_file';
 
 
    SetLength(val_seq, High(par_seq)+1);
@@ -203,6 +203,8 @@ begin
           mapBHname := Trim(Copy(a, spacePos + 1, Length(a)))
           else if (param = 'mapPops') then
           mapPops := Trim(Copy(a, spacePos + 1, Length(a)))
+          else if (param = 'start_pop_file') then
+          start_pop_file := Trim(Copy(a, spacePos + 1, Length(a)))
           else
         Val(Trim(Copy(a, spacePos + 1, Length(a))), value);     // Convert value part to real - any integers are converted below to correct type
 
@@ -241,10 +243,9 @@ begin
    N_d                := val_seq[20];
    beta               := val_seq[21];
    gamma              := val_seq[22];
-   n_ini              := Round(val_seq[23]);
-   max_years          := Round(val_seq[24]);
-   n_sim              := Round(val_seq[25]);
-   n_cycles           := Round(val_seq[26]);
+   max_years          := Round(val_seq[23]);
+   n_sim              := Round(val_seq[24]);
+   n_cycles           := Round(val_seq[25]);
 
 
 end;

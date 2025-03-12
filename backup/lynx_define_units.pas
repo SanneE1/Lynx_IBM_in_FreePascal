@@ -66,9 +66,7 @@ var               {here you declare global variables}
   SettledList: TList;
   MigrationEvent: PMigration;
 
-  n_ini: integer;
   max_years: integer;
-  rep_prob: real;
   AlphaR: real;
   BetaR: real;
   surv_prob: real;
@@ -110,6 +108,9 @@ var               {here you declare global variables}
   current_year: integer;
   n_cycles: integer;
   pop_status_array: Array2Dinteger;
+  check_daily_movement: Array2Dinteger;
+  check_daily_movement_i: integer;
+  check_move_file_out: TextFile;
 
   {Vital rate variables}
   min_rep_age, min_rep_age_m, max_rep_age, max_age: integer;

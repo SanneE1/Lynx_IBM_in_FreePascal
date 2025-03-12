@@ -83,7 +83,6 @@ var               {here you declare global variables}
   SettledList: TList;
   MigrationEvent: PMigration;
 
-  n_ini: integer;
   max_years: integer;
   AlphaR: real;
   BetaR: real;
@@ -116,7 +115,7 @@ var               {here you declare global variables}
   FemalesMap: Array3Dinteger;
   ConnectionMap: Array3Dinteger;
   Mapdimx, Mapdimy: integer;
-  mapname, mapBHname, mapPops, paramname: string;
+  mapname, mapBHname, mapPops, paramname, start_pop_file: string;
   dx: array[0..8] of integer = (0, 0, 1, 1, 1, 0, -1, -1, -1);
   dy: array[0..8] of integer = (0, 1, 1, 0, -1, -1, -1, 0, 1);
   xp, yp: integer;
@@ -128,6 +127,9 @@ var               {here you declare global variables}
   pop_status_array: Array2Dinteger;
   Famtree: array of array of real ;
   UniqueIDnext: integer;
+  check_daily_movement: Array2Dinteger;
+  check_daily_movement_i: integer;
+  check_move_file_out: TextFile;
 
   {Vital rate variables}
   min_rep_age, min_rep_age_m, max_rep_age, max_age: integer;
