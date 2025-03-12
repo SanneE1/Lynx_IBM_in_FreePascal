@@ -45,6 +45,7 @@ begin
 
   SetLength(HabitatMap, Mapdimx + 1, Mapdimy + 1);
 
+
   for iy := 1 to Mapdimy do
   begin
     begin
@@ -130,6 +131,8 @@ begin
   that if I at some point change or mess with the param file, I get a warning here, so
   I don't accedentily work with parameter values in the wrong variable!}
 
+  //ShowMessage('Current Working Directory: ' + GetCurrentDir);
+
    par_seq[1]:= 'min_rep_age';
    par_seq[2]:= 'max_rep_age';
    par_seq[3]:= 'max_age';
@@ -152,13 +155,13 @@ begin
    par_seq[20]:= 'N_d';
    par_seq[21]:= 'beta';
    par_seq[22]:= 'gamma';
-   par_seq[23]:= 'n_ini';
-   par_seq[24]:= 'max_years';
-   par_seq[25]:= 'n_sim';
-   par_seq[26]:= 'n_cycles';
-   par_seq[27]:= 'mapname';
-   par_seq[28]:= 'mapBHname';
-   par_seq[29]:= 'mapPops';
+   par_seq[23]:= 'max_years';
+   par_seq[24]:= 'n_sim';
+   par_seq[25]:= 'n_cycles';
+   par_seq[26]:= 'mapname';
+   par_seq[27]:= 'mapBHname';
+   par_seq[28]:= 'mapPops';
+   par_seq[29]:= 'start_pop_file';
 
 
    SetLength(val_seq, High(par_seq)+1);
@@ -176,36 +179,15 @@ begin
      begin
        readln(filename, a);
 
-       a :=Trim(a);
-
        // Find the first space to split the string
       spacePos := Pos(' ', a);
 
+      if spacePos > 0 then
+      begin
+        // Extract parameter name and convert the rest to a real
+        param := Trim(Copy(a, 1, spacePos - 1));                      // Get parameter name
 
-     if spacePos > 0 then
-     begin
-       param := Trim(Copy(a, 1, spacePos - 1));
-       raw_value := Trim(Copy(a, spacePos + 1, Length(a)));
-
-
-     if (param = 'mapname') then
-     begin
-       mapname := raw_value;
-       Continue;
-     end
-     else if (param = 'mapBHname') then
-     begin
-       mapBHname := raw_value;
-       Continue;
-     end
-     else if (param = 'mapPops') then
-     begin
-       mapPops := raw_value;
-       Continue;
-      end;
-
-
-    if (param = 'mapname') then        //CABIO
+        if (param = 'mapname') then        //CABIO
         begin
           mapname := Trim(Copy(a, spacePos + 1, Length(a)));
           Continue;
@@ -217,6 +199,8 @@ begin
           mapBHname := Trim(Copy(a, spacePos + 1, Length(a)))
           else if (param = 'mapPops') then
           mapPops := Trim(Copy(a, spacePos + 1, Length(a)))
+          else if (param = 'start_pop_file') then
+          start_pop_file := Trim(Copy(a, spacePos + 1, Length(a)))
           else
         Val(Trim(Copy(a, spacePos + 1, Length(a))), value);     // Convert value part to real - any integers are converted below to correct type
 
@@ -236,6 +220,10 @@ begin
        ShowErrorAndExit('Incorrect format in parameter file! Line: ' + a);
      end;
      end;
+
+
+    Close(filename);
+
 
 
     Close(filename);
@@ -263,11 +251,9 @@ begin
    N_d                := val_seq[20];
    beta               := val_seq[21];
    gamma              := val_seq[22];
-   n_ini              := Round(val_seq[23]);
-   max_years          := Round(val_seq[24]);
-   n_sim              := Round(val_seq[25]);
-   n_cycles           := Round(val_seq[26]);
-
+   max_years          := Round(val_seq[23]);
+   n_sim              := Round(val_seq[24]);
+   n_cycles           := Round(val_seq[25]);
 
 end;
 
@@ -359,9 +345,8 @@ begin
     Rewrite(csvFile);
     // Write header
     WriteLn(csvFile, 'Simulation,Year,UniqueID,Sex,Age,Status,Coor_X,Coor_Y,IC, Natal_pop,Previous_pop,Current_pop,Territory_XY, Genome, Homozygosity');
-  end
-
-  append(csvFile);
+    end
+  else append(csvFile);
 
   append(csvFile);
   // Write data for each individual

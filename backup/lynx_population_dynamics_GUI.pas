@@ -20,7 +20,6 @@ Tspatial_Form = class(TForm)
     Chart1LineSeries1: TLineSeries;
     Chart1LineSeries2: TLineSeries;
     CheckBox1: TCheckBox;
-    Edit1: TEdit;
     Edit10: TEdit;
     Edit2: TEdit;
     Edit3: TEdit;
@@ -28,7 +27,6 @@ Tspatial_Form = class(TForm)
     Edit5: TEdit;
     Exit_Button: TButton;
     Abort_Button: TButton;
-    Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -59,20 +57,41 @@ implementation
 
 procedure Startpopulation;
 var
-  a,b, i, k, Tcheck, xy: integer;
-  tmic: real;
+  a,b, i, k, Tcheck, xy, N, X, Y: integer;
+  lineData: TStringList;
+    tmic: real;
+  popFile: TextFile;
+  popName: string;
 begin
+
   Population := TList.Create;
+  lineData := TStringList.Create;
 
-  //Create/initiate the Famtree (array of array)
-  SetLength(Famtree, n_ini);
+//Create/initiate the Famtree (array of array)
+  SetLength(Famtree, 1);
 
-  //Initialization of UniqueID at 0 (the first ind will have an ID of 0)
+  //Initialization of UniqueID at 0 (the first ind will hav an ID of 0)
   UniqueIDnext:= 0;
+  
+  AssignFile(popFile, start_pop_file);
+  reset(popFile);
 
   with population do
   begin
-    for a := 1 to n_ini do
+  while not Eof(popFile) do
+  begin
+    ReadLn(popFile, popName);
+
+     if (Pos('N', popName) = 1) then Continue;
+
+     lineData.Delimiter := ' ';
+     lineData.DelimitedText := popName;
+
+     N := StrToIntDef(lineData[0], 0);
+     X := StrToIntDef(lineData[1], 0);
+     Y := StrToIntDef(lineData[2], 0);
+
+    for a := 1 to N do
     begin
       new(Individual);
 
@@ -84,31 +103,10 @@ begin
         Individual^.status := 1;
         Individual^.UniqueID := UniqueIDnext;
 
-      if a < 75 then
-      begin
-        Individual^.Coor_X := 546;   // Donana for Peninsula
-        Individual^.Coor_Y := 1568;
-      end
-      else if a < 103 then
-      begin
-        Individual^.Coor_X := 699;   // Matachel for Peninsula
-        Individual^.Coor_Y := 1272;
-      end
-      else if a < 126 then
-      begin
-        Individual^.Coor_X := 1008;  // Montes de Toledo for Peninsula
-        Individual^.Coor_Y := 1057;
-      end
-      else if a < 465 then
-      begin
-        Individual^.Coor_X := 1144;   // Sierra Morena for Peninsula
-        Individual^.Coor_Y := 1369;
-      end
-      else
-      begin
-        Individual^.Coor_X := 364;   // Vale do Guadiana
-        Individual^.Coor_Y := 1394;
-      end;
+        Individual^.Coor_X := X;
+        Individual^.Coor_Y := Y;
+
+        Individual^.UniqueID := UniqueIDnext;
 
       Individual^.Natal_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
       Individual^.Current_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
@@ -149,7 +147,8 @@ begin
 
       Population.add(Individual);
 
-      SetLength(Famtree, n_ini, 4);
+
+      SetLength(Famtree, Length(Famtree) + N, 4);
       Famtree[Individual^.UniqueID,0]:=Individual^.UniqueID;  //UniqueID
       Famtree[Individual^.UniqueID,1]:=0;                     //IC
       Famtree[Individual^.UniqueID,2]:= -1;                   //FatherID
@@ -160,6 +159,8 @@ begin
 
 
     end;
+  end;
+  end;
 
     {Go through some dispersal cycles, to get individuals settled}
     with population do
@@ -191,7 +192,6 @@ begin
 
   end;
   end;
-end;
 
 
 procedure Tspatial_Form.Pop_dynamics_GUI;
@@ -206,7 +206,6 @@ var
     AssignFile(ic_file_out, 'output_data/average_IC.csv');
     Rewrite(ic_file_out);
     writeln(ic_file_out, 'Simulation,Year,Pop0,Pop1,Pop2,Pop3,Pop4,Pop5');
-
 
   with population do
   begin
@@ -335,6 +334,7 @@ var
          WritePopulationToCSV(population,'PopulationYear.csv', current_sim, a );
       end;
      CloseFile(ic_file_out);
+
     end;
 
    end;
@@ -342,32 +342,30 @@ end;
 
 procedure Tspatial_Form.Run_ButtonClick(Sender: TObject);
 var
-  a, b, c, i: integer;
+  a, b, c, i, r: integer;
   t: string;
 begin
   randomize; {initialize the pseudorandom number generator}
 
   paramname := Edit3.Text;
-  //ShowMessage('DEBUG: Paramname = ' + paramname);
   ReadParameters(paramname);
 
   if CheckBox1.Checked then
   begin
   {These values overwrite the values in the file with the input from the GUI}
-  val(Edit1.Text, n_ini);
   val(Edit2.Text, max_years);
   val(Edit5.Text, n_sim);
-  mapname:= Edit10.Text;
-  mapBHname:= Edit4.Text;
 end;
 
-  readmap(mapname, mapBHname, mapPops);
+  readmap(mapname,  mapBHname, mapPops);
 
 
   SetLength(MalesMap, Mapdimx + 1, Mapdimy + 1, 2);
   SetLength(FemalesMap, Mapdimx + 1, Mapdimy + 1, 2);
 
   SetLength(ConnectionMap, Mapdimx + 1, Mapdimy + 1, 2);
+
+  SetLength(check_daily_movement, 1000, 102);
 
   AssignFile(to_file_out, file_name);
   rewrite(to_file_out); {create txt file}
@@ -386,6 +384,11 @@ end;
 
   AssignFile(to_file_out, 'output_data/popsize.txt');
   Rewrite(to_file_out); {create txt file}
+
+  {Check to compare daily movement with Revilla 2015}
+  AssignFile(check_move_file_out, 'output_data/check_movement.csv');
+  rewrite(check_move_file_out); {create txt file}
+  writeln(check_move_file_out, 'Sex,Age,directions');
 
   for a := 1 to max_years do sum_pop_size[a] := 0;
   for a := 1 to max_years do n_sim_no_ext[a] := 0;
@@ -473,6 +476,18 @@ end;
     WriteMapCSV('output_data/maps/FemalesMap_traveled_' + IntToStr(current_sim) + '.csv', ConnectionMap, MapdimX, MapdimY, 0);
     WriteMapCSV('output_data/maps/MalesMap_traveled_' + IntToStr(current_sim) + '.csv', ConnectionMap, MapdimX, MapdimY, 1);
 
+    {Write movement check to file}
+    append(check_move_file_out);
+    for r := 0 to 1000 - 1 do
+    begin
+      for b := 0 to 101 do
+      begin
+        write(check_move_file_out, check_daily_movement[r,b], ',');
+
+      end;
+      WriteLn(check_move_file_out);
+    end;
+    CloseFile(check_move_file_out);
 
   end;
 

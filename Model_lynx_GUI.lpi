@@ -23,14 +23,12 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <WorkingDirectory Value="C:\Users\Chiara\Documents\Lynx_IBM_in_FreePascal\"/>
         <Display Use="True"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <WorkingDirectory Value="C:\Users\Chiara\Documents\Lynx_IBM_in_FreePascal\"/>
             <Display Use="True"/>
           </local>
         </Mode0>
