@@ -51,10 +51,8 @@
       <Unit5>
         <Filename Value="lynx_vital_rates.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="29"/>
-        <CursorPos Y="73"/>
+        <CursorPos X="6" Y="41"/>
         <UsageCount Value="339"/>
         <Loaded Value="True"/>
       </Unit5>
@@ -96,16 +94,16 @@
         <EditorIndex Value="1"/>
         <TopLine Value="123"/>
         <CursorPos X="25" Y="132"/>
-        <FoldState Value=" T3kR0{JA"/>
         <UsageCount Value="166"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit10>
       <Unit11>
         <Filename Value="lynx_dispersal_assist_functions.pas"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <CursorPos X="23" Y="295"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit11>
       <Unit12>

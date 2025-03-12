@@ -21,7 +21,6 @@ implementation
 procedure Reproduction;
 var
   a, x,y, current_litter_size, ls, xy, FatherX, FatherY, CurrentDist: integer;
-  rep_prob: real;
   temp_X, temp_Y, Temp_mem: word;
   male_present: boolean;
 begin

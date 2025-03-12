@@ -51,7 +51,7 @@ begin
                 end
                 else
                   begin
-                   for CurrentDist := 0 to 30 do
+                   for CurrentDist := 0 to 80 do
                    begin
                      // Check all cells at the current distance from the starting point
                        for x := Individual^.Coor_X - CurrentDist to Individual^.Coor_X + CurrentDist do
