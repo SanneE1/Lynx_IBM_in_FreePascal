@@ -56,7 +56,7 @@ begin
                 end
                 else
                   begin
-                   for CurrentDist := 0 to 80 do
+                   for CurrentDist := 0 to 30 do
                    begin
                      // Check all cells at the current distance from the starting point
                        for x := Individual^.Coor_X - CurrentDist to Individual^.Coor_X + CurrentDist do
@@ -73,8 +73,8 @@ begin
         // Check if this cell has a male
                              if Malesmap[x, y, 0] >= 2 then
                              begin
-                             FatherX := x;
-                             FatherY := y;
+                             male_x := x;
+                             male_y := y;
                              male_present := True;
                              Break;
           // Don't break here - we need to check all cells at this distance

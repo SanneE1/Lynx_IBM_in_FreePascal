@@ -57,17 +57,18 @@ implementation
 
 procedure Startpopulation;
 var
-  a,b, Tcheck, xy, N, X, Y: integer;
+  a,b, i, k, Tcheck, xy, N, X, Y: integer;
   lineData: TStringList;
     tmic: real;
   popFile: TextFile;
   popName: string;
 begin
+
   Population := TList.Create;
   lineData := TStringList.Create;
 
 //Create/initiate the Famtree (array of array)
-  SetLength(Famtree, n_ini);
+  SetLength(Famtree, 1);
 
   //Initialization of UniqueID at 0 (the first ind will hav an ID of 0)
   UniqueIDnext:= 0;
@@ -104,6 +105,7 @@ begin
         Individual^.Coor_X := X;
         Individual^.Coor_Y := Y;
 
+        Individual^.UniqueID := UniqueIDnext;
 
       Individual^.Natal_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
       Individual^.Current_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
@@ -143,7 +145,7 @@ begin
 
       Population.add(Individual);
 
-      SetLength(Famtree, n_ini, 4);
+      SetLength(Famtree, Length(Famtree) + N, 4);
       Famtree[Individual^.UniqueID,0]:=Individual^.UniqueID;  //UniqueID
       Famtree[Individual^.UniqueID,1]:=0;                     //IC
       Famtree[Individual^.UniqueID,2]:= -1;                   //FatherID
@@ -157,6 +159,7 @@ begin
   end;
   end;
 
+    {
     {Go through some dispersal cycles, to get individuals settled}
     with population do
     for a := 1 to n_cycles do
@@ -185,7 +188,7 @@ begin
 
     end;
 
-  end;
+  end;  }
   end;
 
 
@@ -314,11 +317,9 @@ begin
   {These values overwrite the values in the file with the input from the GUI}
   val(Edit2.Text, max_years);
   val(Edit5.Text, n_sim);
-
-  mapname :='input_data/old_donana.txt';
 end;
 
-  readmap(mapname);
+  readmap(mapname,  mapBHname, mapPops);
 
 
   SetLength(MalesMap, Mapdimx + 1, Mapdimy + 1, 2);

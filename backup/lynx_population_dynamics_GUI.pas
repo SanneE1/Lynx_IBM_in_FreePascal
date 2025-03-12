@@ -7,7 +7,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, TAGraph, TASeries, Forms, Controls, Graphics,
-  Dialogs, StdCtrls, ExtCtrls, Math, LCLType,
+  Dialogs, StdCtrls, ExtCtrls, Math, LCLType,            //Math not used
   lynx_define_units, general_functions, lynx_input_output_functions,
   lynx_vital_rates, lynx_dispersal_assist_functions;
 
@@ -57,14 +57,22 @@ implementation
 
 procedure Startpopulation;
 var
-  a,b, Tcheck, xy, N, X, Y: integer;
+  a,b, i, k, Tcheck, xy, N, X, Y: integer;
   lineData: TStringList;
+    tmic: real;
   popFile: TextFile;
   popName: string;
 begin
+
   Population := TList.Create;
   lineData := TStringList.Create;
 
+//Create/initiate the Famtree (array of array)
+  SetLength(Famtree, 1);
+
+  //Initialization of UniqueID at 0 (the first ind will hav an ID of 0)
+  UniqueIDnext:= 0;
+  
   AssignFile(popFile, start_pop_file);
   reset(popFile);
 
@@ -97,11 +105,11 @@ begin
         Individual^.Coor_X := X;
         Individual^.Coor_Y := Y;
 
+        Individual^.UniqueID := UniqueIDnext;
 
       Individual^.Natal_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
       Individual^.Current_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
       Individual^.Previous_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
-
 
       setLength(Individual^.TerritoryX, Tsize);
       setLength(Individual^.TerritoryY, Tsize);
@@ -116,7 +124,36 @@ begin
       Individual^.DailySteps := 0;
       Individual^.DailyStepsOpen := 0;
 
+      setLength(Individual^.Genome, 25, 2);
+
+
+      for i := 1 to 24 do
+      begin
+        for k := 0 to 1 do
+        begin
+          tmic := random;
+          if tmic < 0.25 then
+            Individual^.Genome[i, k] := 1
+          else if tmic < 0.5 then
+            Individual^.Genome[i, k] := 2
+          else if tmic < 0.75 then
+            Individual^.Genome[i, k] := 3
+          else
+            Individual^.Genome[i, k] := 4;
+          end;
+        end;
+
       Population.add(Individual);
+
+      SetLength(Famtree, Length(Famtree) + N, 4);
+      Famtree[Individual^.UniqueID,0]:=Individual^.UniqueID;  //UniqueID
+      Famtree[Individual^.UniqueID,1]:=0;                     //IC
+      Famtree[Individual^.UniqueID,2]:= -1;                   //FatherID
+      Famtree[Individual^.UniqueID,3]:= -1;                   //MotherID
+
+
+      UniqueIDnext:= UniqueIDnext+1
+
 
     end;
   end;
@@ -152,13 +189,13 @@ begin
 
   end;
   end;
-end;
 
 
 procedure Tspatial_Form.Pop_dynamics_GUI;
 var
-  b, xy, day, Tcheck: integer;
+  a, b, xy, day, Tcheck, current_sim: integer;
 begin
+  current_sim:= 1;
   with population do
   begin
     for current_year := 1 to max_years do
@@ -171,7 +208,8 @@ begin
 
         if day = 90 then
           if populationsize > 2 then
-            reproduction;               // Reproduction happens at the end of March
+
+          reproduction;                 // Reproduction happens at the end of March
 
         Dispersal(day);                 // Dispersal of surviving individuals (also includes dispersion start for subadults)
 
@@ -251,6 +289,11 @@ begin
 
     WritePopulationToCSV(population, 'output_data/Population_data.csv', current_sim, current_year);
 
+      if (a <= 5) then
+      begin
+         WritePopulationToCSV(population,'PopulationYear.csv', current_sim, a );
+      end;
+
     end;
     end;
 
@@ -265,17 +308,18 @@ begin
   randomize; {initialize the pseudorandom number generator}
 
   paramname := Edit3.Text;
+  ShowMessage('DEBUG: Paramname = ' + paramname);
   ReadParameters(paramname);
 
   if CheckBox1.Checked then
   begin
   {These values overwrite the values in the file with the input from the GUI}
   val(Edit2.Text, max_years);
-  mapname := Edit10.Text;
-  mapBHname := Edit4.Text;
-  end;
+  val(Edit5.Text, n_sim);
+end;
 
-  readmap(mapname, mapBHname, mapPops);
+  readmap(mapname,  mapBHname, mapPops);
+
 
   SetLength(MalesMap, Mapdimx + 1, Mapdimy + 1, 2);
   SetLength(FemalesMap, Mapdimx + 1, Mapdimy + 1, 2);
@@ -295,12 +339,16 @@ begin
   rewrite(migS_file_out); {create txt file}
   writeln(migS_file_out, 'EventID,Simulation,Year,Sex,Age,Natal_pop,Old_pop,New_pop');
 
+  if not DirectoryExists('output_data') then
+    MkDir('output_data');
+
+  AssignFile(to_file_out, 'output_data/popsize.txt');
+  Rewrite(to_file_out); {create txt file}
+
   {Check to compare daily movement with Revilla 2015}
   AssignFile(check_move_file_out, 'output_data/check_movement.csv');
   rewrite(check_move_file_out); {create txt file}
   writeln(check_move_file_out, 'Sex,Age,directions');
-
-
 
   for a := 1 to max_years do sum_pop_size[a] := 0;
   for a := 1 to max_years do n_sim_no_ext[a] := 0;
