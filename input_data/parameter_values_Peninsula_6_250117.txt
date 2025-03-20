@@ -20,6 +20,7 @@ L 6
 N_d 5
 beta 0.8
 gamma 0.09
+n_ini 476
 max_years 100
 n_sim 1
 n_cycles 3
