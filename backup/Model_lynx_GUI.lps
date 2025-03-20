@@ -44,7 +44,7 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="150"/>
+        <TopLine Value="154"/>
         <CursorPos Y="176"/>
         <UsageCount Value="340"/>
         <Loaded Value="True"/>
@@ -251,15 +251,6 @@
     </HistoryLists>
   </ProjectSession>
   <Debugging>
-    <BreakPoints>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="lynx_input_output_functions.pas"/>
-        <Line Value="176"/>
-      </Item>
-    </BreakPoints>
     <Watches>
       <Item>
         <Expression Value="populationsize"/>

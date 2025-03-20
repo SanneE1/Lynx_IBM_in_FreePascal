@@ -21,7 +21,7 @@ implementation
 
 procedure Reproduction;
 var
-  a, x,y, g, i, k, current_litter_size, ls, xy, x, y, male_x, male_y, homogeneity_count, CurrentDist: integer;
+  a, x,y, g, i, k, current_litter_size, ls, xy, male_x, male_y, homogeneity_count, CurrentDist: integer;
   tmic, IC_kittens : real;
   temp_X, temp_Y, Temp_mem: word;
   male_present: boolean;
