@@ -20,7 +20,6 @@ Tspatial_Form = class(TForm)
     Chart1LineSeries1: TLineSeries;
     Chart1LineSeries2: TLineSeries;
     CheckBox1: TCheckBox;
-    Edit1: TEdit;
     Edit10: TEdit;
     Edit2: TEdit;
     Edit3: TEdit;
@@ -28,7 +27,6 @@ Tspatial_Form = class(TForm)
     Edit5: TEdit;
     Exit_Button: TButton;
     Abort_Button: TButton;
-    Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -59,13 +57,34 @@ implementation
 
 procedure Startpopulation;
 var
-  a,b, Tcheck, xy: integer;
+  a,b, Tcheck, xy, N, X, Y: integer;
+  lineData: TStringList;
+  popFile: TextFile;
+  popName: string;
 begin
   Population := TList.Create;
+  lineData := TStringList.Create;
+
+  AssignFile(popFile, start_pop_file);
+  reset(popFile);
+
   with population do
   begin
-    for a := 1 to n_ini do
+    while not Eof(popFile) do
     begin
+      ReadLn(popFile, popName);
+
+      if(Pos('N', popName) = 1) then Continue;
+
+      LineData.Delimiter := ' ';
+      lineData.DelimitedText := popName;
+
+      N := StrToIntDef(lineData[0], 0);
+      X := StrToIntDef(lineData[1], 0);
+      Y := StrToIntDef(lineData[2], 0);
+
+      for a := 1 to N do
+      begin
       new(Individual);
 
       Individual^.age := random(3) + 3;   {alternative: Individual^.age:=0; }
@@ -75,53 +94,31 @@ begin
         Individual^.sex := 'm';
         Individual^.status := 1;
 
-      if a < 75 then
-      begin
-        Individual^.Coor_X := 546;   // Donana for Peninsula
-        Individual^.Coor_Y := 1568;
-      end
-      else if a < 103 then
-      begin
-        Individual^.Coor_X := 699;   // Matachel for Peninsula
-        Individual^.Coor_Y := 1272;
-      end
-      else if a < 126 then
-      begin
-        Individual^.Coor_X := 1008;  // Montes de Toledo for Peninsula
-        Individual^.Coor_Y := 1057;
-      end
-      else if a < 465 then
-      begin
-        Individual^.Coor_X := 1144;   // Sierra Morena for Peninsula
-        Individual^.Coor_Y := 1369;
-      end
-      else
-      begin
-        Individual^.Coor_X := 364;   // Vale do Guadiana
-        Individual^.Coor_Y := 1394;
+        Individual^.Coor_X := X;
+        Individual^.Coor_Y := Y;
+
+        Individual^.Natal_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
+        Individual^.Current_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
+        Individual^.Previous_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
+
+        setLength(Individual^.TerritoryX, Tsize);
+        setLength(Individual^.TerritoryY, Tsize);
+        ArrayToNegOne(Individual^.TerritoryX);
+        ArrayToNegOne(Individual^.TerritoryY);
+
+        Individual^.mov_mem := random(8) + 1;
+        Individual^.homeX := Individual^.Coor_X;
+        Individual^.homeY := Individual^.Coor_Y;
+        Individual^.return_home := False;
+
+        Individual^.DailySteps := 0;
+        Individual^.DailyStepsOpen := 0;
+
+        Population.add(Individual);
+
       end;
-
-      Individual^.Natal_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
-      Individual^.Current_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
-      Individual^.Previous_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
-
-
-      setLength(Individual^.TerritoryX, Tsize);
-      setLength(Individual^.TerritoryY, Tsize);
-      ArrayToNegOne(Individual^.TerritoryX);
-      ArrayToNegOne(Individual^.TerritoryY);
-
-      Individual^.mov_mem := random(8) + 1;
-      Individual^.homeX := Individual^.Coor_X;
-      Individual^.homeY := Individual^.Coor_Y;
-      Individual^.return_home := False;
-
-      Individual^.DailySteps := 0;
-      Individual^.DailyStepsOpen := 0;
-
-      Population.add(Individual);
-
     end;
+  end;
 
     {Go through some dispersal cycles, to get individuals settled}
     with population do
@@ -151,7 +148,6 @@ begin
 
     end;
 
-  end;
   end;
 end;
 
@@ -271,7 +267,6 @@ begin
   if CheckBox1.Checked then
   begin
   {These values overwrite the values in the file with the input from the GUI}
-  val(Edit1.Text, n_ini);
   val(Edit2.Text, max_years);
   mapname := Edit10.Text;
   mapBHname := Edit4.Text;

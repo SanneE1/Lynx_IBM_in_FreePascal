@@ -5,7 +5,7 @@ Tsize 6
 litter_size 1.9
 litter_size_sd 0.54
 rep_prob 0.57
-surv_cub 0.384
+surv_cub 0.809
 surv_sub 0.599
 surv_resident 0.798
 surv_disperse 0.798
@@ -20,7 +20,6 @@ L 6
 N_d 5
 beta 0.8
 gamma 0.09
-n_ini 476
 max_years 100
 n_sim 1
 n_cycles 3

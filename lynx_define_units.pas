@@ -66,7 +66,6 @@ var               {here you declare global variables}
   SettledList: TList;
   MigrationEvent: PMigration;
 
-  n_ini: integer;
   max_years: integer;
   AlphaR: real;
   BetaR: real;
@@ -99,7 +98,7 @@ var               {here you declare global variables}
   FemalesMap: Array3Dinteger;
   ConnectionMap: Array3Dinteger;
   Mapdimx, Mapdimy: integer;
-  mapname, mapBHname, mapPops, paramname: string;
+  mapname, mapBHname, mapPops, paramname, start_pop_file: string;
   dx: array[0..8] of integer = (0, 0, 1, 1, 1, 0, -1, -1, -1);
   dy: array[0..8] of integer = (0, 1, 1, 0, -1, -1, -1, 0, 1);
   xp, yp: integer;
