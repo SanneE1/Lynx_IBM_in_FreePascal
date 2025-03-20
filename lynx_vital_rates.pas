@@ -21,8 +21,8 @@ implementation
 
 procedure Reproduction;
 var
-  a, x,y, g, i, k, current_litter_size, ls, xy, male_x, male_y, homogeneity_count, CurrentDist: integer;
-  rep_prob, tmic, IC_kittens : real;
+  a, x,y, g, i, k, current_litter_size, ls, xy, x, y, male_x, male_y, homogeneity_count, CurrentDist: integer;
+  tmic, IC_kittens : real;
   temp_X, temp_Y, Temp_mem: word;
   male_present: boolean;
   PotentialFather: PAgent;
@@ -114,6 +114,38 @@ begin
                   end;
                 end;
 
+                if not male_present then
+                begin
+                   for CurrentDist := 0 to 80 do
+                   begin
+                     // Check all cells at the current distance from the starting point
+                     for x := Individual^.Coor_X - CurrentDist to Individual^.Coor_X + CurrentDist do
+                     begin
+                     for y := Individual^.Coor_Y - CurrentDist to Individual^.Coor_Y + CurrentDist do
+                     begin
+
+                     // only checks cells on the "ring" at CurrentDist
+                     if (Max(Abs(x- Individual^.Coor_X), Abs(y - Individual^.Coor_Y)) <> CurrentDist) then
+                     Continue;
+
+                     // Skip coordinates where lynx couldn't move (so also no coordinates for territory)
+                     if not canMoveHere(x, y) then Continue;
+
+                      // Check if this cell has a male
+                      if Malesmap[x, y, 0] >= 2 then
+                      begin
+                      male_present := True;
+                      Break;
+                      // Don't break here - we need to check all cells at this distance
+                      // to make sure we find the closest one(s)
+                      end;
+                      end;
+                      if male_present then Break;
+                      end;
+                      if male_present then Break;
+
+                      end;
+                end;
 
                 if male_present then
                   if random < rep_prob then
@@ -216,6 +248,7 @@ begin
                     end;
                   end;
               end;
+
       end;
   end;
 end;
@@ -248,6 +281,7 @@ begin
  Result := 0;
 
 end;
+
 
 procedure Survival;
 var
@@ -560,8 +594,9 @@ begin
               begin
 
                {Males just take all the territory of a single settled female}
-
                temp_ind := FindTerrOwner(population, 'f', TestCoordX, TestCoordY);
+
+               if temp_ind = nil then Continue;
 
                for i := 0 to Length(temp_ind^.TerritoryX) - 1 do
                begin

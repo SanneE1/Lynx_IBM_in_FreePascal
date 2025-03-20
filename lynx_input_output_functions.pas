@@ -243,7 +243,6 @@ begin
    n_sim              := Round(val_seq[24]);
    n_cycles           := Round(val_seq[25]);
 
-
 end;
 
 procedure UpdateAbundanceMap;
