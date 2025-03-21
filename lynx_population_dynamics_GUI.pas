@@ -195,7 +195,7 @@ end;
 
 procedure Tspatial_Form.Pop_dynamics_GUI;
 var
-  i, a, b, xy, day, Tcheck, current_sim: integer;
+  i, a, b, xy, day, Tcheck: integer;
   sumIC: array[0..5] of real;
   countInd: array[0..5] of integer;
   avgIC: array[0..5] of real;

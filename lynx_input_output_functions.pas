@@ -120,7 +120,7 @@ end;
 
 procedure ReadParameters(paramname: string);
 var
-  par_seq: array[1..29] of string;
+  par_seq: array[1..32] of string;
   val_seq: array of real;
   r, spacePos, code: integer;
   a, param, raw_value, processed_value: string;
@@ -155,10 +155,13 @@ begin
    par_seq[23]:= 'max_years';
    par_seq[24]:= 'n_sim';
    par_seq[25]:= 'n_cycles';
-   par_seq[26]:= 'mapname';
-   par_seq[27]:= 'mapBHname';
-   par_seq[28]:= 'mapPops';
-   par_seq[29]:= 'start_pop_file';
+   par_seq[26]:= 'IC_eff_surv';
+   par_seq[27]:= 'IC_eff_rep';
+   par_seq[28]:= 'IC_eff_kittens';
+   par_seq[29]:= 'mapname';
+   par_seq[30]:= 'mapBHname';
+   par_seq[31]:= 'mapPops';
+   par_seq[32]:= 'start_pop_file';
 
 
    SetLength(val_seq, High(par_seq)+1);
@@ -186,30 +189,6 @@ begin
      begin
        param := Trim(Copy(a, 1, spacePos - 1));
        raw_value := Trim(Copy(a, spacePos + 1, Length(a)));
-
-
-     if (param = 'mapname') then
-     begin
-       mapname := raw_value;
-       Continue;
-     end
-     else if (param = 'mapBHname') then
-     begin
-       mapBHname := raw_value;
-       Continue;
-     end
-     else if (param = 'mapPops') then
-     begin
-       mapPops := raw_value;
-       Continue;
-      end;
-
-
-    if (param = 'mapname') then        //CABIO
-        begin
-          mapname := Trim(Copy(a, spacePos + 1, Length(a)));
-          Continue;
-        end;
 
         if (param = 'mapname') then
           mapname := Trim(Copy(a, spacePos + 1, Length(a)))
@@ -268,7 +247,9 @@ begin
    max_years          := Round(val_seq[23]);
    n_sim              := Round(val_seq[24]);
    n_cycles           := Round(val_seq[25]);
-
+   IC_eff_surv        := val_seq[26];
+   IC_eff_rep         := val_seq[27];
+   IC_eff_kittens     := val_seq[28];
 end;
 
 

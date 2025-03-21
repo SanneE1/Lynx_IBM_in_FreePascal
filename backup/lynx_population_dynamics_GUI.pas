@@ -70,7 +70,7 @@ begin
 //Create/initiate the Famtree (array of array)
   SetLength(Famtree, 1);
 
-  //Initialization of UniqueID at 0 (the first ind will hav an ID of 0)
+  //Initialization of UniqueID at 0 (the first ind will have an ID of 0)
   UniqueIDnext:= 0;
 
   AssignFile(popFile, start_pop_file);
@@ -147,7 +147,6 @@ begin
 
       Population.add(Individual);
 
-
       SetLength(Famtree, Length(Famtree) + N, 4);
       Famtree[Individual^.UniqueID,0]:=Individual^.UniqueID;  //UniqueID
       Famtree[Individual^.UniqueID,1]:=0;                     //IC
@@ -196,7 +195,7 @@ end;
 
 procedure Tspatial_Form.Pop_dynamics_GUI;
 var
-  i, a, b, xy, day, Tcheck, current_sim: integer;
+  i, a, b, xy, day, Tcheck: integer;
   sumIC: array[0..5] of real;
   countInd: array[0..5] of integer;
   avgIC: array[0..5] of real;
@@ -206,6 +205,7 @@ var
     AssignFile(ic_file_out, 'output_data/average_IC.csv');
     Rewrite(ic_file_out);
     writeln(ic_file_out, 'Simulation,Year,Pop0,Pop1,Pop2,Pop3,Pop4,Pop5');
+
 
   with population do
   begin
@@ -327,14 +327,11 @@ var
     //WriteMapCSV('output_data/maps/MalesMap_age_yr_' + IntToStr(current_year) + '.csv', Malesmap, MapdimX, MapdimY, 1);
     end;
 
-    WritePopulationToCSV(population, 'output_data/Population_data.csv', current_sim, current_year);
-
-      if (a <= 5) then
+      if (current_year <= 5) then
       begin
-         WritePopulationToCSV(population,'PopulationYear.csv', current_sim, a );
+         WritePopulationToCSV(population,'PopulationYear.csv', current_sim, current_year );
       end;
      CloseFile(ic_file_out);
-
     end;
 
    end;

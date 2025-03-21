@@ -22,7 +22,7 @@ implementation
 procedure Reproduction;
 var
   a,  x,y,g, i, k, current_litter_size, ls, xy, male_x, male_y, homogeneity_count, CurrentDist: integer;
-  tmic, IC_kittens, rand_val : real;
+  tmic, IC_kittens, rand_val, IC_rep_prob : real;
   temp_X, temp_Y, Temp_mem: word;
   male_present: boolean;
   PotentialFather: PAgent;
@@ -86,8 +86,8 @@ begin
                        if male_present then Break;
                    end;
                   end;
-                  //
-                  //
+
+
 
 
                 if male_present then
@@ -154,8 +154,9 @@ begin
 
                 if male_present then
                 begin
+                IC_rep_prob := rep_prob*(1+(IC_eff_rep*(0.5-Individual^.IC)));
                  rand_val := random;
-                   if rand_val < rep_prob then
+                   if rand_val < IC_rep_prob then
                   begin
                     current_litter_size := Round(randg(litter_size, litter_size_sd));
                     mother_ID := Individual^.UniqueID;
@@ -298,7 +299,7 @@ end;
 procedure Survival;
 var
   a, b: integer;
-  surv_p, surv_day, daily_mortality_p: real;
+  surv_p, surv_day, daily_mortality_p, IC_surv_prob: real;
   die: boolean;
 
   //temp_X,temp_Y:word;
@@ -339,11 +340,16 @@ begin
        surv_day := 1-daily_mortality_p;
       end;
 
+      if (IC_eff_kittens>0) and (Individual^.Status=0)then
+        IC_surv_prob := surv_cub * (1 + IC_eff_kittens *(0.5 - Individual^.IC))
+      else
+        IC_surv_prob := surv_day*(1+(IC_eff_surv*(0.5-Individual^.IC)));
+
       {Determine fate of individuals}
       die := False;
       if Individual^.age > max_age then die := True
       else
-        if random > surv_day then die := True;
+        if random > IC_surv_prob then die := True;
       if die then
       begin
        if Individual^.Status >= 2 then

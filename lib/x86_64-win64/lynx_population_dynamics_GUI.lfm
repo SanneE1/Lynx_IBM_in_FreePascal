@@ -1,7 +1,7 @@
 object spatial_Form: Tspatial_Form
-  Left = 483
+  Left = 113
   Height = 516
-  Top = 230
+  Top = 109
   Width = 1148
   Caption = 'spatial model'
   ClientHeight = 516
@@ -12,16 +12,16 @@ object spatial_Form: Tspatial_Form
     Left = 1008
     Height = 30
     Top = 386
-    Width = 92
+    Width = 91
     Anchors = [akRight, akBottom]
     Caption = 'Run'
     TabOrder = 0
     OnClick = Run_ButtonClick
   end
   object Exit_Button: TButton
-    Left = 1010
+    Left = 1009
     Height = 32
-    Top = 427
+    Top = 426
     Width = 90
     Anchors = [akTop, akRight]
     Caption = 'Exit'
@@ -29,9 +29,9 @@ object spatial_Form: Tspatial_Form
     OnClick = Exit_ButtonClick
   end
   object Abort_Button: TButton
-    Left = 1010
+    Left = 1009
     Height = 32
-    Top = 462
+    Top = 463
     Width = 90
     Anchors = [akRight, akBottom]
     Caption = 'Abort'
@@ -39,9 +39,9 @@ object spatial_Form: Tspatial_Form
     OnClick = Abort_ButtonClick
   end
   object Chart1: TChart
-    Left = 506
+    Left = 590
     Height = 340
-    Top = -5
+    Top = 57
     Width = 640
     AxisList = <    
       item
@@ -78,7 +78,7 @@ object spatial_Form: Tspatial_Form
     Title.Text.Strings = (
       'TAChart'
     )
-    Anchors = [akRight, akBottom]
+    Anchors = []
     object Chart1LineSeries1: TLineSeries
       Title = 'current run'
       AxisIndexX = 0
@@ -91,29 +91,13 @@ object spatial_Form: Tspatial_Form
     end
   end
   object Panel1: TPanel
-    Left = 27
-    Height = 332
+    Left = 26
+    Height = 331
     Top = 160
-    Width = 507
-    ClientHeight = 332
-    ClientWidth = 507
+    Width = 506
+    ClientHeight = 331
+    ClientWidth = 506
     TabOrder = 4
-    object Edit1: TEdit
-      Left = 180
-      Height = 28
-      Top = 40
-      Width = 93
-      TabOrder = 0
-      Text = '476'
-    end
-    object Label1: TLabel
-      Left = 10
-      Height = 20
-      Top = 40
-      Width = 143
-      Caption = 'Initial population size'
-      ParentColor = False
-    end
     object Label2: TLabel
       Left = 90
       Height = 20
@@ -127,7 +111,7 @@ object spatial_Form: Tspatial_Form
       Height = 28
       Top = 70
       Width = 95
-      TabOrder = 1
+      TabOrder = 0
       Text = '100'
     end
     object Label3: TLabel
@@ -145,11 +129,11 @@ object spatial_Form: Tspatial_Form
       Caption = 'Number of simulations'
     end
     object Edit5: TEdit
-      Left = 182
+      Left = 181
       Height = 28
       Top = 110
-      Width = 93
-      TabOrder = 2
+      Width = 94
+      TabOrder = 1
       Text = '1'
     end
     object Label5: TLabel
@@ -166,7 +150,7 @@ object spatial_Form: Tspatial_Form
       Height = 28
       Top = 180
       Width = 440
-      TabOrder = 3
+      TabOrder = 2
       Text = 'input_data/maps/HabitatMap_500_Peninsula_Revilla_2015_1.txt'
     end
     object Label7: TLabel
@@ -179,30 +163,30 @@ object spatial_Form: Tspatial_Form
     end
   end
   object Edit3: TEdit
-    Left = 27
+    Left = 26
     Height = 28
     Top = 60
-    Width = 427
+    Width = 426
     TabOrder = 5
-    Text = 'input_data/parameter_values_Peninsula_6.txt'
+    Text = 'input_data/parameter_values_Peninsula_6_250117_k4.txt'
   end
   object Edit4: TEdit
     Left = 40
     Height = 28
-    Top = 417
-    Width = 442
+    Top = 416
+    Width = 441
     TabOrder = 6
     Text = 'input_data/maps/BreedingHabitat_500_Peninsula_Fordham_2013.txt'
   end
   object Label6: TLabel
-    Left = 28
+    Left = 29
     Height = 20
     Top = 32
     Width = 92
     Caption = 'Parameter file'
   end
   object CheckBox1: TCheckBox
-    Left = 23
+    Left = 24
     Height = 24
     Top = 120
     Width = 180

@@ -115,7 +115,7 @@ var               {here you declare global variables}
   FemalesMap: Array3Dinteger;
   ConnectionMap: Array3Dinteger;
   Mapdimx, Mapdimy: integer;
-  mapname, mapBHname, mapPops, paramname: string;
+  mapname, mapBHname, mapPops, paramname, start_pop_file: string;
   dx: array[0..8] of integer = (0, 0, 1, 1, 1, 0, -1, -1, -1);
   dy: array[0..8] of integer = (0, 1, 1, 0, -1, -1, -1, 0, 1);
   xp, yp: integer;
@@ -135,6 +135,7 @@ var               {here you declare global variables}
   min_rep_age, min_rep_age_m, max_rep_age, max_age: integer;
   Tsize: integer;
   litter_size, litter_size_sd, rep_prob: real;
+  IC_eff_surv, IC_eff_rep, IC_eff_kittens: real;
   surv_cub, surv_sub, surv_resident, surv_disperse, surv_disp_rho, surv_old: real;
   alpha_steps: real;
   theta_d, theta_delta, delta_theta_long, delta_theta_f, L, N_d, beta, gamma: real;
