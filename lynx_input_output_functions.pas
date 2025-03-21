@@ -45,7 +45,6 @@ begin
 
   SetLength(HabitatMap, Mapdimx + 1, Mapdimy + 1);
 
-
   for iy := 1 to Mapdimy do
   begin
     begin
@@ -121,17 +120,15 @@ end;
 
 procedure ReadParameters(paramname: string);
 var
-  par_seq: array[1..29] of string;
+  par_seq: array[1..32] of string;
   val_seq: array of real;
-  r, spacePos: integer;
-  a, param: string;
+  r, spacePos, code: integer;
+  a, param, raw_value, processed_value: string;
   value: real;
 begin
   {This function is probably much longer than it needs to be. I just need to make absolutely sure
   that if I at some point change or mess with the param file, I get a warning here, so
   I don't accedentily work with parameter values in the wrong variable!}
-
-  //ShowMessage('Current Working Directory: ' + GetCurrentDir);
 
    par_seq[1]:= 'min_rep_age';
    par_seq[2]:= 'max_rep_age';
@@ -158,10 +155,13 @@ begin
    par_seq[23]:= 'max_years';
    par_seq[24]:= 'n_sim';
    par_seq[25]:= 'n_cycles';
-   par_seq[26]:= 'mapname';
-   par_seq[27]:= 'mapBHname';
-   par_seq[28]:= 'mapPops';
-   par_seq[29]:= 'start_pop_file';
+   par_seq[26]:= 'IC_eff_surv';
+   par_seq[27]:= 'IC_eff_rep';
+   par_seq[28]:= 'IC_eff_kittens';
+   par_seq[29]:= 'mapname';
+   par_seq[30]:= 'mapBHname';
+   par_seq[31]:= 'mapPops';
+   par_seq[32]:= 'start_pop_file';
 
 
    SetLength(val_seq, High(par_seq)+1);
@@ -179,19 +179,16 @@ begin
      begin
        readln(filename, a);
 
+       a :=Trim(a);
+
        // Find the first space to split the string
       spacePos := Pos(' ', a);
 
-      if spacePos > 0 then
-      begin
-        // Extract parameter name and convert the rest to a real
-        param := Trim(Copy(a, 1, spacePos - 1));                      // Get parameter name
 
-        if (param = 'mapname') then        //CABIO
-        begin
-          mapname := Trim(Copy(a, spacePos + 1, Length(a)));
-          Continue;
-        end;
+     if spacePos > 0 then
+     begin
+       param := Trim(Copy(a, 1, spacePos - 1));
+       raw_value := Trim(Copy(a, spacePos + 1, Length(a)));
 
         if (param = 'mapname') then
           mapname := Trim(Copy(a, spacePos + 1, Length(a)))
@@ -204,13 +201,21 @@ begin
           else
         Val(Trim(Copy(a, spacePos + 1, Length(a))), value);     // Convert value part to real - any integers are converted below to correct type
 
+
     if (param = par_seq[r]) then
      val_seq[r] := value
      else
-     // stop program and get error message that parameter name not expected
-     ShowErrorAndExit('One of the parameter names is not as expected. Check parameter file');
-     end
-      else ShowErrorAndExit('No space found. Check parameter file');
+       begin
+          ShowMessage('ERROR: Unexpected parameter in file: ' + param);
+          ShowErrorAndExit('Check parameter file!');
+        end;
+      end
+      //stop program and get error message that parameter name not expected
+     else
+      begin
+       ShowErrorAndExit('No space found. Check parameter file');
+       ShowErrorAndExit('Incorrect format in parameter file! Line: ' + a);
+     end;
      end;
 
 
@@ -242,8 +247,12 @@ begin
    max_years          := Round(val_seq[23]);
    n_sim              := Round(val_seq[24]);
    n_cycles           := Round(val_seq[25]);
-
+   IC_eff_surv        := val_seq[26];
+   IC_eff_rep         := val_seq[27];
+   IC_eff_kittens     := val_seq[28];
 end;
+
+
 
 procedure UpdateAbundanceMap;
 var
@@ -331,8 +340,9 @@ begin
     Rewrite(csvFile);
     // Write header
     WriteLn(csvFile, 'Simulation,Year,UniqueID,Sex,Age,Status,Coor_X,Coor_Y,IC, Natal_pop,Previous_pop,Current_pop,Territory_XY, Genome, Homozygosity');
-    end
-  else append(csvFile);
+  end;
+
+  append(csvFile);
 
   append(csvFile);
   // Write data for each individual

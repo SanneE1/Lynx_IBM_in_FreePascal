@@ -9,8 +9,20 @@ uses
   Classes, SysUtils;
 
 type           {here you declare the data structure for you individuals}
-  Array2Dinteger = array of array of integer;
+
   Array3Dinteger = array of array of array of integer;
+  Array2Dbyte = array of array of byte;
+  Array3Dbyte = array of array of array of byte;
+  Array1Dinteger = array of integer;
+  Array2Dinteger = array of array of integer;
+  Array2Dreal = array of array of real;
+
+  TQueueRecord = record
+    ID: integer;
+    Steps: integer;
+
+  end;
+
 
   PAgent = ^Agent;
 
@@ -36,6 +48,11 @@ type           {here you declare the data structure for you individuals}
     // into Open habitat, for them to return to the last known Dispersal habitat they've visited
     homeX: integer;
     homeY: integer;
+
+    Genome: array of array of integer;
+    P_homogeneity: real;
+    UniqueID: integer;
+    IC: real;
 
   end;
 
@@ -98,7 +115,7 @@ var               {here you declare global variables}
   FemalesMap: Array3Dinteger;
   ConnectionMap: Array3Dinteger;
   Mapdimx, Mapdimy: integer;
-  mapname, mapBHname, mapPops, paramname: string;
+  mapname, mapBHname, mapPops, paramname, start_pop_file: string;
   dx: array[0..8] of integer = (0, 0, 1, 1, 1, 0, -1, -1, -1);
   dy: array[0..8] of integer = (0, 1, 1, 0, -1, -1, -1, 0, 1);
   xp, yp: integer;
@@ -108,6 +125,8 @@ var               {here you declare global variables}
   current_year: integer;
   n_cycles: integer;
   pop_status_array: Array2Dinteger;
+  Famtree: array of array of real ;
+  UniqueIDnext: integer;
   check_daily_movement: Array2Dinteger;
   check_daily_movement_i: integer;
   check_move_file_out: TextFile;
@@ -116,6 +135,7 @@ var               {here you declare global variables}
   min_rep_age, min_rep_age_m, max_rep_age, max_age: integer;
   Tsize: integer;
   litter_size, litter_size_sd, rep_prob: real;
+  IC_eff_surv, IC_eff_rep, IC_eff_kittens: real;
   surv_cub, surv_sub, surv_resident, surv_disperse, surv_disp_rho, surv_old: real;
   alpha_steps: real;
   theta_d, theta_delta, delta_theta_long, delta_theta_f, L, N_d, beta, gamma: real;

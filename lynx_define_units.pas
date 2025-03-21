@@ -135,13 +135,14 @@ var               {here you declare global variables}
   min_rep_age, min_rep_age_m, max_rep_age, max_age: integer;
   Tsize: integer;
   litter_size, litter_size_sd, rep_prob: real;
+  IC_eff_surv, IC_eff_rep, IC_eff_kittens: real;
   surv_cub, surv_sub, surv_resident, surv_disperse, surv_disp_rho, surv_old: real;
   alpha_steps: real;
   theta_d, theta_delta, delta_theta_long, delta_theta_f, L, N_d, beta, gamma: real;
 
 const             {here you declare constants}
 
-  file_name = 'output_data/PopulationSizes.txt';
+  file_name = 'output_data/PopulationSizes.csv';
 
   max_steps = 100;
 

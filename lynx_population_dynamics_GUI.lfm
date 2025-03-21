@@ -1,47 +1,48 @@
 object spatial_Form: Tspatial_Form
   Left = 113
-  Height = 413
+  Height = 516
   Top = 109
-  Width = 918
+  Width = 1148
   Caption = 'spatial model'
-  ClientHeight = 413
-  ClientWidth = 918
-  LCLVersion = '3.4.0.0'
+  ClientHeight = 516
+  ClientWidth = 1148
+  DesignTimePPI = 120
+  LCLVersion = '3.8.0.0'
   object Run_Button: TButton
-    Left = 806
-    Height = 24
-    Top = 309
-    Width = 73
+    Left = 1008
+    Height = 30
+    Top = 386
+    Width = 91
     Anchors = [akRight, akBottom]
     Caption = 'Run'
     TabOrder = 0
     OnClick = Run_ButtonClick
   end
   object Exit_Button: TButton
-    Left = 807
-    Height = 26
-    Top = 341
-    Width = 72
+    Left = 1009
+    Height = 32
+    Top = 426
+    Width = 90
     Anchors = [akTop, akRight]
     Caption = 'Exit'
     TabOrder = 1
     OnClick = Exit_ButtonClick
   end
   object Abort_Button: TButton
-    Left = 807
-    Height = 26
-    Top = 370
-    Width = 72
+    Left = 1009
+    Height = 32
+    Top = 463
+    Width = 90
     Anchors = [akRight, akBottom]
     Caption = 'Abort'
     TabOrder = 2
     OnClick = Abort_ButtonClick
   end
   object Chart1: TChart
-    Left = 408
-    Height = 272
-    Top = 12
-    Width = 512
+    Left = 590
+    Height = 340
+    Top = 57
+    Width = 640
     AxisList = <    
       item
         Grid.Color = clSilver
@@ -90,105 +91,105 @@ object spatial_Form: Tspatial_Form
     end
   end
   object Panel1: TPanel
-    Left = 21
-    Height = 265
-    Top = 128
-    Width = 405
-    ClientHeight = 265
-    ClientWidth = 405
+    Left = 26
+    Height = 331
+    Top = 160
+    Width = 506
+    ClientHeight = 331
+    ClientWidth = 506
     TabOrder = 4
     object Label2: TLabel
-      Left = 72
-      Height = 15
-      Top = 8
-      Width = 71
+      Left = 90
+      Height = 20
+      Top = 10
+      Width = 90
       Caption = 'PARAMETERS'
       ParentColor = False
     end
     object Edit2: TEdit
-      Left = 144
-      Height = 23
-      Top = 56
-      Width = 76
+      Left = 180
+      Height = 28
+      Top = 70
+      Width = 95
       TabOrder = 0
       Text = '100'
     end
     object Label3: TLabel
-      Left = 8
-      Height = 15
-      Top = 56
-      Width = 88
+      Left = 10
+      Height = 20
+      Top = 70
+      Width = 110
       Caption = 'Number of years'
     end
     object Label4: TLabel
-      Left = 8
-      Height = 15
-      Top = 88
-      Width = 122
+      Left = 10
+      Height = 20
+      Top = 110
+      Width = 151
       Caption = 'Number of simulations'
     end
     object Edit5: TEdit
-      Left = 145
-      Height = 23
-      Top = 88
-      Width = 75
+      Left = 181
+      Height = 28
+      Top = 110
+      Width = 94
       TabOrder = 1
       Text = '1'
     end
     object Label5: TLabel
       Left = 8
-      Height = 15
+      Height = 20
       Top = 120
-      Width = 43
+      Width = 55
       Align = alCustom
       Alignment = taCenter
       Caption = 'Map file'
     end
     object Edit10: TEdit
-      Left = 8
-      Height = 23
-      Top = 144
-      Width = 352
+      Left = 10
+      Height = 28
+      Top = 180
+      Width = 440
       TabOrder = 2
       Text = 'input_data/maps/HabitatMap_500_Peninsula_Revilla_2015_1.txt'
     end
     object Label7: TLabel
       Left = 8
-      Height = 15
+      Height = 20
       Top = 184
-      Width = 116
+      Width = 148
       Align = alCustom
       Caption = 'Breeding Habitat Map'
     end
   end
   object Edit3: TEdit
-    Left = 21
-    Height = 23
-    Top = 48
-    Width = 341
+    Left = 26
+    Height = 28
+    Top = 60
+    Width = 426
     TabOrder = 5
-    Text = 'input_data/parameter_values_Peninsula_6_250117.txt'
+    Text = 'input_data/parameter_values_Peninsula_6_250117_k4.txt'
   end
   object Edit4: TEdit
-    Left = 32
-    Height = 23
-    Top = 333
-    Width = 353
+    Left = 40
+    Height = 28
+    Top = 416
+    Width = 441
     TabOrder = 6
     Text = 'input_data/maps/BreedingHabitat_500_Peninsula_Fordham_2013.txt'
   end
   object Label6: TLabel
-    Left = 23
-    Height = 15
-    Top = 26
-    Width = 73
+    Left = 29
+    Height = 20
+    Top = 32
+    Width = 92
     Caption = 'Parameter file'
   end
   object CheckBox1: TCheckBox
-    Left = 19
-    Height = 19
-    Top = 96
-    Width = 146
+    Left = 24
+    Height = 24
+    Top = 120
+    Width = 180
     Caption = 'Use custom input below'
     TabOrder = 7
   end

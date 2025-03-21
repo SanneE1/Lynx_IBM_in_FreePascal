@@ -5,7 +5,7 @@ unit lynx_input_output_functions;
 interface
 
 uses
-  Classes, SysUtils,
+  Classes, SysUtils, Dialogs,
   lynx_define_units, general_functions;
 
 procedure ReadMap(mapname, mapBHname, mapPops: string);
@@ -13,8 +13,25 @@ procedure ReadParameters(paramname: string);
 procedure UpdateAbundanceMap;
 procedure WriteMapCSV(filename: string; var arrayData: Array3Dinteger; dimx, dimy, dimz: integer);
 procedure WritePopulationToCSV(population: TList; filename: string; current_sim, year: integer);
+Procedure WriteFamtreeToCSV(filename: string);
+Procedure DebugLog (msg: string);
 
 implementation
+
+procedure DebugLog(msg: string);
+var
+  LogFile: TextFile;
+begin
+  AssignFile(LogFile, 'debug_log.txt');
+  if FileExists('debug_log.txt') then
+    Append(LogFile)
+  else
+    Rewrite(LogFile);
+
+  WriteLn(LogFile, msg);
+  CloseFile(LogFile);
+end;
+
 
 procedure ReadMap(mapname, mapBHname, mapPops: string);
 var
@@ -25,6 +42,7 @@ begin
   Assign(filename, mapName);
   reset(filename);
   readln(filename, Mapdimx, Mapdimy);
+
   SetLength(HabitatMap, Mapdimx + 1, Mapdimy + 1);
 
   for iy := 1 to Mapdimy do
@@ -43,6 +61,7 @@ begin
     end;
     readln(filename);
   end;
+
   Close(filename);
 
   {Do the same for the Breeding Habitat Map}
@@ -101,10 +120,10 @@ end;
 
 procedure ReadParameters(paramname: string);
 var
-  par_seq: array[1..29] of string;
+  par_seq: array[1..32] of string;
   val_seq: array of real;
-  r, spacePos: integer;
-  a, param: string;
+  r, spacePos, code: integer;
+  a, param, raw_value, processed_value: string;
   value: real;
 begin
   {This function is probably much longer than it needs to be. I just need to make absolutely sure
@@ -133,30 +152,67 @@ begin
    par_seq[20]:= 'N_d';
    par_seq[21]:= 'beta';
    par_seq[22]:= 'gamma';
-   par_seq[24]:= 'max_years';
-   par_seq[25]:= 'n_sim';
-   par_seq[26]:= 'n_cycles';
-   par_seq[27]:= 'mapname';
-   par_seq[28]:= 'mapBHname';
-   par_seq[29]:= 'mapPops';
-   par_seq[29]:= 'start_pop_file';
+   par_seq[23]:= 'max_years';
+   par_seq[24]:= 'n_sim';
+   par_seq[25]:= 'n_cycles';
+   par_seq[26]:= 'IC_eff_surv';
+   par_seq[27]:= 'IC_eff_rep';
+   par_seq[28]:= 'IC_eff_kittens';
+   par_seq[29]:= 'mapname';
+   par_seq[30]:= 'mapBHname';
+   par_seq[31]:= 'mapPops';
+   par_seq[32]:= 'start_pop_file';
 
 
    SetLength(val_seq, High(par_seq)+1);
 
+   if not FileExists(ExpandFileName(paramname)) then
+  begin
+    Halt(1)
+  end;
+
    Assign(filename, paramname);
    reset(filename);
+
 
      for r:=1 to High(par_seq) do
      begin
        readln(filename, a);
+
+       a :=Trim(a);
+
        // Find the first space to split the string
       spacePos := Pos(' ', a);
 
-      if spacePos > 0 then
-      begin
-        // Extract parameter name and convert the rest to a real
-        param := Copy(a, 1, spacePos - 1);                      // Get parameter name
+
+     if spacePos > 0 then
+     begin
+       param := Trim(Copy(a, 1, spacePos - 1));
+       raw_value := Trim(Copy(a, spacePos + 1, Length(a)));
+
+
+     if (param = 'mapname') then
+     begin
+       mapname := raw_value;
+       Continue;
+     end
+     else if (param = 'mapBHname') then
+     begin
+       mapBHname := raw_value;
+       Continue;
+     end
+     else if (param = 'mapPops') then
+     begin
+       mapPops := raw_value;
+       Continue;
+      end;
+
+
+    if (param = 'mapname') then        //CABIO
+        begin
+          mapname := Trim(Copy(a, spacePos + 1, Length(a)));
+          Continue;
+        end;
 
         if (param = 'mapname') then
           mapname := Trim(Copy(a, spacePos + 1, Length(a)))
@@ -169,14 +225,26 @@ begin
           else
         Val(Trim(Copy(a, spacePos + 1, Length(a))), value);     // Convert value part to real - any integers are converted below to correct type
 
+
     if (param = par_seq[r]) then
      val_seq[r] := value
      else
-     // stop program and get error message that parameter name not expected
-     ShowErrorAndExit('One of the parameter names is not as expected. Check parameter file');
-     end
-      else ShowErrorAndExit('No space found. Check parameter file');
+       begin
+          ShowMessage('ERROR: Unexpected parameter in file: ' + param);
+          ShowErrorAndExit('Check parameter file!');
+        end;
+      end
+      //stop program and get error message that parameter name not expected
+     else
+      begin
+       ShowErrorAndExit('No space found. Check parameter file');
+       ShowErrorAndExit('Incorrect format in parameter file! Line: ' + a);
      end;
+     end;
+
+
+    Close(filename);
+
 
      min_rep_age        := Round(val_seq[1]);
      max_rep_age        := Round(val_seq[2]);
@@ -203,8 +271,12 @@ begin
    max_years          := Round(val_seq[23]);
    n_sim              := Round(val_seq[24]);
    n_cycles           := Round(val_seq[25]);
-
+   IC_eff_surv        := val_seq[26];
+   IC_eff_rep         := val_seq[27];
+   IC_eff_kittens     := val_seq[28];
 end;
+
+
 
 procedure UpdateAbundanceMap;
 var
@@ -267,13 +339,12 @@ begin
   begin
     for ix := 1 to dimx do
     begin
-      // Write each value, followed by a comma, except for the last value in the row
       if ix < dimx then
         Write(outfile, arrayData[ix, iy, dimz], ',')
       else
-        Write(outfile, arrayData[ix, iy, dimz]);  // No comma at the end of the row
+        Write(outfile, arrayData[ix, iy, dimz]);
     end;
-    writeln(outfile);  // Move to the next line in the CSV file
+    writeln(outfile);
   end;
 
   Close(outfile);
@@ -282,7 +353,8 @@ end;
 procedure WritePopulationToCSV(population: TList; filename: string; current_sim, year: integer);
 var
   csvFile: TextFile;
-  i, j: integer;
+  i, j, l, UniqueID: integer;
+  allele1,allele2,homozygosity: integer;
 begin
 
   AssignFile(csvFile, filename);
@@ -291,22 +363,26 @@ begin
   begin
     Rewrite(csvFile);
     // Write header
-    WriteLn(csvFile, 'Simulation,Year,Sex,Age,Status,Coor_X,Coor_Y,Natal_pop,Previous_pop,Current_pop,Territory_XY');
+    WriteLn(csvFile, 'Simulation,Year,UniqueID,Sex,Age,Status,Coor_X,Coor_Y,IC, Natal_pop,Previous_pop,Current_pop,Territory_XY, Genome, Homozygosity');
   end;
 
   append(csvFile);
+
+  append(csvFile);
   // Write data for each individual
-  for i := 0 to population.Count - 1 do
+  for l := 0 to population.Count - 1 do
   begin
     Write(csvFile, current_sim, ',', year, ',');
-    individual := PAgent(population[i]);
+    individual := PAgent(population[l]);
 
     // Write individual information
+    Write(csvFile, individual^.UniqueID, ',');
     Write(csvFile, individual^.sex, ',');
     Write(csvFile, individual^.Age, ',');
     Write(csvFile, individual^.Status, ',');
     Write(csvFile, individual^.Coor_X, ',');
     Write(csvFile, individual^.Coor_Y, ',');
+    Write(csvFile, individual^.IC, ',');
     Write(csvFile, individual^.Natal_pop, ',');
     Write(csvFile, individual^.Previous_pop, ',');
     Write(csvFile, individual^.Current_pop, ',');
@@ -320,10 +396,61 @@ begin
 
       // Add comma if not last coordinate
       if j < length(individual^.TerritoryX) - 1 then
-        Write(csvFile, ';');
+        Write(csvFile, ';')
+      else
+      Write(csvFile, ',');
     end;
 
-    WriteLn(csvFile); // End of current individual's data
+
+    // Write genetics
+    for i := 1 to 24 do
+      begin
+      Write(csvFile, Individual^.Genome[i,0], ':', Individual^.Genome[i,1]);
+      if i < 24 then
+        Write(csvFile, ';')
+      else
+        Write(csvFile, ',');
+      end;
+
+
+    //percentage homogeneity x ind
+    for i:= 1 to 24 do
+      begin
+        allele1 := Individual^.Genome[i,0];
+        allele2 := Individual^.Genome[i,1];
+        if allele1 = allele2 then
+          homozygosity := homozygosity + 1;
+      end;
+
+    WriteLn(csvFile, ',', Individual^.P_homogeneity:0:4);
+  end;
+
+  CloseFile(csvFile);
+end;
+
+Procedure WriteFamtreeToCSV(filename: string);
+var
+  csvFile: TextFile;
+  i: integer;
+  IC: real; //temporal variable for IC
+begin
+  // assign and open file CSV
+  AssignFile(csvFile, filename);
+  Rewrite(csvFile);
+
+  //write name of columns
+  WriteLn(csvFile, 'UniqueID,IC,FatherID,MotherID');
+
+  // write into CSV
+  for i := 0 to Length(Famtree) - 1 do
+  begin
+    IC:= Famtree[i,1];
+
+    WriteLn(csvFile,
+            Famtree[i, 0]:0:0, ',',   // UniqueID
+            IC:0:3, ',',              // IC (Coefficient of Inbreeding), written with  3 decimals
+            Famtree[i, 2]:0:0, ',',   // FatherID
+            Famtree[i, 3]:0:0);      // MotherID
   end;
 
   CloseFile(csvFile);

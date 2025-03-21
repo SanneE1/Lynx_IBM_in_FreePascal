@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, math,
-  lynx_define_units;
+  lynx_define_units, general_functions;
 
 function Nsteps(step_probs: array of double): integer;
 procedure Step_probabilities;
@@ -436,6 +436,8 @@ var
                   begin
                    xi := temp_terrX[j] + dx[i];
                    yi := temp_terrY[j] + dy[i];
+
+                   if not CanMoveHere(xi,yi) then Contineue;
 
                    already_terr := false;
                    for g := 0 to TCount - 1 do

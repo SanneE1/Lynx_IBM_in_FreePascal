@@ -21,8 +21,8 @@ implementation
 
 procedure Reproduction;
 var
-  a, x,y, g, i, k, current_litter_size, ls, xy, x, y, male_x, male_y, homogeneity_count, CurrentDist: integer;
-  tmic, IC_kittens : real;
+  a,  x,y,g, i, k, current_litter_size, ls, xy, male_x, male_y, homogeneity_count, CurrentDist: integer;
+  tmic, IC_kittens, rand_val : real;
   temp_X, temp_Y, Temp_mem: word;
   male_present: boolean;
   PotentialFather: PAgent;
@@ -89,6 +89,7 @@ begin
                   //
                   //
 
+
                 if male_present then
                 begin
                   setLength(mother, 25, 2);
@@ -96,8 +97,10 @@ begin
 
                   PotentialFather := nil;
                 PotentialFather := FindTerrOwner(population, 'm', male_x, male_y);
-                if (PotentialFather <> nil) then
+
+                  if (PotentialFather <> nil) then
                 begin
+
                 for i:= 1 to 24 do
                 begin
                     for k:= 0 to 1 do
@@ -106,12 +109,14 @@ begin
                       father[i,k]:= PotentialFather^.Genome[i,k];
                     end;
                end;
+
                 father_ID := PotentialFather^.UniqueID
-                end
-                else
+                end;
+                if (PotentialFather = nil) then
                 begin
                   male_present:=false;
                   end;
+
                 end;
 
                 if not male_present then
@@ -148,23 +153,22 @@ begin
                 end;
 
                 if male_present then
-                  if random < rep_prob then
+                begin
+                 rand_val := random;
+                   if rand_val < rep_prob then
                   begin
                     current_litter_size := Round(randg(litter_size, litter_size_sd));
                     mother_ID := Individual^.UniqueID;
                     IC_kittens:= -1;       //something goes wrong, -1 and not the before liiter IC
 
 
-
                     //Save location of the mother, to give to offspring
                     Temp_X := Individual^.Coor_X;
                     Temp_Y := Individual^.Coor_Y;
                     Temp_mem := Individual^.mov_mem;
-
                     {Create a number of new individuals}
                     for ls := 1 to current_litter_size do
                     begin
-
                       New(Individual);
                       Individual^.age := 0;
                       if random < 0.5 then Individual^.sex := 'f'
@@ -215,6 +219,12 @@ begin
                         else
                            Individual^.Genome[i, 1] := father[i, 1];
 
+                        // verify correct genes
+                      if (Individual^.Genome[i, 0] = -1) or (Individual^.Genome[i, 1] = -1) then
+                      begin
+                         Exit;
+                      end;
+
                       //check for homogeneity
                       if Individual^.Genome[i, 0] = Individual^.Genome[i, 1] then
                       homogeneity_count := homogeneity_count + 1;
@@ -247,6 +257,8 @@ begin
 
                     end;
                   end;
+
+                end;
               end;
 
       end;
