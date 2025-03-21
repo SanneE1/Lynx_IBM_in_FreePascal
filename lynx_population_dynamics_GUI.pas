@@ -59,7 +59,7 @@ procedure Startpopulation;
 var
   a,b, i, k, Tcheck, xy, N, X, Y: integer;
   lineData: TStringList;
-    tmic: real;
+  tmic: real;
   popFile: TextFile;
   popName: string;
 begin
@@ -72,27 +72,27 @@ begin
 
   //Initialization of UniqueID at 0 (the first ind will have an ID of 0)
   UniqueIDnext:= 0;
-  
+
   AssignFile(popFile, start_pop_file);
   reset(popFile);
 
   with population do
   begin
-  while not Eof(popFile) do
-  begin
-    ReadLn(popFile, popName);
-
-     if (Pos('N', popName) = 1) then Continue;
-
-     lineData.Delimiter := ' ';
-     lineData.DelimitedText := popName;
-
-     N := StrToIntDef(lineData[0], 0);
-     X := StrToIntDef(lineData[1], 0);
-     Y := StrToIntDef(lineData[2], 0);
-
-    for a := 1 to N do
+    while not Eof(popFile) do
     begin
+      ReadLn(popFile, popName);
+
+      if(Pos('N', popName) = 1) then Continue;
+
+      LineData.Delimiter := ' ';
+      lineData.DelimitedText := popName;
+
+      N := StrToIntDef(lineData[0], 0);
+      X := StrToIntDef(lineData[1], 0);
+      Y := StrToIntDef(lineData[2], 0);
+
+      for a := 1 to N do
+      begin
       new(Individual);
 
       Individual^.age := random(3) + 3;   {alternative: Individual^.age:=0; }
@@ -153,15 +153,12 @@ begin
       Famtree[Individual^.UniqueID,2]:= -1;                   //FatherID
       Famtree[Individual^.UniqueID,3]:= -1;                   //MotherID
 
-
       UniqueIDnext:= UniqueIDnext+1
 
 
     end;
   end;
-  end;
-
-    {
+    
     {Go through some dispersal cycles, to get individuals settled}
     with population do
     for a := 1 to n_cycles do
@@ -190,8 +187,10 @@ begin
 
     end;
 
-  end;  }
+  end;  
   end;
+
+end;
 
 
 procedure Tspatial_Form.Pop_dynamics_GUI;
@@ -346,7 +345,6 @@ begin
   randomize; {initialize the pseudorandom number generator}
 
   paramname := Edit3.Text;
-  //ShowMessage('DEBUG: Paramname = ' + paramname);
   ReadParameters(paramname);
 
   if CheckBox1.Checked then

@@ -5,7 +5,7 @@ Tsize 6
 litter_size 1.9
 litter_size_sd 0.54
 rep_prob 0.57
-surv_cub 0.384
+surv_cub 0.809
 surv_sub 0.599
 surv_resident 0.798
 surv_disperse 0.798

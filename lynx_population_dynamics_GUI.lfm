@@ -6,10 +6,11 @@ object spatial_Form: Tspatial_Form
   Caption = 'spatial model'
   ClientHeight = 413
   ClientWidth = 918
+  LCLVersion = '3.4.0.0'
   object Run_Button: TButton
-    Left = 784
+    Left = 806
     Height = 24
-    Top = 304
+    Top = 309
     Width = 73
     Anchors = [akRight, akBottom]
     Caption = 'Run'
@@ -17,9 +18,9 @@ object spatial_Form: Tspatial_Form
     OnClick = Run_ButtonClick
   end
   object Exit_Button: TButton
-    Left = 785
+    Left = 807
     Height = 26
-    Top = 333
+    Top = 341
     Width = 72
     Anchors = [akTop, akRight]
     Caption = 'Exit'
@@ -27,10 +28,9 @@ object spatial_Form: Tspatial_Form
     OnClick = Exit_ButtonClick
   end
   object Abort_Button: TButton
-
-    Left = 784
+    Left = 807
     Height = 26
-    Top = 368
+    Top = 370
     Width = 72
     Anchors = [akRight, akBottom]
     Caption = 'Abort'
@@ -38,9 +38,9 @@ object spatial_Form: Tspatial_Form
     OnClick = Abort_ButtonClick
   end
   object Chart1: TChart
-    Left = 384
+    Left = 408
     Height = 272
-    Top = 16
+    Top = 12
     Width = 512
     AxisList = <    
       item
@@ -77,7 +77,7 @@ object spatial_Form: Tspatial_Form
     Title.Text.Strings = (
       'TAChart'
     )
-    Anchors = [akRight, akBottom]
+    Anchors = []
     object Chart1LineSeries1: TLineSeries
       Title = 'current run'
       AxisIndexX = 0
