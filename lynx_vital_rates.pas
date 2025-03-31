@@ -5,7 +5,7 @@ unit lynx_vital_rates;
 interface
 
 uses
-  Classes, SysUtils, Math, Dialogs,
+  Classes, SysUtils, Math,
   lynx_define_units, lynx_dispersal_assist_functions, general_functions;
 
 
@@ -21,13 +21,13 @@ implementation
 
 procedure Reproduction;
 var
-  a,  x,y,g, i, k, current_litter_size, ls, xy, male_x, male_y, homogeneity_count, CurrentDist: integer;
+  a,  x,y, i, k, current_litter_size, ls, xy, male_x, male_y, homogeneity_count, CurrentDist: integer;
   tmic, IC_kittens, rand_val, IC_rep_prob : real;
   temp_X, temp_Y, Temp_mem: word;
   male_present: boolean;
   PotentialFather: PAgent;
   father, mother: array of array of integer;
-  mother_ID, father_ID, selected_kitten: integer;
+  mother_ID, father_ID: integer;
 begin
 
   with population do
@@ -46,56 +46,65 @@ begin
             // Individual is settled
             if Individual^.age >= min_rep_age then
               if Individual^.age <= max_rep_age then
-              // Check that there is a local male
               begin
-                if Malesmap[Individual^.Coor_X, Individual^.Coor_Y, 0] >= 2 then
+
+              // Check that there is a local male
+              for xy := 0 to length(Individual^.TerritoryX)-1 do
                 begin
-                  male_x := Individual^.Coor_X;
-                  male_y := Individual^.Coor_Y;
-                  male_present := true;
-                end
-                else
+                  if Individual^.TerritoryX[xy] = -1 then Continue;
+
+                  if Malesmap[Individual^.TerritoryX[xy], Individual^.TerritoryY[xy], 0] >=2 then
                   begin
-                   for CurrentDist := 0 to 30 do
+                    male_present := true;
+                    male_x := Individual^.TerritoryX[xy];
+                    male_y := Individual^.TerritoryY[xy];
+
+                    Break;
+                  end;
+               end;
+
+              if not male_present then
+                begin
+                   for CurrentDist := 0 to 80 do
                    begin
                      // Check all cells at the current distance from the starting point
-                       for x := Individual^.Coor_X - CurrentDist to Individual^.Coor_X + CurrentDist do
-                       begin
-                         for y := Individual^.Coor_Y - CurrentDist to Individual^.Coor_Y + CurrentDist do
-                         begin
-        // only checks cells on the "ring" at CurrentDist
-                             if (Max(Abs(x- Individual^.Coor_X), Abs(y - Individual^.Coor_Y)) <> CurrentDist) then
-                             Continue;
+                     for x := Individual^.Coor_X - CurrentDist to Individual^.Coor_X + CurrentDist do
+                     begin
+                     for y := Individual^.Coor_Y - CurrentDist to Individual^.Coor_Y + CurrentDist do
+                     begin
 
-        // Skip coordinates where lynx couldn't move (so also no coordinates for territory)
-                             if not canMoveHere(x, y) then Continue;
+                     // only checks cells on the "ring" at CurrentDist
+                     if (Max(Abs(x- Individual^.Coor_X), Abs(y - Individual^.Coor_Y)) <> CurrentDist) then
+                     Continue;
 
-        // Check if this cell has a male
-                             if Malesmap[x, y, 0] >= 2 then
-                             begin
-                             male_x := x;
-                             male_y := y;
-                             male_present := True;
-                             Break;
-          // Don't break here - we need to check all cells at this distance
-          // to make sure we find the closest one(s)
-                             end;
-                         end;
-                         if male_present then Break;
-                       end;
-                       if male_present then Break;
-                   end;
-                  end;
+                     // Skip coordinates where lynx couldn't move (so also no coordinates for territory)
+                     if not canMoveHere(x, y) then Continue;
 
+                      // Check if this cell has a male
+                      if Malesmap[x, y, 0] >= 2 then
+                      begin
+                      male_present := True;
+                      male_x := x;
+                      male_y := y;
 
+                      Break;
+                      // Don't break here - we need to check all cells at this distance
+                      // to make sure we find the closest one(s)
+                      end;
+                      end;
+                      if male_present then Break;
+                      end;
+                      if male_present then Break;
 
+                      end;
+                end;
 
-                if male_present then
-                begin
-                  setLength(mother, 25, 2);
-                  setLength(father, 25, 2);
+              if male_present then
+              begin
+                setLength(mother, 25, 2);
+                setLength(father, 25, 2);
 
-                  PotentialFather := nil;
+                PotentialFather := nil;
                 PotentialFather := FindTerrOwner(population, 'm', male_x, male_y);
 
                   if (PotentialFather <> nil) then
@@ -119,43 +128,10 @@ begin
 
                 end;
 
-                if not male_present then
-                begin
-                   for CurrentDist := 0 to 80 do
-                   begin
-                     // Check all cells at the current distance from the starting point
-                     for x := Individual^.Coor_X - CurrentDist to Individual^.Coor_X + CurrentDist do
-                     begin
-                     for y := Individual^.Coor_Y - CurrentDist to Individual^.Coor_Y + CurrentDist do
-                     begin
-
-                     // only checks cells on the "ring" at CurrentDist
-                     if (Max(Abs(x- Individual^.Coor_X), Abs(y - Individual^.Coor_Y)) <> CurrentDist) then
-                     Continue;
-
-                     // Skip coordinates where lynx couldn't move (so also no coordinates for territory)
-                     if not canMoveHere(x, y) then Continue;
-
-                      // Check if this cell has a male
-                      if Malesmap[x, y, 0] >= 2 then
-                      begin
-                      male_present := True;
-                      Break;
-                      // Don't break here - we need to check all cells at this distance
-                      // to make sure we find the closest one(s)
-                      end;
-                      end;
-                      if male_present then Break;
-                      end;
-                      if male_present then Break;
-
-                      end;
-                end;
-
                 if male_present then
                 begin
                 IC_rep_prob := rep_prob*(1+(IC_eff_rep*(0.5-Individual^.IC)));
-                 rand_val := random;
+                rand_val := random;
                    if rand_val < IC_rep_prob then
                   begin
                     current_litter_size := Round(randg(litter_size, litter_size_sd));
@@ -167,6 +143,7 @@ begin
                     Temp_X := Individual^.Coor_X;
                     Temp_Y := Individual^.Coor_Y;
                     Temp_mem := Individual^.mov_mem;
+
                     {Create a number of new individuals}
                     for ls := 1 to current_litter_size do
                     begin
@@ -203,7 +180,6 @@ begin
                       setLength(Individual^.Genome, 25, 2);
                       homogeneity_count := 0;
 
-
                       for i := 1 to 24 do
                       begin
                         tmic:=random;
@@ -213,18 +189,11 @@ begin
                            Individual^.Genome[i, 0] := mother[i, 1];
 
                        //inherit genes of father
-
-                        tmic := random;
+                       tmic := random;
                         if tmic < 0.5 then
                            Individual^.Genome[i, 1] := father[i, 0]
                         else
                            Individual^.Genome[i, 1] := father[i, 1];
-
-                        // verify correct genes
-                      if (Individual^.Genome[i, 0] = -1) or (Individual^.Genome[i, 1] = -1) then
-                      begin
-                         Exit;
-                      end;
 
                       //check for homogeneity
                       if Individual^.Genome[i, 0] = Individual^.Genome[i, 1] then
@@ -232,16 +201,14 @@ begin
                       end;
 
                       //ratio of homogeneity
-                       Individual^.P_homogeneity := homogeneity_count / 24.0;
+                      Individual^.P_homogeneity := homogeneity_count / 24.0;
 
-
-                       {Inbreeding calculations}
-                       // Add new individual to Famtree
+                      {Inbreeding calculations}
+                      // Add new individual to Famtree
                       SetLength(Famtree, Length(Famtree) + 1, 4);
-                      Famtree[High(Famtree), 0] := Individual^.UniqueID;
-                      Famtree[High(Famtree), 2] := father_ID;
-                      Famtree[High(Famtree), 3] := mother_ID;
-
+                      Famtree[Individual^.UniqueID, 0] := Individual^.UniqueID;
+                      Famtree[Individual^.UniqueID, 2] := father_ID;
+                      Famtree[Individual^.UniqueID, 3] := mother_ID;
 
                       //Only one kitten gets CA and IC calculation
                       if ls = 1 then
@@ -249,12 +216,10 @@ begin
                       IC_kittens := CalculateIC(Individual^.UniqueID, Famtree);
                       end;
 
-
                       Individual^.IC:= IC_kittens;
-                      Famtree[High(Famtree), 1] := IC_kittens;
+                      Famtree[Individual^.UniqueID, 1] := IC_kittens;
 
                       Population.add(Individual);
-
 
                     end;
                   end;
@@ -265,12 +230,11 @@ begin
       end;
   end;
 end;
-// Placeholder for function CalculateIC
 
 function CalculateIC(child_ID: integer; Famtree: Array2Dreal): real;
 var
   CA: Array2Dinteger;
-  Steps, a: integer;
+  a: integer;
   IC_sum, b, c: real;
 begin
 
@@ -377,11 +341,11 @@ end;
 
 procedure Dispersal(day: integer);
 var
-  a, b, d, e, f, g, i, j, new_dir, TestCoordX, TestCoordY, TCount, first_Tcount, FCount, xi, yi, xy, competitor_age : integer;
+  a, b, d, e, f, g, i, j, new_dir, TestCoordX, TestCoordY, TCount, first_Tcount, xi, yi, xy : integer;
   age_m, P_disp_start: real;
   temp_terrX, temp_terrY: array of integer;
   temp_ind: PAgent;
-  Iwin, test_cell_available, c_available, already_terr: boolean;
+  test_cell_available, c_available, already_terr: boolean;
 
 begin
   check_daily_movement_i := 0;
@@ -444,14 +408,6 @@ begin
         Individual^.DailyStepsOpen := 0;
         s := 1;
 
-        {Movement check - fill in array}
-        if check_daily_movement_i < 1000 then
-        begin
-        if Individual^.sex = 'f' then check_daily_movement[check_daily_movement_i, 0] := 0
-        else check_daily_movement[check_daily_movement_i, 0] := 1;
-        check_daily_movement[check_daily_movement_i, 1] := Individual^.Age;
-        end;
-
         while s <= steps do
         begin
 
@@ -464,10 +420,6 @@ begin
 
           {Calculate new movement direction}
           new_dir := MoveDir;
-
-          {Movement check - fill in array}
-          if check_daily_movement_i < 1000 then
-          check_daily_movement[check_daily_movement_i, s+1]:= new_dir;
 
           {Calculate coordinates to move to}
           TestCoordX := xp + dx[new_dir];
@@ -699,12 +651,10 @@ begin
 function FindClosestCommonAncestors(Famtree: Array2Dreal; child_ID: integer): Array2Dinteger;
 
 var
-  ID, i, j, q, t, a, min_steps: integer;
+  i, j, q, t, a, min_steps: integer;
   common_ancestors, queue_mother, queue_father, visited_mother, visited_father: array of array of integer;
   closest_ancestors : Array2Dinteger;
   current_mother, current_father: array[0..1] of integer;
-  Steps: integer;
-
 begin
   // Initialize the mother's queue
   SetLength(queue_mother, 1, 2);

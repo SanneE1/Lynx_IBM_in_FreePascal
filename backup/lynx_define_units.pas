@@ -84,29 +84,33 @@ var               {here you declare global variables}
   MigrationEvent: PMigration;
 
   max_years: integer;
-  AlphaR: real;
-  BetaR: real;
+  //AlphaR: real;
+  //BetaR: real;
   surv_prob: real;
-  AlphaS: real;
-  BetaS: real;
-  sett_prob: real;
-  avg_steps: integer;
-  AlphaD: real;
-  BetaD: real;
-  sink: real;
+  //AlphaS: real;
+  //BetaS: real;
+  //sett_prob: real;
+  //avg_steps: integer;
+  //AlphaD: real;
+  //BetaD: real;
+  //sink: real;
   populationsize: longint;
   n_sim: integer;
-  n_extint: integer;
+  taskID: integer;
+
   sum_distance_X: integer;
   sum_distance_Y: integer;
+
   current_sim: integer;
   max_pop_size: integer;
   step_probs: array of double;
-  pop_size: array[1..100] of integer;
-  sum_pop_size: array[1..100] of integer;
+  pop_size: array of integer;
+  pop_IC: array of real;
+  sum_pop_size: array of integer;
   each_pop_sizes: array of array of integer;
+  each_pop_IC: array of array of real;
   n_sim_no_ext: array[1..100] of integer;
-  to_file_out, mig_file_out, migS_file_out: TextFile;
+  to_file_out, mig_file_out, migS_file_out, connection_F_out, connection_M_out: TextFile;
   filename: Text;
   HabitatMap: Array2Dinteger;
   BreedingHabitatMap: Array2Dinteger;
@@ -142,7 +146,7 @@ var               {here you declare global variables}
 
 const             {here you declare constants}
 
-  file_name = 'output_data/PopulationSizes.txt';
+  file_name = 'output_data/PopulationSizes.csv';
 
   max_steps = 100;
 

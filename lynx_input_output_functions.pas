@@ -5,7 +5,7 @@ unit lynx_input_output_functions;
 interface
 
 uses
-  Classes, SysUtils, Dialogs,
+  Classes, SysUtils,
   lynx_define_units, general_functions;
 
 procedure ReadMap(mapname, mapBHname, mapPops: string);
@@ -14,24 +14,8 @@ procedure UpdateAbundanceMap;
 procedure WriteMapCSV(filename: string; var arrayData: Array3Dinteger; dimx, dimy, dimz: integer);
 procedure WritePopulationToCSV(population: TList; filename: string; current_sim, year: integer);
 Procedure WriteFamtreeToCSV(filename: string);
-Procedure DebugLog (msg: string);
 
 implementation
-
-procedure DebugLog(msg: string);
-var
-  LogFile: TextFile;
-begin
-  AssignFile(LogFile, 'debug_log.txt');
-  if FileExists('debug_log.txt') then
-    Append(LogFile)
-  else
-    Rewrite(LogFile);
-
-  WriteLn(LogFile, msg);
-  CloseFile(LogFile);
-end;
-
 
 procedure ReadMap(mapname, mapBHname, mapPops: string);
 var
@@ -117,13 +101,12 @@ begin
 
 end;
 
-
 procedure ReadParameters(paramname: string);
 var
   par_seq: array[1..32] of string;
   val_seq: array of real;
-  r, spacePos, code: integer;
-  a, param, raw_value, processed_value: string;
+  r, spacePos: integer;
+  a, param: string;
   value: real;
 begin
   {This function is probably much longer than it needs to be. I just need to make absolutely sure
@@ -188,9 +171,8 @@ begin
      if spacePos > 0 then
      begin
        param := Trim(Copy(a, 1, spacePos - 1));
-       raw_value := Trim(Copy(a, spacePos + 1, Length(a)));
 
-        if (param = 'mapname') then
+        if (param = 'mapname') then                            // Convert paths to system specific below!
           mapname := Trim(Copy(a, spacePos + 1, Length(a)))
           else if (param = 'mapBHname') then
           mapBHname := Trim(Copy(a, spacePos + 1, Length(a)))
@@ -206,15 +188,13 @@ begin
      val_seq[r] := value
      else
        begin
-          ShowMessage('ERROR: Unexpected parameter in file: ' + param);
-          ShowErrorAndExit('Check parameter file!');
+          ShowErrorAndExit('ERROR: Unexpected parameter in file: ' + param + '. Check parameter file!');
         end;
       end
       //stop program and get error message that parameter name not expected
      else
       begin
-       ShowErrorAndExit('No space found. Check parameter file');
-       ShowErrorAndExit('Incorrect format in parameter file! Line: ' + a);
+       ShowErrorAndExit('No space found. Check parameter file. Line: ' + a);
      end;
      end;
 
@@ -250,8 +230,13 @@ begin
    IC_eff_surv        := val_seq[26];
    IC_eff_rep         := val_seq[27];
    IC_eff_kittens     := val_seq[28];
-end;
 
+   mapname := ExpandFileName(mapname);
+   mapBHname := ExpandFileName(mapBHname);
+   mapPops := ExpandFileName(mapPops);
+   start_pop_file := ExpandFileName(start_pop_file);
+
+end;
 
 
 procedure UpdateAbundanceMap;
@@ -329,8 +314,7 @@ end;
 procedure WritePopulationToCSV(population: TList; filename: string; current_sim, year: integer);
 var
   csvFile: TextFile;
-  i, j, l, UniqueID: integer;
-  allele1,allele2,homozygosity: integer;
+  j, l: integer;
 begin
 
   AssignFile(csvFile, filename);
@@ -339,10 +323,8 @@ begin
   begin
     Rewrite(csvFile);
     // Write header
-    WriteLn(csvFile, 'Simulation,Year,UniqueID,Sex,Age,Status,Coor_X,Coor_Y,IC, Natal_pop,Previous_pop,Current_pop,Territory_XY, Genome, Homozygosity');
+    WriteLn(csvFile, 'Simulation,Year,UniqueID,Sex,Age,Status,Coor_X,Coor_Y,IC, Natal_pop,Previous_pop,Current_pop,Homozygosity,Territory_XY');
   end;
-
-  append(csvFile);
 
   append(csvFile);
   // Write data for each individual
@@ -358,47 +340,25 @@ begin
     Write(csvFile, individual^.Status, ',');
     Write(csvFile, individual^.Coor_X, ',');
     Write(csvFile, individual^.Coor_Y, ',');
-    Write(csvFile, individual^.IC, ',');
+    Write(csvFile, individual^.IC:0:4, ',');
     Write(csvFile, individual^.Natal_pop, ',');
     Write(csvFile, individual^.Previous_pop, ',');
     Write(csvFile, individual^.Current_pop, ',');
+    Write(csvFile, Individual^.P_homogeneity:0:4, ',');
 
     // Write territory coordinates
     for j := 0 to length(individual^.TerritoryX) - 1 do
     begin
-
-      Write(csvFile, Individual^.TerritoryX[j], '/');
+      Write(csvFile, Individual^.TerritoryX[j], ';');
       Write(csvFile, individual^.TerritoryY[j]);
 
       // Add comma if not last coordinate
       if j < length(individual^.TerritoryX) - 1 then
-        Write(csvFile, ';')
-      else
-      Write(csvFile, ',');
+        Write(csvFile, ',')
+        else Writeln(csvFile);
+
     end;
 
-
-    // Write genetics
-    for i := 1 to 24 do
-      begin
-      Write(csvFile, Individual^.Genome[i,0], ':', Individual^.Genome[i,1]);
-      if i < 24 then
-        Write(csvFile, ';')
-      else
-        Write(csvFile, ',');
-      end;
-
-
-    //percentage homogeneity x ind
-    for i:= 1 to 24 do
-      begin
-        allele1 := Individual^.Genome[i,0];
-        allele2 := Individual^.Genome[i,1];
-        if allele1 = allele2 then
-          homozygosity := homozygosity + 1;
-      end;
-
-    WriteLn(csvFile, ',', Individual^.P_homogeneity:0:4);
   end;
 
   CloseFile(csvFile);

@@ -91,6 +91,8 @@ begin
       X := StrToIntDef(lineData[1], 0);
       Y := StrToIntDef(lineData[2], 0);
 
+      SetLength(Famtree, Length(Famtree) + N, 4);
+
       for a := 1 to N do
       begin
       new(Individual);
@@ -101,12 +103,12 @@ begin
       else
         Individual^.sex := 'm';
         Individual^.status := 1;
+
         Individual^.UniqueID := UniqueIDnext;
+        Individual^.IC :=0;
 
         Individual^.Coor_X := X;
         Individual^.Coor_Y := Y;
-
-        Individual^.UniqueID := UniqueIDnext;
 
       Individual^.Natal_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
       Individual^.Current_pop := whichPop(Individual^.Coor_X, Individual^.Coor_Y);
@@ -121,14 +123,11 @@ begin
       Individual^.homeX := Individual^.Coor_X;
       Individual^.homeY := Individual^.Coor_Y;
       Individual^.return_home := False;
-      Individual^.IC :=0;
 
       Individual^.DailySteps := 0;
       Individual^.DailyStepsOpen := 0;
 
       setLength(Individual^.Genome, 25, 2);
-
-
       for i := 1 to 24 do
       begin
         for k := 0 to 1 do
@@ -147,7 +146,6 @@ begin
 
       Population.add(Individual);
 
-      SetLength(Famtree, Length(Famtree) + N, 4);
       Famtree[Individual^.UniqueID,0]:=Individual^.UniqueID;  //UniqueID
       Famtree[Individual^.UniqueID,1]:=0;                     //IC
       Famtree[Individual^.UniqueID,2]:= -1;                   //FatherID
@@ -202,13 +200,9 @@ var
   ic_file_out: TextFile;
 
   begin
-    AssignFile(ic_file_out, 'output_data/average_IC.csv');
-    Rewrite(ic_file_out);
-    writeln(ic_file_out, 'Simulation,Year,Pop0,Pop1,Pop2,Pop3,Pop4,Pop5');
 
-
-  with population do
-  begin
+    with population do
+    begin
     for current_year := 1 to max_years do
     begin
       day := 0;  // Start the year
@@ -246,19 +240,6 @@ var
 
           Individual^.Status := 3;
 
-          if (Individual^.natal_pop <> Individual^.Current_pop) then
-          begin
-          new(MigrationEvent);
-          MigrationEvent^.simulation := current_sim;
-          MigrationEvent^.year := current_year;
-          MigrationEvent^.sex := Individual^.Sex;
-          MigrationEvent^.age := Individual^.Age;
-          MigrationEvent^.natal_pop := Individual^.Natal_pop;
-          MigrationEvent^.old_pop := Individual^.Previous_pop;
-          MigrationEvent^.new_pop := Individual^.Current_pop;
-          SettledList.Add(MigrationEvent);
-          end;
-
           end
           else
           begin
@@ -272,37 +253,13 @@ var
             end;
           end;
         end;
-        each_pop_sizes[Individual^.current_pop, current_year] := each_pop_sizes[Individual^.current_pop, current_year] + 1;
-         //  Aggiorna sumIC e countInd per il calcolo della media
-          if (Individual^.Current_pop >= 0) and (Individual^.Current_pop <= 5) then
-          begin
-            sumIC[Individual^.Current_pop] := sumIC[Individual^.Current_pop] + Famtree[Individual^.UniqueID, 1];
-            countInd[Individual^.Current_pop] := countInd[Individual^.Current_pop] + 1;
-          end;
+
+          each_pop_sizes[Individual^.current_pop, current_year] := each_pop_sizes[Individual^.current_pop, current_year] + 1;
+          each_pop_IC[Individual^.current_pop, current_year] := each_pop_IC[Individual^.current_pop, current_year] + Individual^.IC;
+          pop_IC[current_year] := pop_IC[current_year] + Individual^.IC;
+
         end;
       end;
-
-      //  Calcolo della media IC per popolazione
-      for i := 0 to 5 do
-      begin
-        if countInd[i] > 0 then
-          avgIC[i] := sumIC[i] / countInd[i]
-        else
-          avgIC[i] := 0;
-      end;
-
-      // Scrittura della media IC nel file CSV
-      Append(ic_file_out);
-      Write(ic_file_out, current_sim, ',', current_year, ',');
-      for i := 0 to 5 do
-      begin
-        if i < 5 then
-          Write(ic_file_out, avgIC[i]:0:4, ',')
-        else
-          WriteLn(ic_file_out, avgIC[i]:0:4);
-      end;
-
-      Flush(ic_file_out);
 
       UpdateAbundanceMap;
 
@@ -321,17 +278,16 @@ var
 
     if (current_year = 1) or (current_year mod 10 = 0) then
     begin
-    WriteMapCSV('output_data/maps/FemalesMap_status_yr_' + IntToStr(current_year) + '.csv', Femalesmap, MapdimX, MapdimY, 0);
+    //WriteMapCSV('output_data/maps/FemalesMap_status_yr_' + IntToStr(current_year) + '.csv', Femalesmap, MapdimX, MapdimY, 0);
     //WriteMapCSV('output_data/maps/FemalesMap_age_yr_' + IntToStr(current_year) + '.csv', Femalesmap, MapdimX, MapdimY, 1);
-    WriteMapCSV('output_data/maps/MalesMap_status_yr_' + IntToStr(current_year) + '.csv', Malesmap, MapdimX, MapdimY, 0);
+    //WriteMapCSV('output_data/maps/MalesMap_status_yr_' + IntToStr(current_year) + '.csv', Malesmap, MapdimX, MapdimY, 0);
     //WriteMapCSV('output_data/maps/MalesMap_age_yr_' + IntToStr(current_year) + '.csv', Malesmap, MapdimX, MapdimY, 1);
     end;
 
       if (current_year <= 5) then
       begin
-         WritePopulationToCSV(population,'PopulationYear.csv', current_sim, current_year );
+         WritePopulationToCSV(population,'output_data/PopulationYear.csv', current_sim, current_year );
       end;
-     CloseFile(ic_file_out);
     end;
 
    end;
@@ -339,7 +295,7 @@ end;
 
 procedure Tspatial_Form.Run_ButtonClick(Sender: TObject);
 var
-  a, b, c, i, r: integer;
+  a, b, c, i, r, iy, ix: integer;
   t: string;
 begin
   randomize; {initialize the pseudorandom number generator}
@@ -356,49 +312,37 @@ end;
 
   readmap(mapname,  mapBHname, mapPops);
 
-
   SetLength(MalesMap, Mapdimx + 1, Mapdimy + 1, 2);
   SetLength(FemalesMap, Mapdimx + 1, Mapdimy + 1, 2);
 
   SetLength(ConnectionMap, Mapdimx + 1, Mapdimy + 1, 2);
 
-  SetLength(check_daily_movement, 1000, 102);
-
-  AssignFile(to_file_out, file_name);
-  rewrite(to_file_out); {create txt file}
-  writeln(to_file_out, 'current_sim,year,pop1, pop2, pop3, pop4, pop5');
-
-  AssignFile(mig_file_out, 'output_data/migration.csv');
-  rewrite(mig_file_out); {create txt file}
-  writeln(mig_file_out, 'EventID,Simulation,Year,Sex,Age,Natal_pop,Old_pop,New_pop');
+  if not DirectoryExists('output_data') then
+    MkDir('output_data');
 
   AssignFile(migS_file_out, 'output_data/migration_settled.csv');
   rewrite(migS_file_out); {create txt file}
   writeln(migS_file_out, 'EventID,Simulation,Year,Sex,Age,Natal_pop,Old_pop,New_pop');
 
-  if not DirectoryExists('output_data') then
-    MkDir('output_data');
-
-  AssignFile(to_file_out, 'output_data/popsize.txt');
-  Rewrite(to_file_out); {create txt file}
-
-  {Check to compare daily movement with Revilla 2015}
-  AssignFile(check_move_file_out, 'output_data/check_movement.csv');
-  rewrite(check_move_file_out); {create txt file}
-  writeln(check_move_file_out, 'Sex,Age,directions');
+  SetLength(pop_size, max_years + 1);
+  SetLength(pop_IC, max_years + 1);
+  SetLength(sum_pop_size, max_years + 1);
 
   for a := 1 to max_years do sum_pop_size[a] := 0;
   for a := 1 to max_years do n_sim_no_ext[a] := 0;
 
   SetLength(each_pop_sizes, 6);
+  SetLength(each_pop_IC, 6);
   for i := 0 to High(each_pop_sizes) do
+  begin
     SetLength(each_pop_sizes[i], max_years+1);
+    SetLength(each_pop_IC[i], max_years+1);
+  end;
 
   // Calculate array of step probabilities (here once) to be used in dispersal procedure later
   Step_probabilities;
 
   MigrationList := TList.Create;
-  SettledList := Tlist.Create;
 
   for current_sim := 1 to n_sim do
   begin
@@ -420,22 +364,44 @@ end;
           Chart1LineSeries2.addxy(b, sum_pop_size[b] / current_sim);
 
     {save the results to a text file}
-    append(to_file_out);
+    AssignFile(to_file_out, 'output_data/PopulationSizes.csv');
+    rewrite(to_file_out); {create txt file}
+    writeln(to_file_out, 'year,tot_size,tot_IC,size_0,IC_0,size_1,IC_1,size_2,IC_2,size_3,IC_3,size_4,IC_4,size_5,IC_5');
+
     for b := 1 to max_years do
     begin
-      writeln(to_file_out, current_sim, ',', b, ',',
-      each_pop_sizes[0,b], ',',
-      each_pop_sizes[1,b], ',',
-      each_pop_sizes[2,b], ',',
-      each_pop_sizes[3,b], ',',
-      each_pop_sizes[4,b], ',',
-      each_pop_sizes[5,b], ',');
+      write(to_file_out, b, ',', pop_size[b], ',', pop_IC[b]:0:5, ',', each_pop_sizes[0,b], ',');
+      if each_pop_sizes[0,b] > 0 then write(to_file_out, (each_pop_IC[0,b]/each_pop_sizes[0,b]):0:5, ',') else
+        write(to_file_out, 'NA', ',');
+
+      write(to_file_out, each_pop_sizes[1,b], ',');
+      if each_pop_sizes[1,b]  > 0 then write(to_file_out, (each_pop_IC[1,b]/each_pop_sizes[1,b]):0:5, ',') else
+        write(to_file_out, 'NA', ',');
+
+      write(to_file_out, each_pop_sizes[2,b], ',');
+      if each_pop_sizes[2,b]  > 0 then write(to_file_out, (each_pop_IC[2,b]/each_pop_sizes[2,b]):0:5, ',') else
+        write(to_file_out, 'NA', ',');
+
+      write(to_file_out,each_pop_sizes[3,b], ',');
+      if each_pop_sizes[3,b]  > 0 then write(to_file_out, (each_pop_IC[3,b]/each_pop_sizes[3,b]):0:5, ',')  else
+        write(to_file_out, 'NA', ',');
+
+      write(to_file_out,each_pop_sizes[4,b], ',');
+      if each_pop_sizes[4,b]  > 0 then write(to_file_out, (each_pop_IC[4,b]/each_pop_sizes[4,b]):0:5, ',') else
+        write(to_file_out, 'NA', ',');
+
+      write(to_file_out,each_pop_sizes[5,b], ',');
+      if each_pop_sizes[5,b]  > 0 then writeln(to_file_out, (each_pop_IC[5,b]/each_pop_sizes[5,b]):0:5) else
+        writeln(to_file_out, 'NA');
     end;
 
     CloseFile(to_file_out);
 
     {Write Migration list to file}
-    append(mig_file_out);
+    AssignFile(mig_file_out, 'output_data/migration.csv');
+    rewrite(mig_file_out); {create txt file}
+    writeln(mig_file_out, 'EventID,Simulation,Year,Sex,Age,Natal_pop,Old_pop,New_pop');
+
     with MigrationList do
     for b := 0 to MigrationList.Count - 1 do
     begin
@@ -451,40 +417,38 @@ end;
     end;
     CloseFile(mig_file_out);
 
-
-    {Write Settled Migrants list to file}
-    append(migS_file_out);
-    with SettledList do
-    for b := 0 to SettledList.Count - 1 do
+  // Loop over the ConnectionMap and write to file for both female and male
+  AssignFile(connection_F_out, 'output_data/connection_map_Female' + IntToStr(current_sim) + '.csv' );
+  rewrite(connection_F_out); {create txt file}
+  for iy := 1 to MapDimY do
+  begin
+    for ix := 1 to MapDimX do
     begin
-      MigrationEvent := items[b];
-
-      writeln(migS_file_out, b , ',', MigrationEvent^.simulation, ',',
-      MigrationEvent^.year, ',',
-      MigrationEvent^.sex, ',',
-      MigrationEvent^.age, ',',
-      MigrationEvent^.natal_pop, ',',
-      MigrationEvent^.old_pop, ',',
-      MigrationEvent^.new_pop);
+      if ix < MapDimX then
+        Write(connection_F_out, ConnectionMap[ix, iy, 0], ',')
+      else
+        WriteLn(connection_F_out, ConnectionMap[ix, iy, 0]);
     end;
-    CloseFile(migS_file_out);
+  end;
+  CloseFile(connection_F_out);
 
-    {Write connection map}
-    WriteMapCSV('output_data/maps/FemalesMap_traveled_' + IntToStr(current_sim) + '.csv', ConnectionMap, MapdimX, MapdimY, 0);
-    WriteMapCSV('output_data/maps/MalesMap_traveled_' + IntToStr(current_sim) + '.csv', ConnectionMap, MapdimX, MapdimY, 1);
-
-    {Write movement check to file}
-    append(check_move_file_out);
-    for r := 0 to 1000 - 1 do
+  // Loop over the ConnectionMap and write to file for both female and male
+  AssignFile(connection_M_out, 'output_data/connection_map_Male' + IntToStr(current_sim) + '.csv' );
+  rewrite(connection_M_out); {create txt file}
+  for iy := 1 to MapDimY do
+  begin
+    for ix := 1 to MapDimX do
     begin
-      for b := 0 to 101 do
-      begin
-        write(check_move_file_out, check_daily_movement[r,b], ',');
-
-      end;
-      WriteLn(check_move_file_out);
+      if ix < MapDimX then
+        Write(connection_M_out, ConnectionMap[ix, iy, 0], ',')
+      else
+        WriteLn(connection_M_out, ConnectionMap[ix, iy, 0]);
     end;
-    CloseFile(check_move_file_out);
+  end;
+  CloseFile(connection_M_out);
+
+  WriteFamtreeToCSV('output_data/Famtree.csv');
+
 
   end;
 

@@ -5,7 +5,7 @@ unit general_functions;
 interface
 
 uses
-  Classes, SysUtils, Dialogs,
+  Classes, SysUtils,
   lynx_define_units;
 
 function randomPoisson(mean: integer): integer;
