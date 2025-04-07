@@ -5,7 +5,7 @@ unit lynx_vital_rates;
 interface
 
 uses
-  Classes, SysUtils, Math, Dialogs,
+  Classes, SysUtils, Math, Generics.Collections, Types,
   lynx_define_units, lynx_dispersal_assist_functions, general_functions;
 
 
@@ -649,138 +649,180 @@ begin
 
 
 function FindClosestCommonAncestors(Famtree: Array2Dreal; child_ID: integer): Array2Dinteger;
+type
+  // Define a record to store ancestor ID and distance
+  TAncestorInfo = record
+    ID: Integer;
+    Steps: Integer;
+  end;
 
+  // Queue and Dictionary types
+  TQueueOfAncestor = TQueue<TAncestorInfo>;
+  TAncestorDict = TDictionary<Integer, Integer>;
 var
-  i, j, q, t, a, min_steps: integer;
-  common_ancestors, queue_mother, queue_father, visited_mother, visited_father: array of array of integer;
-  closest_ancestors : Array2Dinteger;
-  current_mother, current_father: array[0..1] of integer;
+  i, ancestorID, steps, minSteps: integer;
+  qMother, qFather: TQueueOfAncestor;
+  visitedMother, visitedFather: TAncestorDict;
+  commonAncestors: TList<TPoint>;
+  current: TAncestorInfo;
+  closestAncestors: Array2Dinteger;
 begin
-  // Initialize the mother's queue
-  SetLength(queue_mother, 1, 2);
-  queue_mother[0,0] := Round(Famtree[child_ID, 3]);
-  queue_mother[0,1] := 1;
+  // Create data structures
+  qMother := TQueueOfAncestor.Create;
+  qFather := TQueueOfAncestor.Create;
+  visitedMother := TAncestorDict.Create;
+  visitedFather := TAncestorDict.Create;
+  commonAncestors := TList<TPoint>.Create;
 
-  // Initialize the father's queue
-  SetLength(queue_father, 1, 2);
-  queue_father[0,0] := Round(Famtree[child_ID, 2]);
-  queue_father[0,1] := 1;
-
-  // Expansion of the mother's ancestors//
-
-  while Length(queue_mother) > 0 do
-  begin
-    current_mother[0] := queue_mother[High(queue_mother),0];
-    current_mother[1] := queue_mother[High(queue_mother),1];
-
-    SetLength(queue_mother, Length(queue_mother) - 1);
-
-    // Add to visited
-    SetLength(visited_mother, Length(visited_mother) + 1, 2);
-    visited_mother[High(visited_mother),0] := current_mother[0];
-    visited_mother[High(visited_mother),1] := current_mother[1];
-
-    // Expand to parents of current node
-    if (current_mother[0] <> -1) and (current_mother[0] < Length(Famtree)) then
+  try
+    // Initialize with parents (ID, steps)
+    if (child_ID >= 0) and (child_ID < Length(Famtree)) then
     begin
-     if Famtree[current_mother[0], 2] <> -1 then               //father of current mother
-     begin
-      SetLength(queue_mother, Length(queue_mother) + 1,2);     //add new line to the queue to add father of current_mother
-      queue_mother[High(queue_mother),0] := Round(Famtree[current_mother[0], 2]);
-      queue_mother[High(queue_mother),1] := current_mother[1] + 1;          //number of steps correspond to the previous one +1
-     end;
-    end;
-
-    if (current_mother[0] <> -1) and (current_mother[0] < Length(Famtree)) then
-    begin
-     if Famtree[current_mother[0], 3] <> -1 then                            //mother of current_mother
-     begin
-      SetLength(queue_mother, Length(queue_mother) + 1,2);
-      queue_mother[High(queue_mother),0] := Round(Famtree[current_mother[0], 3]);
-      queue_mother[High(queue_mother),1] := current_mother[1] + 1;
-    end;
-    end;
-  end;
-
-  // Expansion of the mother's ancestors//
-
-  while Length(queue_father) > 0 do
-  begin
-    current_father[0] := queue_father[High(queue_father),0];
-    current_father[1] := queue_father[High(queue_father),1];
-    SetLength(queue_father, Length(queue_father) - 1);
-
-    //Add to visited
-    SetLength(visited_father, Length(visited_father) + 1,2);
-    visited_father[High(visited_father),0] := current_father[0];
-    visited_father[High(visited_father),1] := current_father[1];
-
-    // Expand to parents of current node
-    if (current_father[0] <> -1) and (current_father[0] < Length(Famtree)) then
-    begin
-     if Famtree[current_father[0], 2] <> -1 then
-     begin
-      SetLength(queue_father, Length(queue_father) + 1,2);
-      queue_father[High(queue_father),0] := Round(Famtree[current_father[0], 2 ]);
-      queue_father[High(queue_father),1] := current_father[1] + 1;
-     end;
-    end;
-
-    if (current_father[0] <> -1) and (current_father[0] < Length(Famtree)) then
-    begin
-    if Famtree[current_father[0], 3] <> -1 then
-    begin
-      SetLength(queue_father, Length(queue_father) + 1,2);
-      queue_father[High(queue_father),0] := Round(Famtree[current_father[0], 3]);
-      queue_father[High(queue_father),1] := current_father[1] + 1;
-    end;
-    end;
-  end;
-
-  // find CA
-  SetLength(common_ancestors, 0);
-  for i := 0 to Length(visited_mother) - 1 do
-    for j := 0 to Length(visited_father) - 1 do
-      if visited_mother[i,0] = visited_father[j,0] then
+      // Add father to father's queue
+      ancestorID := Round(Famtree[child_ID, 2]);
+      if ancestorID <> -1 then
       begin
-        SetLength(common_ancestors, Length(common_ancestors) + 1, 2);
-        common_ancestors[High(common_ancestors),0] := visited_mother[i,0];
-        common_ancestors[High(common_ancestors),1] :=
-          visited_mother[i,1] + visited_father[j,1];
+        current.ID := ancestorID;
+        current.Steps := 1;
+        qFather.Enqueue(current);
+        visitedFather.Add(ancestorID, 1);
       end;
 
-  //Find min number of steps
-  min_steps := MaxInt;
-  for q := 0 to Length(common_ancestors) - 1 do
-    if common_ancestors[q,1] < min_steps then
-      min_steps := common_ancestors[q,1];
+      // Add mother to mother's queue
+      ancestorID := Round(Famtree[child_ID, 3]);
+      if ancestorID <> -1 then
+      begin
+        current.ID := ancestorID;
+        current.Steps := 1;
+        qMother.Enqueue(current);
+        visitedMother.Add(ancestorID, 1);
+      end;
+    end;
 
-  //Filter Common Ancestors with the minimum number of steps
-  if(common_ancestors <> nil) then
-  begin
-  setLength(closest_ancestors,1);
-  SetLength(closest_ancestors[0], 2);
-  a := 0;
-
-  for t := 0 to Length(common_ancestors) - 1 do
-    if common_ancestors[t,1] = min_steps then
+    // Process mother's side ancestors with breadth-first search
+    while qMother.Count > 0 do
     begin
+      current := qMother.Dequeue;
+      ancestorID := current.ID;
+      steps := current.Steps;
 
-      SetLength(closest_ancestors, a + 1);
-      SetLength(closest_ancestors[a], 2);
+      // Check if this ancestor is already found on father's side
+      if visitedFather.ContainsKey(ancestorID) then
+        commonAncestors.Add(TPoint.Create(ancestorID, steps + visitedFather[ancestorID]));
 
-      closest_ancestors[a][0] := common_ancestors[t,0];
-      closest_ancestors[a][1] := common_ancestors[t,1];
+      // Only continue if we haven't found common ancestors yet or need more with same distance
+      if (commonAncestors.Count = 0) or
+         ((steps <= minSteps) and (ancestorID < Length(Famtree)) and (ancestorID <> -1)) then
+      begin
+        // Add father of current ancestor
+        if (ancestorID < Length(Famtree)) then
+        begin
+          ancestorID := Round(Famtree[ancestorID, 2]);
+          if (ancestorID <> -1) and not visitedMother.ContainsKey(ancestorID) then
+          begin
+            current.ID := ancestorID;
+            current.Steps := steps + 1;
+            qMother.Enqueue(current);
+            visitedMother.Add(ancestorID, steps + 1);
+          end;
 
-      a := a+1;
+          // Add mother of current ancestor
+          ancestorID := Round(Famtree[current.ID, 3]);
+          if (ancestorID <> -1) and not visitedMother.ContainsKey(ancestorID) then
+          begin
+            current.ID := ancestorID;
+            current.Steps := steps + 1;
+            qMother.Enqueue(current);
+            visitedMother.Add(ancestorID, steps + 1);
+          end;
+        end;
+      end;
     end;
-  Result := closest_ancestors;
-   end
-  else
-  begin
-    Result := nil;
+
+    // Process father's side ancestors with breadth-first search
+    while qFather.Count > 0 do
+    begin
+      current := qFather.Dequeue;
+      ancestorID := current.ID;
+      steps := current.Steps;
+
+      // Check if this ancestor is already found on mother's side
+      if visitedMother.ContainsKey(ancestorID) then
+        commonAncestors.Add(TPoint.Create(ancestorID, steps + visitedMother[ancestorID]));
+
+      // Only continue if we haven't found common ancestors yet or need more with same distance
+      if (commonAncestors.Count = 0) or
+         ((steps <= minSteps) and (ancestorID < Length(Famtree)) and (ancestorID <> -1)) then
+      begin
+        // Add father of current ancestor
+        if (ancestorID < Length(Famtree)) then
+        begin
+          ancestorID := Round(Famtree[ancestorID, 2]);
+          if (ancestorID <> -1) and not visitedFather.ContainsKey(ancestorID) then
+          begin
+            current.ID := ancestorID;
+            current.Steps := steps + 1;
+            qFather.Enqueue(current);
+            visitedFather.Add(ancestorID, steps + 1);
+          end;
+
+          // Add mother of current ancestor
+          ancestorID := Round(Famtree[current.ID, 3]);
+          if (ancestorID <> -1) and not visitedFather.ContainsKey(ancestorID) then
+          begin
+            current.ID := ancestorID;
+            current.Steps := steps + 1;
+            qFather.Enqueue(current);
+            visitedFather.Add(ancestorID, steps + 1);
+          end;
+        end;
+      end;
     end;
 
+    // Initialize minSteps before first use
+    minSteps := MaxInt;
+
+    // Find minimum distance
+    for i := 0 to commonAncestors.Count - 1 do
+      if commonAncestors[i].Y < minSteps then
+        minSteps := commonAncestors[i].Y;
+
+    // Filter common ancestors with minimum distance
+    if commonAncestors.Count > 0 then
+    begin
+      // Count ancestors with minimum distance
+      steps := 0;
+      for i := 0 to commonAncestors.Count - 1 do
+        if commonAncestors[i].Y = minSteps then
+          Inc(steps);
+
+      // Create result array
+      SetLength(closestAncestors, steps);
+      steps := 0;
+
+      for i := 0 to commonAncestors.Count - 1 do
+        if commonAncestors[i].Y = minSteps then
+        begin
+          SetLength(closestAncestors[steps], 2);
+          closestAncestors[steps][0] := commonAncestors[i].X;
+          closestAncestors[steps][1] := commonAncestors[i].Y;
+          Inc(steps);
+        end;
+
+      Result := closestAncestors;
+    end
+    else
+      Result := nil;
+
+  finally
+    // Clean up
+    qMother.Free;
+    qFather.Free;
+    visitedMother.Free;
+    visitedFather.Free;
+    commonAncestors.Free;
+  end;
 end;
+
 end.
 

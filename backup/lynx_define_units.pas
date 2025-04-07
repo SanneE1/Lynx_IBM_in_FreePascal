@@ -96,7 +96,9 @@ var               {here you declare global variables}
   //sink: real;
   populationsize: longint;
   n_sim: integer;
+
   taskID: integer;
+  output_dir: string;
 
   sum_distance_X: integer;
   sum_distance_Y: integer;
