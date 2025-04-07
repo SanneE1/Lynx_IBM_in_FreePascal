@@ -25,7 +25,7 @@ begin
   RunPopSim;
 
   WriteLn('All simulations finished');
-  ReadLn;
+
 
 end.
 

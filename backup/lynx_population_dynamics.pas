@@ -162,6 +162,8 @@ begin
       day := 0;  // Start the year
       current_year := a;
 
+      writeln(current_year);
+
       while (day < 366) and (populationsize > 0) do //Let's pretend there's no such thing as leap years
       begin
         day := day + 1;
