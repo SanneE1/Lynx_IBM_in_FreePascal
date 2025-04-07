@@ -153,10 +153,6 @@ end;
 procedure Pop_dynamics;
 var
   a, b, xy, day, Tcheck: integer;
-  sumIC: array[0..5] of real;
-  countInd: array[0..5] of integer;
-  avgIC: array[0..5] of real;
-  ic_file_out: TextFile;
 begin
  with population do
   begin
