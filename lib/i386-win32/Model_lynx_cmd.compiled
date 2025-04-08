@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <Compiler Value="C:\lazarus\fpc\3.2.2\bin\i386-win32\fpc.exe" Date="1488545472"/>
-  <Params Value=" -MObjFPC -Scghi -CX -O2 -XX -l -vewnhibq -FiC:\Users\Z1512834Z\Documents\01_Natura_Connect\00_Lynx_model\lynx_donana\lib\i386-win32 -FuC:\Users\Z1512834Z\Documents\01_Natura_Connect\00_Lynx_model\lynx_donana\ -FUC:\Users\Z1512834Z\Documents\01_Natura_Connect\00_Lynx_model\lynx_donana\lib\i386-win32\ -FEC:\Users\Z1512834Z\Documents\01_Natura_Connect\00_Lynx_model\lynx_donana\program\ -oC:\Users\Z1512834Z\Documents\01_Natura_Connect\00_Lynx_model\lynx_donana\program\Model_Lynx_release.exe Model_lynx_cmd.lpr"/>
+  <Params Value=" -MObjFPC -Scaghi -CirotR -O1 -gw3 -gl -gh -Xg -gt -l -vewnhibq -FiC:\Users\Z1512834Z\Documents\01_Natura_Connect\00_Lynx_model\lynx_donana\lib\i386-win32 -FuC:\Users\Z1512834Z\Documents\01_Natura_Connect\00_Lynx_model\lynx_donana\ -FUC:\Users\Z1512834Z\Documents\01_Natura_Connect\00_Lynx_model\lynx_donana\lib\i386-win32\ -FEC:\Users\Z1512834Z\Documents\01_Natura_Connect\00_Lynx_model\lynx_donana\ -oC:\Users\Z1512834Z\Documents\01_Natura_Connect\00_Lynx_model\lynx_donana\Model_Lynx_debug.exe Model_lynx_cmd.lpr"/>
 </CONFIG>

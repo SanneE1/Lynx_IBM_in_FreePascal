@@ -21,6 +21,7 @@ begin
 
 
   //if taskID := then taskID := 0;
+  WriteLn('Starting program');
 
   RunPopSim;
 
