@@ -27,7 +27,5 @@ begin
 
   WriteLn('All simulations finished');
 
-  ReadLn();
-
 end.
 

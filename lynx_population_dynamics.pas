@@ -88,7 +88,9 @@ begin
       Individual^.DailySteps := 0;
       Individual^.DailyStepsOpen := 0;
 
-      setLength(Individual^.Genome, 25, 2);
+      setLength(Individual^.Genome, 25);
+      for i := 0 to High(Individual^.Genome) do setLength(Individual^.Genome[i], 2);
+
       for i := 1 to 24 do
       begin
         for k := 0 to 1 do
@@ -117,7 +119,8 @@ begin
 
     end;
   end;
-
+    
+    WriteLn('Beginning population size = ', Population.Count);
     {Go through some dispersal cycles, to get individuals settled}
     WriteLn('Starting ', n_cycles, ' initial dispersal cycles');
 
