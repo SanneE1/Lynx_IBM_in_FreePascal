@@ -3,12 +3,11 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Debug"/>
+    <BuildModes Active="Release"/>
     <Units>
       <Unit>
         <Filename Value="Model_lynx_cmd.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <CursorPos X="3" Y="31"/>
         <UsageCount Value="102"/>
         <Loaded Value="True"/>
@@ -16,9 +15,10 @@
       <Unit>
         <Filename Value="lynx_population_dynamics.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="141"/>
-        <CursorPos X="35" Y="170"/>
+        <TopLine Value="142"/>
+        <CursorPos X="50" Y="157"/>
         <UsageCount Value="102"/>
         <Loaded Value="True"/>
       </Unit>
