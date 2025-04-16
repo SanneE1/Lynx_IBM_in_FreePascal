@@ -188,6 +188,7 @@ begin
 
       
       populationsize := population.Count;
+      pop_size[current_year] := populationsize;
 
       if populationsize > 0 then
       begin
@@ -411,7 +412,9 @@ begin
   end;
   CloseFile(connection_M_out);
 
-    WriteLn('Done with simulation ', current_sim);
+  //WriteFamtreeToCSV(output_dir + PathDelim + 'Famtree_' + IntToStr(taskID) + '.csv');
+
+  WriteLn('Done with simulation ', current_sim);
 end;
 end;
 

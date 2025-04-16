@@ -16,63 +16,7 @@
     </General>
     <BuildModes>
       <Item Name="Debug" Default="True"/>
-      <Item Name="Release Windows">
-        <CompilerOptions>
-          <Version Value="11"/>
-          <PathDelim Value="\"/>
-          <Target>
-            <Filename Value="program\Model_Lynx_$(TargetOS)"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
-            <TargetCPU Value="x86_64"/>
-            <TargetOS Value="win64"/>
-            <Optimizations>
-              <OptimizationLevel Value="2"/>
-            </Optimizations>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <GenerateDebugInfo Value="False"/>
-              <RunWithoutDebug Value="True"/>
-            </Debugging>
-            <LinkSmart Value="True"/>
-          </Linking>
-        </CompilerOptions>
-      </Item>
-      <Item Name="Release Linux">
-        <CompilerOptions>
-          <Version Value="11"/>
-          <PathDelim Value="\"/>
-          <Target>
-            <Filename Value="program\Model_Lynx_$(TargetOS)"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
-            <TargetCPU Value="x86_64"/>
-            <TargetOS Value="linux"/>
-            <Optimizations>
-              <OptimizationLevel Value="2"/>
-            </Optimizations>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <GenerateDebugInfo Value="False"/>
-              <RunWithoutDebug Value="True"/>
-            </Debugging>
-            <LinkSmart Value="True"/>
-          </Linking>
-        </CompilerOptions>
-      </Item>
-      <Item Name="Release basic">
+      <Item Name="Release">
         <CompilerOptions>
           <Version Value="11"/>
           <PathDelim Value="\"/>

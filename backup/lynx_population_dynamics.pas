@@ -32,6 +32,8 @@ begin
   //Initialization of UniqueID at 0 (the first ind will have an ID of 0)
   UniqueIDnext:= 0;
 
+  WriteLn('Creating start population');
+
   AssignFile(popFile, start_pop_file);
   reset(popFile);
 
@@ -86,7 +88,9 @@ begin
       Individual^.DailySteps := 0;
       Individual^.DailyStepsOpen := 0;
 
-      setLength(Individual^.Genome, 25, 2);
+      setLength(Individual^.Genome, 25);
+      for i := 0 to High(Individual^.Genome) do setLength(Individual^.Genome[i], 2);
+
       for i := 1 to 24 do
       begin
         for k := 0 to 1 do
@@ -115,8 +119,11 @@ begin
 
     end;
   end;
-
+    
+    WriteLn('Beginning population size = ', Population.Count);
     {Go through some dispersal cycles, to get individuals settled}
+    WriteLn('Starting ', n_cycles, ' initial dispersal cycles');
+
     with population do
     for a := 1 to n_cycles do
     begin
@@ -156,13 +163,14 @@ var
 begin
  with population do
   begin
+    WriteLn('Starting population dynamics');
 
     for a := 1 to max_years do
     begin
       day := 0;  // Start the year
       current_year := a;
 
-      writeln(current_year);
+      writeln('Simulation year ', current_year);
 
       while (day < 366) and (populationsize > 0) do //Let's pretend there's no such thing as leap years
       begin
@@ -403,7 +411,9 @@ begin
   end;
   CloseFile(connection_M_out);
 
-    WriteLn('Done with simulation ', current_sim);
+  //WriteFamtreeToCSV(output_dir + PathDelim + 'Famtree_' + IntToStr(taskID) + '.csv');
+
+  WriteLn('Done with simulation ', current_sim);
 end;
 end;
 

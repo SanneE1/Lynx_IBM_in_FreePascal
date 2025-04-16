@@ -69,7 +69,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="program\Model_Lynx_debug"/>
+      <Filename Value="Model_Lynx_debug"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
