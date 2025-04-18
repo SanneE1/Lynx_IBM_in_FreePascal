@@ -88,7 +88,7 @@ begin
       Individual^.DailySteps := 0;
       Individual^.DailyStepsOpen := 0;
 
-      setLength(Individual^.Genome, 25);
+      {setLength(Individual^.Genome, 25);
       for i := 0 to High(Individual^.Genome) do setLength(Individual^.Genome[i], 2);
 
       for i := 1 to 24 do
@@ -106,6 +106,7 @@ begin
             Individual^.Genome[i, k] := 4;
           end;
         end;
+        }
 
       Population.add(Individual);
 

@@ -177,7 +177,7 @@ begin
 
 
                       //inherit genes of mother
-                      setLength(Individual^.Genome, 25, 2);
+                      {setLength(Individual^.Genome, 25, 2);
                       homogeneity_count := 0;
 
                       for i := 1 to 24 do
@@ -202,6 +202,7 @@ begin
 
                       //ratio of homogeneity
                       Individual^.P_homogeneity := homogeneity_count / 24.0;
+                      }
 
                       {Inbreeding calculations}
                       // Add new individual to Famtree
@@ -356,6 +357,9 @@ begin
 
     begin
       Individual := items[a];
+
+      //Extra debug information
+      if Individual = nil then WriteLn('Individual index ' + IntToStr(a) + 'doesnt get an individual assigned');
 
       {If the individual is a subadult determine if it starts dispersing}
       if (Individual^.Status = 0) and (Individual^.Age > 0) then
@@ -564,6 +568,7 @@ begin
               begin
 
                {Males just take all the territory of a single settled female}
+               temp_ind := nil;
                temp_ind := FindTerrOwner(population, 'f', TestCoordX, TestCoordY);
 
                if temp_ind = nil then Continue;
@@ -656,23 +661,24 @@ type
     Steps: Integer;
   end;
 
-  // Queue and Dictionary types
-  TQueueOfAncestor = TQueue<TAncestorInfo>;
-  TAncestorDict = TDictionary<Integer, Integer>;
+  // Fully specialized generic types
+  TAncestorQueue = specialize TQueue<TAncestorInfo>;
+  TAncestorDict = specialize TDictionary<Integer, Integer>;
+  TPointList = specialize TList<TPoint>;
 var
   i, ancestorID, steps, minSteps: integer;
-  qMother, qFather: TQueueOfAncestor;
+  qMother, qFather: TAncestorQueue;
   visitedMother, visitedFather: TAncestorDict;
-  commonAncestors: TList<TPoint>;
+  commonAncestors: TPointList;
   current: TAncestorInfo;
   closestAncestors: Array2Dinteger;
 begin
   // Create data structures
-  qMother := TQueueOfAncestor.Create;
-  qFather := TQueueOfAncestor.Create;
+  qMother := TAncestorQueue.Create;
+  qFather := TAncestorQueue.Create;
   visitedMother := TAncestorDict.Create;
   visitedFather := TAncestorDict.Create;
-  commonAncestors := TList<TPoint>.Create;
+  commonAncestors := TPointList.Create;
 
   try
     // Initialize with parents (ID, steps)
@@ -698,6 +704,9 @@ begin
         visitedMother.Add(ancestorID, 1);
       end;
     end;
+
+    // Initialize minSteps before use
+    minSteps := MaxInt;
 
     // Process mother's side ancestors with breadth-first search
     while qMother.Count > 0 do
@@ -726,14 +735,20 @@ begin
             visitedMother.Add(ancestorID, steps + 1);
           end;
 
+          // Reset ancestorID to current.ID for mother lookup
+          ancestorID := current.ID;
+
           // Add mother of current ancestor
-          ancestorID := Round(Famtree[current.ID, 3]);
-          if (ancestorID <> -1) and not visitedMother.ContainsKey(ancestorID) then
+          if (ancestorID < Length(Famtree)) then
           begin
-            current.ID := ancestorID;
-            current.Steps := steps + 1;
-            qMother.Enqueue(current);
-            visitedMother.Add(ancestorID, steps + 1);
+            ancestorID := Round(Famtree[ancestorID, 3]);
+            if (ancestorID <> -1) and not visitedMother.ContainsKey(ancestorID) then
+            begin
+              current.ID := ancestorID;
+              current.Steps := steps + 1;
+              qMother.Enqueue(current);
+              visitedMother.Add(ancestorID, steps + 1);
+            end;
           end;
         end;
       end;
@@ -766,30 +781,33 @@ begin
             visitedFather.Add(ancestorID, steps + 1);
           end;
 
+          // Reset ancestorID to current.ID for mother lookup
+          ancestorID := current.ID;
+
           // Add mother of current ancestor
-          ancestorID := Round(Famtree[current.ID, 3]);
-          if (ancestorID <> -1) and not visitedFather.ContainsKey(ancestorID) then
+          if (ancestorID < Length(Famtree)) then
           begin
-            current.ID := ancestorID;
-            current.Steps := steps + 1;
-            qFather.Enqueue(current);
-            visitedFather.Add(ancestorID, steps + 1);
+            ancestorID := Round(Famtree[ancestorID, 3]);
+            if (ancestorID <> -1) and not visitedFather.ContainsKey(ancestorID) then
+            begin
+              current.ID := ancestorID;
+              current.Steps := steps + 1;
+              qFather.Enqueue(current);
+              visitedFather.Add(ancestorID, steps + 1);
+            end;
           end;
         end;
       end;
     end;
 
-    // Initialize minSteps before first use
-    minSteps := MaxInt;
-
-    // Find minimum distance
-    for i := 0 to commonAncestors.Count - 1 do
-      if commonAncestors[i].Y < minSteps then
-        minSteps := commonAncestors[i].Y;
-
-    // Filter common ancestors with minimum distance
+    // Find minimum distance if any common ancestors were found
     if commonAncestors.Count > 0 then
     begin
+      minSteps := MaxInt;
+      for i := 0 to commonAncestors.Count - 1 do
+        if commonAncestors[i].Y < minSteps then
+          minSteps := commonAncestors[i].Y;
+
       // Count ancestors with minimum distance
       steps := 0;
       for i := 0 to commonAncestors.Count - 1 do

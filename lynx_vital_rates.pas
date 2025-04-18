@@ -110,7 +110,7 @@ begin
                   if (PotentialFather <> nil) then
                 begin
 
-                for i:= 1 to 24 do
+                {for i:= 1 to 24 do
                 begin
                     for k:= 0 to 1 do
                     begin
@@ -118,7 +118,7 @@ begin
                       father[i,k]:= PotentialFather^.Genome[i,k];
                     end;
                end;
-
+                }
                 father_ID := PotentialFather^.UniqueID
                 end;
                 if (PotentialFather = nil) then
@@ -177,7 +177,7 @@ begin
 
 
                       //inherit genes of mother
-                      setLength(Individual^.Genome, 25, 2);
+                      {setLength(Individual^.Genome, 25, 2);
                       homogeneity_count := 0;
 
                       for i := 1 to 24 do
@@ -202,6 +202,7 @@ begin
 
                       //ratio of homogeneity
                       Individual^.P_homogeneity := homogeneity_count / 24.0;
+                      }
 
                       {Inbreeding calculations}
                       // Add new individual to Famtree
@@ -356,6 +357,9 @@ begin
 
     begin
       Individual := items[a];
+
+      //Extra debug information
+      if Individual = nil then WriteLn('Individual index ' + IntToStr(a) + 'doesnt get an individual assigned');
 
       {If the individual is a subadult determine if it starts dispersing}
       if (Individual^.Status = 0) and (Individual^.Age > 0) then
@@ -564,6 +568,7 @@ begin
               begin
 
                {Males just take all the territory of a single settled female}
+               temp_ind := nil;
                temp_ind := FindTerrOwner(population, 'f', TestCoordX, TestCoordY);
 
                if temp_ind = nil then Continue;

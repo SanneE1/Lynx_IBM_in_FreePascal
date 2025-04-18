@@ -188,6 +188,7 @@ begin
 
       
       populationsize := population.Count;
+      pop_size[current_year] := populationsize;
 
       if populationsize > 0 then
       begin

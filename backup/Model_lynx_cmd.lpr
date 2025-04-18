@@ -19,13 +19,21 @@ begin
 
   if ParamStr(2) = '' then taskID := 0 else taskID := StrToInt(ParamStr(2));
 
+  //SetHeapTraceOutput('job_report' + PathDelim + IntToStr(taskID) +  '_heaptrc.log');  // Output file name
+  SetHeapTraceOutput(IntToStr(taskID) +  '_heaptrc.log');  // Output file name
 
   //if taskID := then taskID := 0;
   WriteLn('Starting program');
 
+  try
   RunPopSim;
-
   WriteLn('All simulations finished');
+  except
+    on E: Exception do
+    begin
+      WriteLn('Program error: ', E.Message);
+    end;
+  end;
 
 
 end.
