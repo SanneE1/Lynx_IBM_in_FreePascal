@@ -120,6 +120,9 @@ begin
 
     end;
   end;
+  end;
+  
+    CloseFile(popFile);
     
     WriteLn('Beginning population size = ', Population.Count);
     {Go through some dispersal cycles, to get individuals settled}
@@ -144,18 +147,26 @@ begin
           Tcheck := Tcheck + 1;
 
           if Tcheck = Tsize then
+		  begin
           Individual^.Status := 3;
-
+          if Individual^.Sex = 'f' then
+          for xy := 0 to Tcheck - 1 do
+            begin
+            FemalesMap[Individual^.TerritoryX[xy], Individual^.TerritoryY[xy], 0] := Individual^.Status;
+            FemalesMap[Individual^.TerritoryX[xy], Individual^.TerritoryY[xy], 1] := Individual^.Age;
+            end
+            else
+            begin
+            MalesMap[Individual^.TerritoryX[xy], Individual^.TerritoryY[xy], 0] := Individual^.Status;
+            MalesMap[Individual^.TerritoryX[xy], Individual^.TerritoryX[xy], 1] := Individual^.Age;
+            end;
+          end;
+		  
       end;
-
-      UpdateAbundanceMap;
-
     end;
 
   end;
   end;
-
-end;
 
 
 procedure Pop_dynamics;

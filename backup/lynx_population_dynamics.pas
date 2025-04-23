@@ -88,7 +88,7 @@ begin
       Individual^.DailySteps := 0;
       Individual^.DailyStepsOpen := 0;
 
-      setLength(Individual^.Genome, 25);
+      {setLength(Individual^.Genome, 25);
       for i := 0 to High(Individual^.Genome) do setLength(Individual^.Genome[i], 2);
 
       for i := 1 to 24 do
@@ -106,6 +106,7 @@ begin
             Individual^.Genome[i, k] := 4;
           end;
         end;
+        }
 
       Population.add(Individual);
 
@@ -119,6 +120,9 @@ begin
 
     end;
   end;
+  end;
+  
+    CloseFile(popFile);
     
     WriteLn('Beginning population size = ', Population.Count);
     {Go through some dispersal cycles, to get individuals settled}
@@ -143,18 +147,26 @@ begin
           Tcheck := Tcheck + 1;
 
           if Tcheck = Tsize then
+		  begin
           Individual^.Status := 3;
-
+          if Lynx^.Sex = 'f' then
+          for xy := 0 to Tcheck - 1 do
+            begin
+            FemalesMap[Lynx^.TerritoryX[xy], Lynx^.TerritoryY[xy], 0] := Lynx^.Status;
+            FemalesMap[Lynx^.TerritoryX[xy], Lynx^.TerritoryY[xy], 1] := Lynx^.Age;
+            end
+            else
+            begin
+            MalesMap[Lynx^.TerritoryX[xy], Lynx^.TerritoryY[xy], 0] := Lynx^.Status;
+            MalesMap[Lynx^.TerritoryX[xy], Lynx^.TerritoryX[xy], 1] := Lynx^.Age;
+            end;
+          end;
+		  
       end;
-
-      UpdateAbundanceMap;
-
     end;
 
   end;
   end;
-
-end;
 
 
 procedure Pop_dynamics;
