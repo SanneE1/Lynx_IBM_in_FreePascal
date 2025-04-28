@@ -149,16 +149,16 @@ begin
           if Tcheck = Tsize then
 		  begin
           Individual^.Status := 3;
-          if Lynx^.Sex = 'f' then
+          if Individual^.Sex = 'f' then
           for xy := 0 to Tcheck - 1 do
             begin
-            FemalesMap[Lynx^.TerritoryX[xy], Lynx^.TerritoryY[xy], 0] := Lynx^.Status;
-            FemalesMap[Lynx^.TerritoryX[xy], Lynx^.TerritoryY[xy], 1] := Lynx^.Age;
+            FemalesMap[Individual^.TerritoryX[xy], Individual^.TerritoryY[xy], 0] := Individual^.Status;
+            FemalesMap[Individual^.TerritoryX[xy], Individual^.TerritoryY[xy], 1] := Individual^.Age;
             end
             else
             begin
-            MalesMap[Lynx^.TerritoryX[xy], Lynx^.TerritoryY[xy], 0] := Lynx^.Status;
-            MalesMap[Lynx^.TerritoryX[xy], Lynx^.TerritoryX[xy], 1] := Lynx^.Age;
+            MalesMap[Individual^.TerritoryX[xy], Individual^.TerritoryY[xy], 0] := Individual^.Status;
+            MalesMap[Individual^.TerritoryX[xy], Individual^.TerritoryX[xy], 1] := Individual^.Age;
             end;
           end;
 		  

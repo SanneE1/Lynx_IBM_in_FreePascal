@@ -147,8 +147,9 @@ begin
           Tcheck := Tcheck + 1;
 
           if Tcheck = Tsize then
-		  begin
+	  begin
           Individual^.Status := 3;
+
           if Individual^.Sex = 'f' then
           for xy := 0 to Tcheck - 1 do
             begin

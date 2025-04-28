@@ -8,17 +8,17 @@
       <Unit>
         <Filename Value="Model_lynx_cmd.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="3" Y="22"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="3" Y="39"/>
         <UsageCount Value="217"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="lynx_population_dynamics.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="155"/>
-        <CursorPos X="32" Y="161"/>
+        <TopLine Value="265"/>
+        <CursorPos X="29" Y="168"/>
         <UsageCount Value="217"/>
         <Loaded Value="True"/>
       </Unit>
@@ -28,7 +28,7 @@
         <EditorIndex Value="4"/>
         <TopLine Value="295"/>
         <CursorPos X="19" Y="332"/>
-        <UsageCount Value="145"/>
+        <UsageCount Value="147"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>

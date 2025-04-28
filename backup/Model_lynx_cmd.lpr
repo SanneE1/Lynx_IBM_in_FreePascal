@@ -15,12 +15,12 @@ begin
   WriteLn('A different number of parameters received than expected. Check submission line');
 
   paramname := ParamStr(1);
-  if paramname = '' then paramname := 'input_data' + PathDelim + 'parameter_values_Peninsula_gen_000.txt';
 
+  if paramname = '' then paramname := 'input_data' + PathDelim + 'parameter_values_Peninsula_gen_100.txt';
   if ParamStr(2) = '' then taskID := 0 else taskID := StrToInt(ParamStr(2));
 
   //SetHeapTraceOutput('job_report' + PathDelim + IntToStr(taskID) +  '_heaptrc.log');  // Output file name
-  SetHeapTraceOutput(IntToStr(taskID) +  '_heaptrc.log');  // Output file name
+  //SetHeapTraceOutput(IntToStr(taskID) +  '_heaptrc.log');  // Output file name
 
   //if taskID := then taskID := 0;
   WriteLn('Starting program');
@@ -35,6 +35,7 @@ begin
     end;
   end;
 
+  readLn();
 
 end.
 
