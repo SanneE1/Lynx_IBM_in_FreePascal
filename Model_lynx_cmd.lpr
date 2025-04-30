@@ -17,7 +17,6 @@ begin
   Exit();
   end;
 
-
   paramname := ParamStr(1);
 
   if paramname = '' then paramname := 'input_data' + PathDelim + 'parameter_values_Peninsula_gen_100.txt';

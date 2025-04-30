@@ -110,7 +110,7 @@ begin
                   if (PotentialFather <> nil) then
                 begin
 
-                for i:= 1 to 24 do
+                {for i:= 1 to 24 do
                 begin
                     for k:= 0 to 1 do
                     begin
@@ -118,7 +118,7 @@ begin
                       father[i,k]:= PotentialFather^.Genome[i,k];
                     end;
                end;
-
+                }
                 father_ID := PotentialFather^.UniqueID
                 end;
                 if (PotentialFather = nil) then

@@ -11,8 +11,12 @@ uses
 
 begin
 
-  if ParamCount <> 2 then
+  {if ParamCount <> 2 then
+  begin
   WriteLn('A different number of parameters received than expected. Check submission line');
+  Exit();
+  end;
+  }
 
   paramname := ParamStr(1);
 
