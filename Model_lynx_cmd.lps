@@ -9,8 +9,8 @@
         <Filename Value="Model_lynx_cmd.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="3"/>
-        <CursorPos X="4" Y="19"/>
+        <TopLine Value="2"/>
+        <CursorPos X="8" Y="18"/>
         <UsageCount Value="217"/>
         <Loaded Value="True"/>
       </Unit>
@@ -29,7 +29,6 @@
         <EditorIndex Value="4"/>
         <TopLine Value="380"/>
         <CursorPos X="75" Y="392"/>
-        <FoldState Value=" T3qH0{s3"/>
         <UsageCount Value="153"/>
         <Loaded Value="True"/>
       </Unit>

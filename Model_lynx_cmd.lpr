@@ -38,7 +38,6 @@ begin
     end;
   end;
 
-  readLn();
 
 end.
 

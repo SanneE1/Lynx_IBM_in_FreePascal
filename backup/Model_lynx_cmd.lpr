@@ -15,8 +15,7 @@ begin
   begin
   WriteLn('A different number of parameters received than expected. Check submission line');
   Exit();
-  end;
-  }
+  end;}
 
   paramname := ParamStr(1);
 
