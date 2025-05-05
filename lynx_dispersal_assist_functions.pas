@@ -385,11 +385,11 @@ begin
   Result := False
   else
     if ((Sex = 'f') and (Femalesmap[x, y, 0] = 0)) or
-    ((Sex = 'm') and (Malesmap[x, y, 0] = 0) and (Femalesmap[x, y, 0] = 3)) then
+    ((Sex = 'm') and (Malesmap[x, y, 0] = 0) and (Femalesmap[x, y, 0] >= 2)) then
     Result := True
     else
       if ((Sex = 'f') and (Femalesmap[x, y, 0] = 2)) or
-      ((Sex = 'm') and (Malesmap[x, y, 0] = 2) and (FemalesMap[x,y,0] = 3)) then
+      ((Sex = 'm') and (Malesmap[x, y, 0] = 2) and (FemalesMap[x,y,0] >= 2)) then
       begin
       resident_age := -1;
         if (Sex = 'f') then
