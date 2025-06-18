@@ -111,7 +111,6 @@ var               {here you declare global variables}
   sum_pop_size: array of integer;
   each_pop_sizes: array of array of integer;
   each_pop_IC: array of array of real;
-  n_sim_no_ext: array[1..100] of integer;
   to_file_out, mig_file_out, migS_file_out, connection_F_out, connection_M_out: TextFile;
   filename: Text;
   HabitatMap: Array2Dinteger;

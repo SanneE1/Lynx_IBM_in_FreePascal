@@ -132,8 +132,10 @@ begin
     for a := 1 to n_cycles do
     begin
 
+      WriteLn('Disperal procedure nr ', a);
       dispersal(a);
 
+      WriteLn('See which Individuals can be settled');
       for b := 0 to population.count - 1 do
       begin
       Individual := Items[b];
@@ -147,8 +149,9 @@ begin
           Tcheck := Tcheck + 1;
 
           if Tcheck = Tsize then
-		  begin
+	  begin
           Individual^.Status := 3;
+
           if Individual^.Sex = 'f' then
           for xy := 0 to Tcheck - 1 do
             begin

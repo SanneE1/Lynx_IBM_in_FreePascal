@@ -299,7 +299,6 @@ begin
   SetLength(sum_pop_size, max_years + 1);
 
   for a := 1 to max_years do sum_pop_size[a] := 0;
-  for a := 1 to max_years do n_sim_no_ext[a] := 0;
 
   SetLength(each_pop_sizes, 6);
   SetLength(each_pop_IC, 6);

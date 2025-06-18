@@ -11,15 +11,15 @@ uses
 
 begin
 
-  if ParamCount <> 2 then
+  {if ParamCount <> 2 then
   begin
   WriteLn('A different number of parameters received than expected. Check submission line');
   Exit();
   end;
-
+  }
   paramname := ParamStr(1);
 
-  if paramname = '' then paramname := 'input_data' + PathDelim + 'parameter_values_Peninsula_gen_100.txt';
+  if paramname = '' then paramname := 'input_data' + PathDelim + 'parameter_values_Peninsula_gen_000.txt';
   if ParamStr(2) = '' then taskID := 0 else taskID := StrToInt(ParamStr(2));
 
   //SetHeapTraceOutput('job_report' + PathDelim + IntToStr(taskID) +  '_heaptrc.log');  // Output file name
@@ -38,6 +38,7 @@ begin
     end;
   end;
 
+  readLn();
 
 end.
 

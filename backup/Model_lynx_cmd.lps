@@ -3,14 +3,13 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Release"/>
+    <BuildModes Active="Debug"/>
     <Units>
       <Unit>
         <Filename Value="Model_lynx_cmd.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="2"/>
-        <CursorPos X="7" Y="18"/>
+        <CursorPos X="31" Y="9"/>
         <UsageCount Value="217"/>
         <Loaded Value="True"/>
       </Unit>
@@ -18,7 +17,7 @@
         <Filename Value="lynx_population_dynamics.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="147"/>
+        <TopLine Value="55"/>
         <CursorPos X="11" Y="168"/>
         <UsageCount Value="217"/>
         <Loaded Value="True"/>
@@ -73,7 +72,7 @@
         <Loaded Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
+    <JumpHistory HistoryIndex="27">
       <Position>
         <Filename Value="Model_lynx_cmd.lpr"/>
         <Caret Line="9" Column="22"/>
@@ -101,10 +100,6 @@
       <Position>
         <Filename Value="lynx_vital_rates.pas"/>
         <Caret Line="647" Column="46" TopLine="613"/>
-      </Position>
-      <Position>
-        <Filename Value="lynx_vital_rates.pas"/>
-        <Caret Line="198" Column="9" TopLine="443"/>
       </Position>
       <Position>
         <Filename Value="lynx_vital_rates.pas"/>
@@ -185,10 +180,6 @@
       <Position>
         <Filename Value="lynx_dispersal_assist_functions.pas"/>
         <Caret Line="80" Column="46" TopLine="47"/>
-      </Position>
-      <Position>
-        <Filename Value="lynx_input_output_functions.pas"/>
-        <Caret Line="16" Column="28" TopLine="242"/>
       </Position>
       <Position>
         <Filename Value="lynx_input_output_functions.pas"/>
