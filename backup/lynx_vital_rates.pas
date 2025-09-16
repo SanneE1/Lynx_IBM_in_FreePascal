@@ -63,42 +63,6 @@ begin
                   end;
                end;
 
-              if not male_present then
-                begin
-                   for CurrentDist := 0 to 80 do
-                   begin
-                     // Check all cells at the current distance from the starting point
-                     for x := Individual^.Coor_X - CurrentDist to Individual^.Coor_X + CurrentDist do
-                     begin
-                     for y := Individual^.Coor_Y - CurrentDist to Individual^.Coor_Y + CurrentDist do
-                     begin
-
-                     // only checks cells on the "ring" at CurrentDist
-                     if (Max(Abs(x- Individual^.Coor_X), Abs(y - Individual^.Coor_Y)) <> CurrentDist) then
-                     Continue;
-
-                     // Skip coordinates where lynx couldn't move (so also no coordinates for territory)
-                     if not canMoveHere(x, y) then Continue;
-
-                      // Check if this cell has a male
-                      if Malesmap[x, y, 0] >= 2 then
-                      begin
-                      male_present := True;
-                      male_x := x;
-                      male_y := y;
-
-                      Break;
-                      // Don't break here - we need to check all cells at this distance
-                      // to make sure we find the closest one(s)
-                      end;
-                      end;
-                      if male_present then Break;
-                      end;
-                      if male_present then Break;
-
-                      end;
-                end;
-
               if male_present then
               begin
                 setLength(mother, 25, 2);
@@ -130,7 +94,7 @@ begin
 
                 if male_present then
                 begin
-                IC_rep_prob := rep_prob*(1+(IC_eff_rep*(0.5-Individual^.IC)));
+                IC_rep_prob := rep_prob* (1 - (IC_eff_rep * Individual^.IC));
                 rand_val := random;
                    if rand_val < IC_rep_prob then
                   begin
@@ -296,6 +260,12 @@ begin
           if (Individual^.Age > max_rep_age) then surv_p := surv_old;
         end;
 
+      {Include Inbreeding effects}
+      if (IC_eff_kittens>0) and (Individual^.Status=0)then
+        surv_p := surv_p * (1 - (IC_eff_kittens * Individual^.IC))
+      else
+        surv_p := surv_p *(1 - (IC_eff_surv * Individual^.IC));
+
 
       {Transform annual survival (surv_p) to daily survival (surv_day)}
         surv_day := Power(surv_p, (1 / 365));
@@ -305,16 +275,12 @@ begin
        surv_day := 1-daily_mortality_p;
       end;
 
-      if (IC_eff_kittens>0) and (Individual^.Status=0)then
-        IC_surv_prob := surv_cub * (1 + IC_eff_kittens *(0.5 - Individual^.IC))
-      else
-        IC_surv_prob := surv_day*(1+(IC_eff_surv*(0.5-Individual^.IC)));
 
       {Determine fate of individuals}
       die := False;
       if Individual^.age > max_age then die := True
       else
-        if random > IC_surv_prob then die := True;
+        if random > surv_day then die := True;
       if die then
       begin
        if Individual^.Status >= 2 then
@@ -349,7 +315,6 @@ var
   test_cell_available, c_available, already_terr: boolean;
 
 begin
-  check_daily_movement_i := 0;
   with population do
   begin
     populationsize := population.Count;
@@ -359,11 +324,12 @@ begin
       Individual := items[a];
 
       //Extra debug information
-      if Individual = nil then WriteLn('Individual index ' + IntToStr(a) + 'doesnt get an individual assigned');
+      if Individual = nil then WriteLn('Individual index ' + IntToStr(a) + 'doesnt have an individual assigned');
 
       {If the individual is a subadult determine if it starts dispersing}
       if (Individual^.Status = 0) and (Individual^.Age > 0) then
       begin
+        //WriteLn('See if individual starts dispersing');
         age_m := (Individual^.Age * 12) + (day / 30);
         // Formula requires age in months
         P_disp_start := -1.55 + 2.62 * (1 - Exp(-0.115 * age_m));
@@ -377,6 +343,7 @@ begin
       If not, restart dispersal}
       if (Individual^.Status = 2) then
       begin
+        //WriteLn('Individual is early settler, check if it has enough territory');
         TCount := 0;
 
         for b := 0 to length(Individual^.TerritoryX) - 1 do
@@ -391,13 +358,17 @@ begin
 
         {If there's not enough territory, see if there's any unclaimed available}
         if (TCount < Tsize) and (TCount > 0) then //If TCount is 0 that means that the individual will have to move for sure to find new territory
+        begin
+        //WriteLn('Not enough territory, claiming other free cells if possible, otherwise restart dispersal');
         ClaimNewTerrOrStartDispersal;
+        end;
       end;
 
       {Now start dispersal IF individual has dispersal status}
 
       if (Individual^.Status = 1) then
       begin
+        //WriteLn('Individual has status 1, starting walking');
         SetLength(temp_terrX, Tsize);
         SetLength(temp_terrY, Tsize);
         ArrayToNegOne(temp_terrX);
@@ -480,14 +451,12 @@ begin
           {If in breeding habitat, check if settlement is possible}
           if (HabitatMap[TestCoordX, TestCoordY] = 2) and (ReproductionQuality(TestCoordX, TestCoordY)) then
           begin
-
+            //WriteLn('Individual walked into breeding habitat, checking to see if territory can be claimed');
             test_cell_available := False;
             test_cell_available := TerritoryCellAvailable(TestCoordX, TestCoordY, Individual^.Sex, Individual^.Age);
 
             if test_cell_available then
             begin
-              if Individual^.Sex = 'f' then
-              begin
               {Look for more breeding habitat until teritory is big enough}
 
               temp_terrX[0] := TestCoordX;
@@ -523,6 +492,7 @@ begin
               {Keep looking in adjacent cells if not enough territory has been found yet}
                 if TCount < Tsize then
                 begin
+                  //WriteLn('Looking further outside immediate circle to find enough cells');
                   first_Tcount := TCount;
                   j := 0;
                 while (TCount < Tsize) and (j < first_Tcount) do
@@ -563,31 +533,12 @@ begin
                  end;
                   end;
 
-              end
-              else
-              begin
-
-               {Males just take all the territory of a single settled female}
-               temp_ind := nil;
-               temp_ind := FindTerrOwner(population, 'f', TestCoordX, TestCoordY);
-
-               if temp_ind = nil then Continue;
-
-               for i := 0 to Length(temp_ind^.TerritoryX) - 1 do
-               begin
-                  temp_terrX[i] := temp_ind^.TerritoryX[i];
-                  temp_terrY[i] := temp_ind^.TerritoryY[i];
-               end;
-
-               TCount := Length(temp_ind^.TerritoryX);
-
-              end;
-
 
                   {Check that enough territory has been foundso territory can be removed and assigned according}
                   if TCount >= Tsize then
                   begin
                     {use temp_terr to remove those coordinates from existing territories}
+                    //WriteLn('Enough found, removing selected cells from others if needed');
                     for xy := 0 to TCount - 1 do
                       begin
 
@@ -614,6 +565,7 @@ begin
                       end;
 
                     {Assign territory to individual and change status}
+                    //WriteLn('Changing status of individual and assigning territory cells');
                     Individual^.status := 2;
                       for f := 0 to TCount - 1 do
                       begin
@@ -643,13 +595,10 @@ begin
               end;
               Inc(s);
           end;
-        if check_daily_movement_i < 1000 then
-        check_daily_movement_i := check_daily_movement_i + 1;
-        end;
 
         end;
       end;
-
+     end;
     end;
 
 

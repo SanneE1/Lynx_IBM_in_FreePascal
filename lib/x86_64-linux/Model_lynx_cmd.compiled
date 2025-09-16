@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
-  <Compiler Value="/usr/bin/fpc" Date="1649687632"/>
-  <Params Value=" -MObjFPC -Scghi -CX -Cg -O2 -XX -l -vewnhibq -Fi/home/jovyan/Lynx_IBM_in_FreePascal/lib/x86_64-linux -Fu/home/jovyan/Lynx_IBM_in_FreePascal/ -FU/home/jovyan/Lynx_IBM_in_FreePascal/lib/x86_64-linux/ -FE/home/jovyan/Lynx_IBM_in_FreePascal/program/ -o/home/jovyan/Lynx_IBM_in_FreePascal/program/Model_Lynx_release Model_lynx_cmd.lpr"/>
+  <Compiler Value="C:\fpcupdeluxe\fpc\bin\x86_64-win64\fpc.exe" Date="1529043037"/>
+  <Params Value=" -Tlinux -Px86_64 -MObjFPC -Scaghi -Cg -CirotR -O1 -gw3 -gl -gt -l -vewnhibq -FiC:\Users\z1512834z\Documents\01_Natura_Connect\00_Lynx_model\lynx_donana\lib\x86_64-linux -FuC:\Users\z1512834z\Documents\01_Natura_Connect\00_Lynx_model\lynx_donana\ -FUC:\Users\z1512834z\Documents\01_Natura_Connect\00_Lynx_model\lynx_donana\lib\x86_64-linux\ -FEC:\Users\z1512834z\Documents\01_Natura_Connect\00_Lynx_model\lynx_donana\ -oC:\Users\z1512834z\Documents\01_Natura_Connect\00_Lynx_model\lynx_donana\Model_Lynx_debug Model_lynx_cmd.lpr"/>
 </CONFIG>

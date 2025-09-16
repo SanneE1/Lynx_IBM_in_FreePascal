@@ -3,22 +3,23 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="Debug"/>
+    <BuildModes Active="Linux_debug"/>
     <Units>
       <Unit>
         <Filename Value="Model_lynx_cmd.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <CursorPos X="31" Y="9"/>
+        <TopLine Value="12"/>
+        <CursorPos X="21" Y="9"/>
         <UsageCount Value="217"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="lynx_population_dynamics.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="55"/>
-        <CursorPos X="11" Y="168"/>
+        <TopLine Value="317"/>
+        <CursorPos X="60" Y="330"/>
         <UsageCount Value="217"/>
         <Loaded Value="True"/>
       </Unit>
@@ -28,7 +29,7 @@
         <EditorIndex Value="4"/>
         <TopLine Value="336"/>
         <CursorPos X="13" Y="368"/>
-        <UsageCount Value="155"/>
+        <UsageCount Value="173"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -41,7 +42,8 @@
       <Unit>
         <Filename Value="lynx_define_units.pas"/>
         <EditorIndex Value="5"/>
-        <CursorPos X="20" Y="9"/>
+        <TopLine Value="81"/>
+        <CursorPos X="39" Y="113"/>
         <UsageCount Value="110"/>
         <Loaded Value="True"/>
       </Unit>
@@ -53,7 +55,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="237"/>
         <CursorPos Y="255"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit>
       <Unit>
         <Filename Value="lynx_input_output_functions.pas"/>
@@ -66,21 +68,13 @@
       <Unit>
         <Filename Value="lynx_vital_rates.pas"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="415"/>
-        <CursorPos X="15" Y="436"/>
+        <TopLine Value="252"/>
+        <CursorPos X="42" Y="275"/>
         <UsageCount Value="100"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="27">
-      <Position>
-        <Filename Value="Model_lynx_cmd.lpr"/>
-        <Caret Line="9" Column="22"/>
-      </Position>
-      <Position>
-        <Filename Value="lynx_population_dynamics.pas"/>
-        <Caret Line="109" Column="9" TopLine="98"/>
-      </Position>
+    <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="Model_lynx_cmd.lpr"/>
         <Caret Line="22" Column="3"/>
@@ -185,6 +179,22 @@
         <Filename Value="lynx_input_output_functions.pas"/>
         <Caret Line="38" Column="62" TopLine="18"/>
       </Position>
+      <Position>
+        <Filename Value="Model_lynx_cmd.lpr"/>
+        <Caret Line="9" Column="31"/>
+      </Position>
+      <Position>
+        <Filename Value="lynx_population_dynamics.pas"/>
+        <Caret Line="302" Column="42" TopLine="273"/>
+      </Position>
+      <Position>
+        <Filename Value="lynx_define_units.pas"/>
+        <Caret Line="9" Column="20"/>
+      </Position>
+      <Position>
+        <Filename Value="lynx_vital_rates.pas"/>
+        <Caret Line="304" Column="7" TopLine="285"/>
+      </Position>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
@@ -207,6 +217,9 @@
       </Item>
       <Item>
         <Expression Value="each_pop_sizes"/>
+      </Item>
+      <Item>
+        <Expression Value="n_sim_no_ext"/>
       </Item>
     </Watches>
   </Debugging>

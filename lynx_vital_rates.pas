@@ -94,7 +94,7 @@ begin
 
                 if male_present then
                 begin
-                IC_rep_prob := rep_prob*(1+(IC_eff_rep*(0.5-Individual^.IC)));
+                IC_rep_prob := rep_prob * (1 - (IC_eff_rep * Individual^.IC));
                 rand_val := random;
                    if rand_val < IC_rep_prob then
                   begin
@@ -260,6 +260,12 @@ begin
           if (Individual^.Age > max_rep_age) then surv_p := surv_old;
         end;
 
+      {Include Inbreeding effects}
+      if (IC_eff_kittens>0) and (Individual^.Status=0)then
+        surv_p := surv_p * (1 - (IC_eff_kittens * Individual^.IC))
+      else
+        surv_p := surv_p *(1 - (IC_eff_surv * Individual^.IC));
+
 
       {Transform annual survival (surv_p) to daily survival (surv_day)}
         surv_day := Power(surv_p, (1 / 365));
@@ -269,16 +275,12 @@ begin
        surv_day := 1-daily_mortality_p;
       end;
 
-      if (IC_eff_kittens>0) and (Individual^.Status=0)then
-        IC_surv_prob := surv_cub * (1 + IC_eff_kittens *(0.5 - Individual^.IC))
-      else
-        IC_surv_prob := surv_day*(1+(IC_eff_surv*(0.5-Individual^.IC)));
 
       {Determine fate of individuals}
       die := False;
       if Individual^.age > max_age then die := True
       else
-        if random > IC_surv_prob then die := True;
+        if random > surv_day then die := True;
       if die then
       begin
        if Individual^.Status >= 2 then
